@@ -95,13 +95,8 @@ def rooms(sorted=False):
 	if not roomlist:
 		return "I'm not in any rooms atm..."
 
-	if sorted:
-		tmp=[]
-		for elem in roomlist:
-			tmp.append(elem)
-		tmp.sort()
-		roomlist=tmp
-		del tmp
+	roomlist=list(roomlist) #roomsHandler.getActive() returns a tuple, which is unmutable and thus insortable. make it a list first.
+	roomlist.sort()
 
 	result="rooms I'm in atm:"
 	for elem in roomlist:
@@ -110,11 +105,47 @@ def rooms(sorted=False):
 	return result
 
 
+
+
+def uids():
+	'''fetch all uid-info'''
+
+	reply="contacts I know:"
+
+	query_uids='select `type`,`name` from `uids`;'
+	query_typs='select `id`,`type` from `convotypes`;'
+	cursor=mysql.db_r.cursor()
+	cursor.execute(query_uids)
+	uids=list(cursor.fetchall())
+	cursor.execute(query_typs)
+	typs=cursor.fetchall()
+	cursor.close()
+
+	typs_dict={} #dictionary with all types. type-id is the key and type-name is the value
+	result={} #all the uids stored together in one tuple for each different type.
+
+	for elem in typs:
+		typs_dict[elem[0]]=elem[1] #make the dictionary that holds all the names of the types for easy reference later on
+		result[elem[0]]=[] #create an empty list for each different type
+	for elem in uids:
+		result[elem[0]].append(elem[1]) #put every uid in the result dictionary classed according to its type
+	for elem in result:
+		typ=typs_dict[elem]
+		uids=result[elem]
+		reply+="\n\n -- %s --"%typ
+		for elem in uids:
+			reply+="\n%s"%elem
+
+	return reply
+
+
+
 def extended():
 	'''put all other statistics together and blurt them out!'''
 
 	stats=simple()
 	stats+='\n\n'+factoidsAndReactions()
 	stats+='\n\n'+rooms()
+	stats+='\n\n'+uids()
 
 	return stats

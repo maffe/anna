@@ -90,6 +90,12 @@ class StringFilters:
 			return string[:end]
 
 
+	def stripQM(self,text):
+		'''return the input with the last character removed if it was a question mark'''
+		if text[-1]=="?":
+			return text[:-1]
+		else:
+			return text
 
 
 

@@ -48,7 +48,7 @@ class PM:
 		return self.permissions
 
 	def getUid(self):
-		'''if you don't understand this one you should really get your self checked some day'''
+		'''if you don't understand this one... then...'''
 		return self.uid
 
 	def isAllowedTo(self,plok):

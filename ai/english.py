@@ -18,6 +18,9 @@ filters=misc.StringFilters()
 import stats
 import config
 import plugin
+from user_identification import isAllowedTo as uidIsAllowedTo
+
+
 
 
 # def perm(required,supplied):
@@ -44,13 +47,23 @@ def direct(message,identity,typ):
 	if identity.isAllowedTo('protect') and message[:8]=="protect ":
 		message=message[8:]
 		if message[:16]=="the reaction to ":
-			reply = Reactions.protect(message[16:],silent=False)
+			result = Reactions.protect(message[16:],silent=False)
 		elif message[:12]=="reaction to ":
-			reply = Reactions.protect(message[12:],silent=False)
+			result = Reactions.protect(message[12:],silent=False)
 		elif message[:8]=="factoid ":
-			reply = Factoids.protect(message[8:],silent=False)
+			result = Factoids.protect(message[8:],silent=False)
 		else:
-			reply = Factoids.protect(message,silent=False)
+			result = Factoids.protect(message,silent=False)
+		if result==0:
+			reply="k."
+		elif result==1:
+			reply="I don't know what that is"
+		elif result==2:
+			reply="database error: query failed"
+		elif result==3:
+			reply="I know, it's already set up that way"
+		else:
+			reply="uhh.. error?"
 
 
 	if message.lower()=="stats":
@@ -73,7 +86,9 @@ def direct(message,identity,typ):
 		reply=handleFactoids(message,uid)
 	#otheriwse, check for reaction
 	if not reply:
-		reply = Reactions.get(message,True)
+		reply = Reactions.get(message)
+		if type(reply) == types.IntType:
+			reply=None
 
 	if reply:
 		identity.send(reply)
@@ -98,7 +113,7 @@ def room(message,sender,typ,room):
 
 	#body and message are used totally in the wrong way. for historical reasons ( ;] ) the body variable still exists, and message holds the reply. this should change to message holding the incoming message and reply holding the reply.
 	message=filters.xstrip(message)
-	reply=''
+	reply=None
 
 
 
@@ -115,18 +130,23 @@ def room(message,sender,typ,room):
 
 
 	#get factoid
+	#fixme: use regexp to make this look better
 	elif message.lower()[:8]=="what is ":
-		reply=Factoids.get(message[8:],silent=True)
+		reply=Factoids.get(filters.stripQM(message[8:]))
 	elif message.lower()[:7]=="what's " :
-		reply=Factoids.get(message[7:],silent=True)
+		reply=Factoids.get(filters.stripQM(message[7:]))
 	elif message[-1:]=="?":
-		reply=Factoids.get(message[:-1],silent=True)
+		reply=Factoids.get(message[:-1])
+	if type(reply)==types.IntType: #if error
+		reply=None #ignore
 
 
 
 
-	else:
-		reply=Reactions.get(message,True,user=sender)
+	if not reply:
+		reply=Reactions.get(message,user=sender)
+		if type(reply)==types.IntType:
+			reply=None
 
 
 	if reply and room.getBehaviour(asstring=False): #if silent: don't speak
@@ -152,7 +172,7 @@ if the prepend (str) is set, this is prepended to the output with a random highl
 		except ValueError, e:
 			return e.__str__()
 	else:
-		if type(sre.match('(what\'s|what is) your behaviour\?$',message)) != types.NoneType:
+		if type(sre.match('(what\'s|what is) your behaviour\?$',message)) != types.NoneType: #sre.match() matches a regexp to the beginning of a string. because of the $ at the end of our regexp this means we only get a match if the entire string exactly matches it.
 			return room.getBehaviour(asstring=True)
 
 
@@ -164,7 +184,9 @@ if the prepend (str) is set, this is prepended to the output with a random highl
 		reply=handleFactoids(message,uid)
 	#otheriwse, check for reaction
 	if not reply:
-		reply = Reactions.get(message,True)
+		reply = Reactions.get(message)
+		if type(reply)==types.IntType: #if error
+			reply=None #ignore
 
 
 	if prepend and reply:
@@ -185,34 +207,83 @@ if the prepend (str) is set, this is prepended to the output with a random highl
 def handleFactoids(message,uid):
 	'''use this function to check if a message is meant to do something with factoids (change one, add one, etc).'''
 
+	reply=None
+
 	#fetch factoid
+
 	if message[:8].lower()=="what is ":
-		reply = Factoids.get(message[8:],silent=False)
+		reply = Factoids.get(filters.stripQM(message[8:]))
 	elif message[:7].lower()=="what's ":
-		reply = Factoids.get(message[7:],silent=False)
+		reply = Factoids.get(filters.stripQM(message[7:]))
 	elif message[:17].lower()=="do you know what " and message.strip("?")[-3:]==" is":
-		reply = Factoids.get(message[17:-3],silent=False)
+		reply = Factoids.get(message[17:-3])
+	if type(reply) == types.IntType:
+		if reply==1:
+			reply="Idk.. can you tell me?"
+		elif reply==2:
+			reply="whoops... db error :s"
+		else: #unspecified error
+			reply="an error ocurred"
+
+
+	if reply: #if there already is a reply
+		pass #don't even bother checking all this stuff
+
 	elif message[-1:]=="?":
-		reply = Factoids.get(message[:-1],silent=True)
+		reply = Factoids.get(message[:-1])
+		if type(reply)==types.IntType:
+			reply=None
 
 	#forget factoid
 	elif message[:7].lower()=="forget ":
-		message=message[7:]
-		if message[:5].lower()=="what " and message[-3:]==" is":
-			reply = Factoids.delete(message[5:-3])
-		else:
-			reply = Factoids.delete(message)
+		object=message[7:]
+		if object[:5].lower()=="what " and object[-3:]==" is":
+			object=object[5:-3]
+		result = Factoids.delete(object)
+		if result==0:
+			reply="k."
+		elif result==1:
+			reply="I don't know what %s is"%object
+		elif result==2:
+			reply="woops... database error."
+		elif result==3:
+			reply="srry, protected factoid. only an admin can delete that."
 
 
 	#add factoid
 	elif ' is ' in message:
 		(object,definition)=[elem.strip() for elem in message.split(" is ",1)]
-		if definition =="protected":
-			reply=Factoids.protect(object)
-		elif definition in ('public','unprotected'):
-			reply=Factoids.unProtect(object)
-		else:
-			reply = Factoids.add(object,definition,uid)
+		if uidIsAllowedTo(uid,'protect'):
+			if definition=="protected":
+				result=Factoids.protect(object)
+			elif definition in ('public','unprotected'):
+				result=Factoids.unProtect(object)
+			#fixme: this means you will get the same answer no matter if you protect or unprotect. I don't care, but it could be done nicer.
+			if result==0:
+				reply="k"
+			elif result==1:
+				reply="I don't know what that means"
+			elif result==2:
+				reply="ah crap crap crap... database error!"
+			elif result==3:
+				reply="yeah, I know.."
+			else: #unspecified error messages
+				reply="hmm.. error."
+
+
+		if not reply:
+			result=Factoids.get(object)
+			if result==1: # object is not known yet
+				Factoids.add(object,definition,uid)
+				reply="k"
+			elif result==2:
+				reply="oh noes, a database error!"
+			elif type(result) in types.StringTypes: #means that result holds the definition of the object and not an error code
+				if result == definition:
+					reply="I know"
+				else:
+					reply="but... but... %s is %s"%(object,result)
+
 
 	try:
 		return reply
@@ -248,6 +319,8 @@ def handleProtection(message):
 		elif isprotected==1:
 			return "yes"
 		elif isprotected==2:
+			return "ah crap, a database error"
+		elif isprotected==3:
 			return dunno
 	else:
 		return None
@@ -260,16 +333,56 @@ def handleReactions(message,uid):
 	#add global reaction
 	if message[:12].lower()=="reaction to " and " is " in message[12:]:
 		(listenfor,reaction)=[elem.strip() for elem in message[12:].split(" is ",1)]
-		if reaction =="protected":
-			reply=Reactions.protect(listenfor)
-		elif reaction in ('public','unprotected'):
-			reply=Reactions.unProtect(listenfor)
-		else:
-			reply = Reactions.add(listenfor,reaction,uid)
+
+
+		if uidIsAllowedTo(uid,'protect'):
+			if reaction =="protected":
+				result=Reactions.protect(listenfor)
+			elif reaction in ('public','unprotected'):
+				result=Reactions.unProtect(listenfor)
+			#fixme: this means you will get the same answer no matter if you protect or unprotect. I don't care, but it could be done nicer.
+			if result==0:
+				reply="k"
+			elif result==1:
+				reply="I don't know what to say to that"
+			elif result==2:
+				reply="ah crap crap crap... database error!"
+			elif result==3:
+				reply="yeah, I know.."
+			else: #unspecified error messages
+				reply="hmm.. error."
+
+
+		try:
+			reply
+		except NameError: #reply has not been set yet
+			#if reaction[:xx]==" and append a questionmark" #fixme; make this
+			result=Reactions.get(listenfor)
+			if result==1: # object is not known yet
+				Reactions.add(listenfor,reaction,uid)
+				reply="k"
+			elif result==2:
+				reply="oh noes, a database error!"
+			elif type(result) in types.StringTypes: #means that result holds the definition of the object and not an error code
+				if result == reaction:
+					reply="I know"
+				else:
+					reply="but the reaction to %s is %s"%(listenfor,result)
+			else: #an unspecified error occured:
+				reply="uhh... error?"
+
 
 	#del global reaction
 	elif message[:19].lower()=="forget reaction to ":
-		reply = Reactions.delete(message[19:])
+		result = Reactions.delete(message[19:])
+		if result==0:
+			reply="k"
+		elif result==1:
+			reply="I don't know what that means anyway"
+		elif result==2:
+			reply="shit, db error."
+		elif result==3:
+			reply="that factoid is protected. an admin needs to unprotect it before you can remove it."
 
 	try:
 		return reply

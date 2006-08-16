@@ -103,6 +103,25 @@ def getTypeId(typ):
 		return int(result[0])
 
 
+
+def getPermissions(uid):
+	'''return an iterable object that holds all the permissions a uid has
+#fixme: currently, this just returns 'all' if the uid matches the jid of an admin, hardcoded here. obviously, we need a real system for this.'''
+	if int(uid) == 6:
+		return ('all',)
+	else:
+		return ()
+
+
+def isAllowedTo(uid,whatdoeshewanttodothen):
+	'''check if uid (int) is allowed to do whatdoeshewanttodothen (str). returns True (bool) if allowed, False otherwise.'''
+	for elem in getPermissions(uid):
+		if elem in (whatdoeshewanttodothen,'all'):
+			return True
+	return False
+
+
+
 ### hmm... technically speaking, it should be possible (and better) to work without this by simply catching exceptions. if there's a drastic need; it should work.
 # def isUid(name,typ):
 # 	'''return True (bool) if we already have a uid with this name (str) and type (str||int), False otherwise'''
