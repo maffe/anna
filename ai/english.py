@@ -90,6 +90,25 @@ def direct(message,identity,typ):
 		if type(reply) == types.IntType:
 			reply=None
 
+
+	#replace some stuff in the reply:
+	replacedict={'user':identity.getNick()}
+	try:
+		reply=reply%replacedict
+	except KeyError, e:
+		key=e[0]
+		if key=="nick":
+			reply='I was told to say "%s" now'%reply
+			reply+=" but since this is a private conversation it seems awkward to replace %("+"nick"+")s by something..."
+		else:
+			reply=  'I was told to say "%s" now'%reply
+			reply+= " but I don't know what to replace %("
+			reply+= e[0]
+			reply+= ')s with'
+	except StandardError, e:
+		reply='I was taught to say "%s" now, but there seems to be something wrong with that..'%reply
+
+
 	if reply:
 		identity.send(reply)
 
@@ -140,29 +159,28 @@ def room(message,sender,typ,room):
 		reply=None #ignore
 
 
-
-
 	if not reply:
 		reply=Reactions.get(message)
 		if type(reply)==types.IntType: #if an error ocurred
 			reply=None #ignore it
-		else:
-			replacedict={'user':sender, \
-			             'nick':room.getNick() }
-			try:
-				reply=reply%replacedict
-			except KeyError, e:
-				reply=  'I was told to say "%s" now'%reply
-				reply+= " but I don't know what to replace %("
-				reply+= e[0]
-				reply+= ')s with'
-			except StandardError, e:
-				reply='I was taught to say "%s" now, but there seems to be something wrong with that..'%reply
-
 
 
 	if reply and room.getBehaviour(asstring=False): #if silent: don't speak
+
+		replacedict={'user':sender, \
+		             'nick':room.getNick() }
+		try:
+			reply=reply%replacedict
+		except KeyError, e:
+			reply=  'I was told to say "%s" now'%reply
+			reply+= " but I don't know what to replace %("
+			reply+= e[0]
+			reply+= ')s with'
+		except StandardError, e:
+			reply='I was taught to say "%s" now, but there seems to be something wrong with that..'%reply
+
 		room.send(reply)
+
 
 
 def mucHighlight(message,room,prepend=None):
