@@ -201,6 +201,9 @@ if the prepend (str) is set, this is prepended to the output with a random highl
 			return 'k.'
 		except ValueError, e:
 			return e.__str__()
+	elif message[:24]=="change your nickname to ":
+		room.setNick(message[24:])
+		return #nothing more needs to be done.
 	else:
 		if type(sre.match('(what\'s|what is) your behaviour\?$',message)) != types.NoneType: #sre.match() matches a regexp to the beginning of a string. because of the $ at the end of our regexp this means we only get a match if the entire string exactly matches it.
 			return room.getBehaviour(asstring=True)

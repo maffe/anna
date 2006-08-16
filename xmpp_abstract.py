@@ -273,6 +273,12 @@ takes: message (str), the message to send"""
 			else:
 				self.behaviour=behaviour
 
+	def setNick(self,nick):
+		'''change nickname to nick (str). actually, what this does is change self.nick and force re-joining the room if self.active is True.'''
+		self.nick=nick
+		if self.isActive():
+			self.join(silent=True,force=True)
+
 	def setInActive(self):
 		'''inverse of self.Active()'''
 		self.active=False
