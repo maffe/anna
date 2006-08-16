@@ -125,15 +125,13 @@ def room(message,sender,typ,room):
 
 
 
-	nickname = room.nick
+	nickname = room.getNick()
 
 	if sender.lower()==nickname.lower():
 		return False  #prevent loops
 
 	message=filters.xstrip(message)
 	reply=None
-
-
 
 	#handle messages with leading nick as direct messages
 	nick_len = nickname.__len__()+1
