@@ -111,7 +111,6 @@ def room(message,sender,typ,room):
 	if sender.lower()==nickname.lower():
 		return False  #prevent loops
 
-	#body and message are used totally in the wrong way. for historical reasons ( ;] ) the body variable still exists, and message holds the reply. this should change to message holding the incoming message and reply holding the reply.
 	message=filters.xstrip(message)
 	reply=None
 
@@ -144,9 +143,22 @@ def room(message,sender,typ,room):
 
 
 	if not reply:
-		reply=Reactions.get(message,user=sender)
-		if type(reply)==types.IntType:
-			reply=None
+		reply=Reactions.get(message)
+		if type(reply)==types.IntType: #if an error ocurred
+			reply=None #ignore it
+		else:
+			replacedict={'user':sender, \
+			             'nick':room.getNick() }
+			try:
+				reply=reply%replacedict
+			except KeyError, e:
+				reply=  'I was told to say "%s" now'%reply
+				reply+= " but I don't know what to replace %("
+				reply+= e[0]
+				reply+= ')s with'
+			except StandardError, e:
+				reply='I was taught to say "%s" now, but there seems to be something wrong with that..'%reply
+
 
 
 	if reply and room.getBehaviour(asstring=False): #if silent: don't speak

@@ -1,13 +1,14 @@
 # -- coding: utf-8 --
-'''
-ai/__init__.py
-///////////////////////////////////////
+
+'''ai/__init__.py
+
 
 the AI module for anna.
 
 
       Q & A
 
+note: this documentation is relatively old now so it might very well be possible that the information provided here is not accurate. the idea is still the same though.
 
 Q: WHAT IS THIS MODULE FOR?
 
@@ -64,11 +65,7 @@ this is roughly the same as the one above, with one notable difference; a univer
 
 Q: WHY DOES ONE HAVE TO SPECIFY THE TYPE OF COMMUNICATION?
 
-A: I don't know T_T . I thought it could come in handy.. for example, when storing something in a database, it can be useful to know, additionally to the unique indentifier of the sender for that specific type, what type it is. it just seems more realistic. also, the type can be of influence to the reaction! taking into account the message-limit imposed by msn, you could want to return an excuse instead of too long a message that won't arrive anyway.
-
-///////////////////////////////////////
-
-'''
+A: I don't know T_T . I thought it could come in handy.. for example, when storing something in a database, it can be useful to know, additionally to the unique indentifier of the sender for that specific type, what type it is. it just seems more realistic. also, the type can be of influence to the reaction! taking into account the message-limit imposed by msn, you could want to return an excuse instead of too long a message that won't arrive anyway.'''
 
 
 def chat(lang):

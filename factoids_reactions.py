@@ -330,8 +330,8 @@ returns an integer:
 
 
 
-	def get(self,message_in,user=None):
-		"""check if a string exists in the 'global' table and return it. behaviour resembles Factoids.get(). user (str) is used to replace %(user)s with. returns the reaction as a string or an integer with errorcode if an error ocurred:
+	def get(self,message_in):
+		"""check if a string exists in the 'global' table and return it. behaviour resembles Factoids.get(). returns the reaction as a string or an integer with errorcode if an error ocurred:
 1: message_in unknown
 2: database error: query failed"""
 
@@ -351,20 +351,7 @@ returns an integer:
 			cursor.execute("update `reactions_global` set `count`=%d where `id`=%d limit 1;"%(int(count),int(result[2])))
 			cursor.close()
 		try:
-			result=result[0]
-			if user:
-				dictionary={'user':user}
-			#fixme: most of this belongs in the ai module.
-			try:
-				return result%dictionary
-			except KeyError, e: # prevent exit on invalid key (looks complicated... I couldn't make it look better)
-				return "somebody said I should say '%s' now, but I don't know what to replace '"%result + "%(" + "%s)s"%e[0] + "' with "
-			except ValueError: # handle incorrect stanza (eg.: %(user) instead of %(user)s )
-				return "somebody told me I should say '%s' now, but I think something is wrong there..."%result
-			except NameError:
-				return result
-			#fixme: check all possible exceptions that can occur
-			#return result
+			return result[0]
 		except TypeError:
 			return 1
 
