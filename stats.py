@@ -23,9 +23,11 @@ def simple():
 	stats='stats:'
 
 	(uptime,unit)=(time.time()-config.Misc.starttime,"seconds")
-	if uptime>3600:
+	if uptime>3e5:
+		(uptime,unit)=(uptime/86400,"days")
+	elif uptime>1e3:
 		(uptime,unit)=(uptime/3600,"hours")
-	elif uptime>60:
+	elif uptime>100:
 		(uptime,unit)=(uptime/60,"minutes")
 	if 1<uptime<2:
 		unit=unit[:-1]
@@ -36,11 +38,11 @@ def simple():
 
 
 	try:
-		cursor.execute("show table status like '%"+"factoids';")
+		cursor.execute("show table status like 'factoids';")
 		results['factoids']=cursor.fetchone()
-		cursor.execute("show table status like '%"+"reactions_global';")
+		cursor.execute("show table status like 'reactions_global';")
 		results['reactions_global']=cursor.fetchone()
-		cursor.execute("show table status like '%"+"reactions_direct';")
+		cursor.execute("show table status like 'reactions_direct';")
 		results['reactions_direct']=cursor.fetchone()
 		cursor.close()
 	except MySQLdb.ProgrammingError, e:
@@ -49,13 +51,13 @@ def simple():
 		return "oh dear, the database query failed."
 	cursor.close()
 
-	stats+="\nnumber of factoids remembered: %d\nnumber of factoids entered: %d\nnumber of global reactions remembered: %d\nnumber of global reactions entered: %d\nnumber of direct reactions remembered: %d\nnumber of direct reactions entered:%d" % \
+	stats+="\nnumber of factoids remembered: %d\nnumber of factoids entered: %d\nnumber of global reactions remembered: %d\nnumber of global reactions entered: %d\nnumber of direct reactions remembered: %d\nnumber of direct reactions entered: %d" % \
 	(results['factoids'][4],
-	results['factoids'][10],
+	results['factoids'][10]-1,
 	results['reactions_global'][4],
-	results['reactions_global'][10],
+	results['reactions_global'][10]-1,
 	results['reactions_direct'][4],
-	results['reactions_direct'][10])
+	results['reactions_direct'][10]-1)
 
 	return stats
 
@@ -146,6 +148,6 @@ def extended():
 	stats=simple()
 	stats+='\n\n'+factoidsAndReactions()
 	stats+='\n\n'+rooms()
-	stats+='\n\n'+uids()
+	#stats+='\n\n'+uids()
 
 	return stats

@@ -68,18 +68,4 @@ Q: WHY DOES ONE HAVE TO SPECIFY THE TYPE OF COMMUNICATION?
 A: I don't know T_T . I thought it could come in handy.. for example, when storing something in a database, it can be useful to know, additionally to the unique indentifier of the sender for that specific type, what type it is. it just seems more realistic. also, the type can be of influence to the reaction! taking into account the message-limit imposed by msn, you could want to return an excuse instead of too long a message that won't arrive anyway.'''
 
 
-def chat(lang):
-	'''use this function to choose a module that is compatible with instant messaging. most likely these functions will return something with the intention of having it being sent back to the sender.'''
-	if lang=='english':
-		global ai
-		import english as ai
-	elif lang=='german':
-		global ai
-		import german as ai
-	else:
-		raise ValueError, "there is no module available for '%s'."%lang
-
-
-
-
-pass
+__all__=['chat_english','chat_theenglishnazigame','all_echo']

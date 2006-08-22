@@ -5,8 +5,7 @@
 import config
 conf=config.Configuration()
 mysql=config.MySQL()
-from misc import StringFilters
-filters=StringFilters()
+import stringfilters as filters
 
 def addUid(name,typ):
 	'''add a new uid to the database. the typ argument is passed directly to the function for checking types, the name is inserted in the database. Do note that if self.getTypeId() raises an exception, it will not be catched. it will just return None if the uid already exists.'''
@@ -17,10 +16,9 @@ def addUid(name,typ):
 			typ=int(typ)
 		except ValueError:
 			typ=getTypeId(typ)
-		query="insert into `uids`(`name`,`type`) values('%s','%d');"%(filters.sql(name),int(typ))
 		cursor=mysql.db_w.cursor()
 		try:
-			cursor.execute(query)
+			cursor.execute("insert into `uids`(`name`,`type`) values(%s,%s)",(name,typ))
 		except mysql.ProgrammingError, e:
 			print "\n\n  >> DATABASE ERROR: QUERY FAILED <<\n\n  >> %s\n\n"%e.__str__()
 			cursor.close()
@@ -32,12 +30,10 @@ def addUid(name,typ):
 
 def getId(name,typ):
 	'''fetch the uid of the user with name name (str) and of type typ (str). return as an integer.'''
-	name=filters.sql(name)
 	typ=getTypeId(typ)
-	query="select `id` from `uids` where `name` = '%s' and `type` = '%d' limit 1;"%(name,typ)
 	cursor=mysql.db_r.cursor()
 	try:
-		n=cursor.execute(query) #.execute() returns the number of rows
+		n=cursor.execute("select `id` from `uids` where `name`=%s and `type`=%s limit 1",(name,typ)) #.execute() returns the number of rows
 	except mysql.ProgrammingError, e:
 		print "\n\n  >> DATABASE ERROR: QUERY FAILED <<\n\n  >> %s\n\n"%e.__str__()
 		cursor.close()
@@ -55,8 +51,7 @@ def getIdNoBullShit(name,typ):
 	try:
 		return getId(name,typ)
 	except ValueError:
-		addUid(name,typ)
-		return getId(name,typ)
+		return addUid(name,typ)
 
 
 
@@ -91,10 +86,8 @@ def getTypeId(typ):
 	try: #maybe it's already an integer...
 		return int(typ)
 	except ValueError:
-		typ=filters.sql(typ)
-		query="select `id` from `convotypes` where `type`='%s' limit 1;"%typ
 		cursor=mysql.db_r.cursor()
-		n=cursor.execute(query)
+		n=cursor.execute("select `id` from `convotypes` where `type`=%s limit 1",(typ,))
 		if not n:
 			cursor.close()
 			raise ValueError, "conversation type not found"
@@ -119,22 +112,3 @@ def isAllowedTo(uid,whatdoeshewanttodothen):
 		if elem in (whatdoeshewanttodothen,'all'):
 			return True
 	return False
-
-
-
-### hmm... technically speaking, it should be possible (and better) to work without this by simply catching exceptions. if there's a drastic need; it should work.
-# def isUid(name,typ):
-# 	'''return True (bool) if we already have a uid with this name (str) and type (str||int), False otherwise'''
-# 	try:
-# 		typ=int(typ)
-# 	except ValueError:
-# 		typ=getTypeId(typ)
-# 	name=filters.sql(name)
-# 	query="select `id` from `uids` where `name` = '%s' and `type` = '%d' limit 1;"%(name,typ)
-# 	cursor=mysql.db_r.cursor()
-# 	n=cursor.execute(query)
-# 	cursor.close()
-# 	if n:
-# 		return True
-# 	else:
-# 		return False

@@ -1,33 +1,23 @@
 # -- coding: utf-8 --
 '''
-factoids_reactions.py
+handlers.py
 ///////////////////////////////////////
 Define the handlers
 ///////////////////////////////////////
 '''
 
-import random
 import xmpp
-import sre
+import types
 
-import config
-mysql=config.MySQL()
-conf=config.Configuration()
-import factoids_reactions
-Reactions=factoids_reactions.Reactions()
-Factoids=factoids_reactions.Factoids()
 import misc
 admin=misc.Admin()
-filters=misc.StringFilters()
-import stats
+import stringfilters as filters
 import user_identification as uids
 import xmpp_abstract
 rooms=xmpp_abstract.MUCRooms()
 
-import ai as AI
-AI.chat('english')
-ai=AI.ai
-del AI #that's all we need from you ^^
+import aihandler
+
 
 class Xmpp:
 	"""use this class to call handlers for specific xmpp events"""
@@ -35,7 +25,8 @@ class Xmpp:
 	def pm(self,conn,mess):
 		"""handler that deals with messages directed directly to the bot by PM."""
 
-		message=mess.getBody().encode('utf-8','replace')
+
+		message=mess.getBody()
 		jid=mess.getFrom()
 		#prevent overloaded messages
 		if message.__len__()>255 :
@@ -79,7 +70,15 @@ class Xmpp:
 			conn.send(message[10:])
 			return 'k.'
 		else:
-			return ai.direct(message,counterpart,typ='jabber')
+			#to get our AIModule we first check if this uid already has a certain ai module in use.
+			aimodule=aihandler.getAIReferenceByUID(counterpart.getUid())
+			#if there was an error aimodule is now types.IntType
+			if type(aimodule)==types.IntType:
+				#in that case we just force the chat.english ai module
+				aimodule=aihandler.getAIReferenceByAID('chat_english')
+				if type(aimodule)==types.IntType:
+					sys.exit('default AI module ai/chat_english.py wasnt found.')
+			return aimodule.direct(message,counterpart,typ='jabber')
 
 
 
@@ -89,17 +88,13 @@ class Xmpp:
 		'''handler for multi user chitchat messages =D hurray.'''
 
 
-		#FIXME GODDAMNIT, FIXME!! T_T wtf should we do about unicode?! I am clueless here.. :'(
-		try:
-			message=mess.getBody().encode('utf-8','replace')
-		except AttributeError:
-			message=str(mess.getBody())
+		message=mess.getBody()
 		if message.__len__()>255 :
 			return False
 		if mess.getProperties().count("jabber:x:delay"): #stop if this is a delayed message
 			return False
 
-		jid=xmpp.JID(mess.getFrom())
+		jid=mess.getFrom()
 		user=jid.getResource() # the sender of the message
 		if not user: #<message type='groupchat' /> without resource
 			return False #IF by horror one finds a room that does not set the nick as resource, a loop cannot be prevented. therefore: ignore. type='groupchat' from rooms aren't interesting anyway, so we don't care (A)
@@ -109,7 +104,16 @@ class Xmpp:
 		except ValueError:
 			room=rooms.new(jid,conn,autojoin=False)
 
-		return ai.room(message,sender=user,typ='jabber',room=room)
+
+
+		#load the aimodule the same way as in self.direct()
+		aimodule=aihandler.getAIReferenceByUID(room.getUid())
+		if type(aimodule)==types.IntType:
+			aimodule=aihandler.getAIReferenceByAID('chat_english')
+			if type(aimodule)==types.IntType:
+				sys.exit('default AI module ai/chat_english.py wasnt found.')
+
+		return aimodule.room(message,sender=user,typ='jabber',room=room)
 
 
 	def joinmuc(self,conn,mess):
@@ -134,7 +138,9 @@ if not 2, get the existing instance, otherwise create a new one. pass this on to
 				situation=1
 			else: # situation 0
 				situation=0
-		ai.invitedToMuc(room,situation,by,reason)
+		#fixme: we need a more elegant solution
+		aimodule=aihandler.getAIReferenceByAID('chat_english')
+		aimodule.invitedToMuc(room,situation,by,reason)
 
 
 	def presence(self,conn,presence):
@@ -151,9 +157,11 @@ return False if type attribute == 'error'. '''
 		except AttributeError:
 			return False
 
-		jid=xmpp.JID(presence.getFrom())
+		jid=presence.getFrom()
 
-		if ns=='http:/jabber.org/protocol/muc#user':
+		if ns=='http://jabber.org/protocol/muc#user':
+
+			nick=jid.getResource()
 
 			#get the instance of the room
 			try:
@@ -169,9 +177,9 @@ return False if type attribute == 'error'. '''
 				except KeyError:
 					pass
 			else:
-				item=x.getNode('item')
-				role=x.getAttr('role')
-				jid =x.getAttr('jid')
+				item=x.T.item
+				role=item.getAttr('role')
+				jid =item.getAttr('jid')
 				participant=xmpp_abstract.MUCParticipant(nick,presence,role,jid)
 				room.addParticipant(participant)
 

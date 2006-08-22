@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -- coding: utf-8 --
 
-import time
-starttime=time.time()
+from time import time
+starttime=time()
 
 import connect_xmpp
 import config

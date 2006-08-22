@@ -12,13 +12,14 @@ import factoids_reactions
 Factoids=factoids_reactions.Factoids()
 Reactions=factoids_reactions.Reactions()
 
-import misc
-admin=misc.Admin()
-filters=misc.StringFilters()
+from misc import Admin
+admin=Admin()
+import stringfilters as filters
 import stats
 import config
 import plugin
 from user_identification import isAllowedTo as uidIsAllowedTo
+import aihandler
 
 
 
@@ -39,12 +40,25 @@ def direct(message,identity,typ):
 	reply=None
 	uid=identity.getUid()
 
-	#admin stuff
+
 	if identity.isAllowedTo('stop') and message=="stop":
 		#pm.send(identity,"ok, well, I'm leaving...") #fixme: we need a nice and clean solution for this that fits the idea! what about returning a message, waiting till it is delivered and stopping only after that?
 		admin.stop(nocheck=True) #only admins get here so no need to check again
 
-	if identity.isAllowedTo('protect') and message[:8]=="protect ":
+	#fixme: todo:
+	#tell the conversations module about the message
+	#conversations.received(message,uid)
+
+
+	elif message[:12]=="load module " and message[12:]: #prevent trying to load an empty module
+		result=aihandler.setAID(uid,message[12:]) #fixme: security?
+		if result==0:
+			reply="success!"
+		elif result==1:
+			reply="no such module"
+
+
+	elif identity.isAllowedTo('protect') and message[:8]=="protect ":
 		message=message[8:]
 		if message[:16]=="the reaction to ":
 			result = Reactions.protect(message[16:],silent=False)
@@ -90,27 +104,20 @@ def direct(message,identity,typ):
 		if type(reply) == types.IntType:
 			reply=None
 
+		if reply:
+			#replace some stuff in the reply:
+			replacedict={'user':identity.getNick()}
+			try:
+				reply=reply%replacedict
+			except KeyError, e:
+				if e[0]=="nick":
+					reply='I was told to say "%s" now but since this is a private conversation it seems awkward to replace %%(nick)s by something...'%reply
+				else:
+					reply='''I was told to say "%s" now but I don't know what to replace %%(%s)s with'''%(reply,e[0])
+			except StandardError, e:
+				reply='I was taught to say "%s" now, but there seems to be something wrong with that..'%reply
 
-	#replace some stuff in the reply:
-	replacedict={'user':identity.getNick()}
-	try:
-		reply=reply%replacedict
-	except KeyError, e:
-		key=e[0]
-		if key=="nick":
-			reply='I was told to say "%s" now'%reply
-			reply+=" but since this is a private conversation it seems awkward to replace %("+"nick"+")s by something..."
-		else:
-			reply=  'I was told to say "%s" now'%reply
-			reply+= " but I don't know what to replace %("
-			reply+= e[0]
-			reply+= ')s with'
-	except StandardError, e:
-		reply='I was taught to say "%s" now, but there seems to be something wrong with that..'%reply
-
-
-	if reply:
-		identity.send(reply)
+	identity.send(reply)
 
 
 
@@ -162,20 +169,18 @@ def room(message,sender,typ,room):
 		if type(reply)==types.IntType: #if an error ocurred
 			reply=None #ignore it
 
+		if reply:
+			replacedict={'user':sender, \
+									'nick':room.getNick() }
+			try:
+				reply=reply%replacedict
+			except KeyError, e:
+				reply='''I was told to say "%s" now but I don't know what to replace %%(%s)s with'''%(reply,e[0])
+			except StandardError, e:
+				reply='I was taught to say "%s" now, but there seems to be something wrong with that..'%reply
 
-	if reply and room.getBehaviour(asstring=False): #if silent: don't speak
 
-		replacedict={'user':sender, \
-		             'nick':room.getNick() }
-		try:
-			reply=reply%replacedict
-		except KeyError, e:
-			reply=  'I was told to say "%s" now'%reply
-			reply+= " but I don't know what to replace %("
-			reply+= e[0]
-			reply+= ')s with'
-		except StandardError, e:
-			reply='I was taught to say "%s" now, but there seems to be something wrong with that..'%reply
+	if reply and room.getBehaviour(): #if silent: don't speak
 
 		room.send(reply)
 
@@ -194,14 +199,26 @@ if the prepend (str) is set, this is prepended to the output with a random highl
 		room.leave(message=False,silent=True)
 		return
 	elif message[:4]=="act ":
-		try:
-			room.setBehaviour(message[4:])
-			return 'k.'
-		except ValueError, e:
-			return e.__str__()
+		behaviour=getBehaviourID(message[4:])
+		if behaviour==None:
+			return "behaviour not found"
+		room.setBehaviour(behaviour)
+		return 'k.'
+
 	elif message[:24]=="change your nickname to ":
+		#fixme: this is not the right place for conflict checking; we should catch the error message returned by the conference server
+		for elem in room.getParticipants():
+			if elem==message[24:]:
+				return "that nick is already in use"
 		room.setNick(message[24:])
 		return #nothing more needs to be done.
+
+	elif message[:12]=="load module " and message[12:]: #prevent trying to load an empty module
+		result=aihandler.setAID(uid,message[12:]) #fixme: security?
+		if result==0:
+			reply="success!"
+		elif result==1:
+			reply="no such module"
 	else:
 		if type(sre.match('(what\'s|what is) your behaviour\?$',message)) != types.NoneType: #sre.match() matches a regexp to the beginning of a string. because of the $ at the end of our regexp this means we only get a match if the entire string exactly matches it.
 			return room.getBehaviour(asstring=True)
@@ -225,7 +242,7 @@ if the prepend (str) is set, this is prepended to the output with a random highl
 		n=randint(0,config.Misc.hlchars.__len__()-1)
 		hlchar=config.Misc.hlchars[n]
 		del n
-		reply="%s%s %s"%(prepend,hlchar,reply.decode('utf-8','replace'))
+		reply="%s%s %s"%(prepend,hlchar,reply)
 
 	try:
 		return reply
@@ -285,12 +302,16 @@ def handleFactoids(message,uid):
 	elif ' is ' in message:
 		(object,definition)=[elem.strip() for elem in message.split(" is ",1)]
 		if uidIsAllowedTo(uid,'protect'):
+
+			result=None
 			if definition=="protected":
 				result=Factoids.protect(object)
 			elif definition in ('public','unprotected'):
 				result=Factoids.unProtect(object)
 			#fixme: this means you will get the same answer no matter if you protect or unprotect. I don't care, but it could be done nicer.
-			if result==0:
+			if result==None:
+				pass
+			elif result==0:
 				reply="k"
 			elif result==1:
 				reply="I don't know what that means"
@@ -367,12 +388,16 @@ def handleReactions(message,uid):
 
 
 		if uidIsAllowedTo(uid,'protect'):
+
+			result=None
 			if reaction =="protected":
 				result=Reactions.protect(listenfor)
 			elif reaction in ('public','unprotected'):
 				result=Reactions.unProtect(listenfor)
 			#fixme: this means you will get the same answer no matter if you protect or unprotect. I don't care, but it could be done nicer.
-			if result==0:
+			if result==None:
+				pass
+			elif result==0:
 				reply="k"
 			elif result==1:
 				reply="I don't know what to say to that"
@@ -444,3 +469,25 @@ situations:
 	else:
 		room.join()
 		room.send("hi, thx for inviting me here.")
+
+
+
+
+
+
+# a directory representing the different behaviour-levels and their textual representations
+behaviour={
+0:'silent',# with this behaviour you should typically not say anything
+1:'shy'   ,# only talk when talked to
+2:'normal',# react to everything you can react to, even if not addressed
+3:'loud'   # say random things at random moments, be annoying
+}
+
+def getBehaviourID(text):
+	'''get the numerical ID of the specified behaviour'''
+	result=None
+	for elem in behaviour.iteritems():
+		if elem[1]==text:
+			result=elem[0]
+			break
+	return result

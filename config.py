@@ -42,29 +42,32 @@ class Configuration:
 		config_lines = f.readlines()
 		for line in config_lines:
 			line=line.strip()
-			if line and line[0] != '#': #first test prevents IndexError on empty line
-				# key = val , whitespaces stripped, splitted at first '='
-				try:
-					(key,value)=[elem.strip() for elem in line.split('=',1)]
-				except ValueError:
-					sys.exit('\nthis line needs at least one "="-sign:\n\n>>> "%s"\n'%line)
-				except StandardError:
-					sys.exit('\nit seems there was a problem with the configuration file on this line:\n\n>>>   "%s"\n'%line)
-				if key[:6].lower()=='mysql_':
-					self.mysql[key[6:]]=value
-				elif key.lower()=="jid" or key.lower()=="jabber_jid":
-					(self.jabber['user'],self.jabber['server'])=value.split('@')
-				elif key[:7].lower()=='jabber_':
-					self.jabber[key[7:]]=value
-				elif key.lower()=='admin_jids':
-					for elem in value.split(' '):
-						if elem: #prevent empty elements that occur when splitting for ex: 'a    b'
-							self.admins.append(elem)
-				elif key.lower()=='owner_jid':
-					self.admins.append(value)
-					self.misc[key]=value
-				else:
-					self.misc[key]=value
+			try:
+				if line[0] != '#':
+					# key = val , whitespaces stripped, splitted at first '='
+					try:
+						(key,value)=[elem.strip() for elem in line.split('=',1)]
+					except ValueError:
+						sys.exit('\nthis line needs at least one "="-sign:\n\n>>> "%s"\n'%line)
+					except StandardError:
+						sys.exit('\nit seems there was a problem with the configuration file on this line:\n\n>>>   "%s"\n'%line)
+					if key[:6].lower()=='mysql_':
+						self.mysql[key[6:]]=value
+					elif key.lower()=="jid" or key.lower()=="jabber_jid":
+						(self.jabber['user'],self.jabber['server'])=value.split('@')
+					elif key[:7].lower()=='jabber_':
+						self.jabber[key[7:]]=value
+					elif key.lower()=='admin_jids':
+						for elem in value.split(' '):
+							if elem: #prevent empty elements that occur when splitting for ex: 'a    b'
+								self.admins.append(elem)
+					elif key.lower()=='owner_jid':
+						self.admins.append(value)
+						self.misc[key]=value
+					else:
+						self.misc[key]=value
+			except IndexError:
+				pass
 
 	def create_first_conf(self,config_loc):
 		# Create config file
@@ -97,7 +100,8 @@ class MySQL:
 													host   = conf.mysql['host'],       \
 													db     = conf.mysql['db'],         \
 													unix_socket = conf.mysql['socket'],\
-													port   = int(conf.mysql['port'])   )
+													port   = int(conf.mysql['port']),  \
+													use_unicode = True                 )
 	except MySQLdb.OperationalError, e:
 		print e
 		sys.exit()
@@ -108,17 +112,21 @@ class MySQL:
 													host   = conf.mysql['host'],       \
 													db     = conf.mysql['db'],         \
 													unix_socket = conf.mysql['socket'],\
-													port   = int(conf.mysql['port'])   )
+													port   = int(conf.mysql['port']),  \
+													use_unicode = True                 )
 	except MySQLdb.OperationalError, e:
 		print e
 		sys.exit()
 
-	#set the charset of the connections
+ 	#set the charset of the connections
+	#fixme: this is an ugly fix/workaround.
 	cursor=db_r.cursor()
 	cursor.execute("set names 'utf8';")
+	cursor.connection.charset='utf8'
 	cursor.close()
 	cursor=db_w.cursor()
 	cursor.execute("set names 'utf8';")
+	cursor.connection.charset='utf8'
 	cursor.close()
 
 
@@ -132,18 +140,7 @@ class Misc:
 	# common highlighting characters
 	hlchars=(",",":",";")
 
-	# mood (fixme: make this work)
-	mood=70
-
 	# a list of all the muc-room instances. usually this would not be called directly but indirectly by the MucRooms class.
 	rooms=[]
-
-	# a directory representing the different behaviour-levels and their textual representations
-	behaviour={
-	0:'silent',# with this behaviour you should typically not say anything
-	1:'shy'   ,# only talk when talked to
-	2:'normal',# react to everything you can react to, even if not addressed
-	3:'loud'   # say random things at random moments, be annoying
-	}
 
 pass

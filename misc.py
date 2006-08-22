@@ -7,13 +7,10 @@ Define miscellaneous commands
 '''
 
 import sys
-import MySQLdb
 import xmpp
-import sre
 
 import config
 conf=config.Configuration()
-mysql=config.MySQL()
 
 
 
@@ -59,44 +56,6 @@ returns:
 		#conn.disconnect()
 		print "remote exit initiated"
 		sys.exit()
-
-
-
-
-
-
-class StringFilters:
-	'''functions that help formatting a string'''
-
-	def sql(self,val):
-		'''prevent sql injection in two steps:
-1) change all \ to \\
-2) change all ' to \'  '''
-		return str(val).replace("\\","\\\\").replace("\'","\\\'")
-
-	def xstrip(self,string):
-		'''cleanup a string in three steps:
-1) trim whitespaces
-2) remove appending dot, if the character before it wasn't a dot too
-3) remove one appending whitespace if present'''
-		string=string.strip()
-		pattern='[^\.] ?\.$'
-		result=sre.search(pattern,string)
-		if result is None:
-			return string
-		else:
-			#the beginning of the match is the end of the real data
-			end=result.start()+1
-			return string[:end]
-
-
-	def stripQM(self,text):
-		'''return the input with the last character removed if it was a question mark'''
-		if text[-1]=="?":
-			return text[:-1]
-		else:
-			return text
-
 
 
 pass

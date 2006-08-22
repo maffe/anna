@@ -6,14 +6,9 @@ Check for factoids or reactions and answer to it
 ///////////////////////////////////////
 '''
 
-import MySQLdb
-import xmpp
-
 from config import MySQL
 from config import Configuration
 conf=Configuration()
-from misc import StringFilters
-filters=StringFilters()
 from misc import Admin
 admins=Admin()
 
@@ -33,7 +28,7 @@ class Factoids:
 		"""check if a factoid exists, and if not, add it to the database.
 
 takes:
-- object and definition (str): ... duuh.
+- object and definition (unicode): ... duuh.
 - uid (int): the uid of the thing that is adding this definition
 
 returns an integer:
@@ -46,14 +41,11 @@ returns an integer:
 		if self.exists(object):
 			return 1
 
-		#pass it all through the sqlfilter
-		(object,definition,uid)=(filters.sql(object),filters.sql(definition),int(uid))
-
 		# do the db thing
 		cursor=MySQL.db_w.cursor()
 		try:
-			cursor.execute("insert into `factoids`(`object`,`definition`,`uid`) values('%s','%s','%s');"%(object,definition,uid))
-		except MySQLdb.ProgrammingError, e:
+			cursor.execute("insert into `factoids`(`object`,`definition`,`uid`) values(%s,%s,%s);" , (object,definition,uid) )
+		except cursor.ProgrammingError, e:
 			print "\n\n  >> DATABASE ERROR: QUERY FAILED <<\n\n  >> %s\n\n"%e.__str__()
 			return 2
 		cursor.close()
@@ -67,7 +59,7 @@ returns an integer:
 		"""delete a factoid.
 
 takes:
-- object(str): object-to-be-deleted
+- object(unicode): object-to-be-deleted
 - isadmin(bool):only if True can protected factoids be deleted
 
 returns an integer:
@@ -86,8 +78,8 @@ returns an integer:
 
 		cursor=MySQL.db_w.cursor()
 		try:
-			cursor.execute("delete from `factoids` where `object` = '%s' limit 1;"%filters.sql(object))
-		except MySQLdb.ProgrammingError, e:
+			cursor.execute("delete from `factoids` where `object` = %s limit 1;" , (object,) )
+		except cursor.ProgrammingError, e:
 			print "\n\n  >> DATABASE ERROR: QUERY FAILED <<\n\n  >> %s\n\n"%e.__str__()
 			return 2
 		cursor.close()
@@ -95,13 +87,12 @@ returns an integer:
 
 
 	def exists(self,object):
-		'''return True (bool) if an entry exists for object (str) in the factoids table, False if not. return 0 (int) if the query failed. it returns 0 for all errors instead of a specific integer for each seperate error because this allows one to do "if exists('bla'):" without getting a false "true" when an error occurs.'''
+		'''return True (bool) if an entry exists for object (unicode) in the factoids table, False if not. return 0 (int) if the query failed. it returns 0 for all errors instead of a specific integer for each seperate error because this allows one to do "if exists('bla'):" without getting a false "true" when an error occurs.'''
 
-		object=filters.sql(object)
 		cursor=MySQL.db_r.cursor()
 		try:
-			n=cursor.execute("select `id` from `factoids` where `object`='%s' limit 1;"%object)
-		except MySQLdb.ProgrammingError:
+			n=cursor.execute("select `id` from `factoids` where `object`=%s limit 1;",(object,))
+		except cursor.ProgrammingError:
 			return 0
 		cursor.close()
 		if n:
@@ -112,7 +103,7 @@ returns an integer:
 
 
 	def get(self,object):
-		"""check the database to see if there's a definition of object (str)
+		"""check the database to see if there's a definition of object (unicode)
 and return that definition. also checks if the last character is a question
 mark.
 
@@ -120,14 +111,12 @@ on failure: returns an integer with the error code:
   1: object doesn't exist
   2: database query error"""
 
-		#prevent mysql injection
-		object=filters.sql(object) #replace ' by \'
 		#create a cursor from existing database connection
 		cursor=MySQL.db_r.cursor()
 		#execute
 		try:
-			cursor.execute("select `definition`,`count` from `factoids` where `object`='%s' limit 1;"%object)
-		except MySQLdb.ProgrammingError:
+			cursor.execute("select `definition`,`count` from `factoids` where `object`=%s limit 1;" , (object,) )
+		except cursor.ProgrammingError:
 			return 2
 		#fetch result.
 		result=cursor.fetchone()
@@ -140,13 +129,12 @@ on failure: returns an integer with the error code:
 		else:
 			cursor=MySQL.db_w.cursor()
 			try:
-				cursor.execute("update `factoids` set `count`='%s' where `object`='%s' and `definition`='%s' limit 1;"%(count,object,filters.sql(result[0])))
-			except MySQLdb.ProgrammingError:
+				cursor.execute("update `factoids` set `count`=%s where `object`=%s and `definition`=%s limit 1;" , (count,object,result[0]))
+			except cursor.ProgrammingError:
 				return 2
 			cursor.close()
 			# and return! fetchone() returns a tuple with an item for each column; we want the first one.
-			#fixme: I put .__str__() here in case result contains a (long) integer if it was just numbers, but is that possible? if not; just leave this out.
-			return result[0].__str__()
+			return result[0]
 
 
 
@@ -158,7 +146,7 @@ on failure: returns an integer with the error code:
 # example; we want to protect "chuck norris".
 
 takes:
-- object(str): the object of the factoid # in our example: "chuck norris"
+- object(unicode): the object of the factoid # in our example: "chuck norris"
 - protect(bool): protect if True, unprotect if False # in our example: True
 
 returns an integer:
@@ -185,11 +173,10 @@ returns an integer:
 				return 3
 
 
-		object=filters.sql(object)
 		cursor=MySQL.db_w.cursor()
 		try:
-			cursor.execute("update `factoids` set `protected` = %s where `object` = '%s' limit 1;"%(protect,object))
-		except MySQLdb.ProgrammingError, e:
+			cursor.execute("update `factoids` set `protected` = %s where `object` = %s limit 1;",(protect,object))
+		except cursor.ProgrammingError, e:
 			print "\n\n  >> DATABASE ERROR: QUERY FAILED <<\n\n  >> %s\n\n"%e.__str__()
 			return 2
 		cursor.close()
@@ -210,7 +197,7 @@ returns an integer:
 		'''check if a factoid is protected (meaning only admins can change it).
 
 takes:
-- object (str): factoid to be checked for protected-ness.
+- object (unicode): factoid to be checked for protected-ness.
 
 returns:
 - 0 (int): unprotected
@@ -219,11 +206,10 @@ returns:
 - 3 (int): object doesn't exist'''
 
 		cursor=MySQL.db_r.cursor()
-		object=filters.sql(object)
 		try:
-			if not cursor.execute("select `protected` from `factoids` where `object` = '%s' limit 1;"%object):
+			if not cursor.execute("select `protected` from `factoids` where `object` = %s limit 1;",(object,)):
 				return 3
-		except MySQLdb.ProgrammingError, e:
+		except cursor.ProgrammingError, e:
 			print "\n\n  >> DATABASE ERROR: QUERY FAILED <<\n\n  >> %s\n\n"%e.__str__()
 			return 2
 
@@ -268,14 +254,12 @@ returns:
 		if self.exists(message_in):
 			return 1
 
-		#prepare for sql query
-		(message_in,message_out,uid)=(filters.sql(message_in),filters.sql(message_out),int(uid))
 
 		# do the db thing
 		cursor=MySQL.db_w.cursor()
 		try:
-			cursor.execute("insert into `reactions_global`(`message_in`,`message_out`,`uid`) values('%s','%s','%s');"%(message_in,message_out,uid))
-		except MySQLdb.ProgrammingError, e:
+			cursor.execute("insert into `reactions_global`(`message_in`,`message_out`,`uid`) values(%s,%s,%s);",(message_in,message_out,uid))
+		except cursor.ProgrammingError, e:
 			print "\n\n  >> DATABASE ERROR: QUERY FAILED <<\n\n  >> %s\n\n"%e.__str__()
 			return 2
 		cursor.close()
@@ -299,12 +283,11 @@ returns an integer:
 			return 1
 		if not nocheck and self.isProtected(message_in):
 			return 3
-		message_in=filters.sql(message_in)
 		cursor=MySQL.db_w.cursor()
 		try:
 			# FIXME : check protected
-			cursor.execute("delete from `reactions_global` where `message_in` = '%s' limit 1;"%message_in)
-		except MySQLdb.ProgrammingError, e:
+			cursor.execute("delete from `reactions_global` where `message_in` = %s limit 1;",(message_in,))
+		except cursor.ProgrammingError, e:
 			print "\n\n  >> DATABASE ERROR: QUERY FAILED <<\n\n  >> %s\n\n"%e.__str__()
 			return 2
 		cursor.close()
@@ -315,11 +298,10 @@ returns an integer:
 	def exists(self,message_in):
 		'''just like Factoids.exists()'''
 
-		message_in=filters.sql(message_in)
 		cursor=MySQL.db_r.cursor()
 		try:
-			n=cursor.execute("select `id` from `reactions_global` where `message_in`='%s' limit 1;"%message_in)
-		except MySQLdb.ProgrammingError:
+			n=cursor.execute("select `id` from `reactions_global` where `message_in`=%s limit 1;",(message_in,))
+		except cursor.ProgrammingError:
 			return 0
 		cursor.close()
 		if n:
@@ -335,11 +317,10 @@ returns an integer:
 1: message_in unknown
 2: database error: query failed"""
 
-		message_in=filters.sql(message_in)
 		cursor=MySQL.db_r.cursor()
 		try:
-			cursor.execute("select `message_out`,`count`,`id` from `reactions_global` where `message_in`='%s' limit 1;"%message_in)
-		except MySQLdb.ProgrammingError, e:
+			cursor.execute("select `message_out`,`count`,`id` from `reactions_global` where `message_in`=%s limit 1;",(message_in,))
+		except cursor.ProgrammingError, e:
 			print "\n\n  >> DATABASE ERROR: QUERY FAILED <<\n\n  >> %s\n\n"%e.__str__()
 			return 2
 		result=cursor.fetchone()
@@ -348,7 +329,7 @@ returns an integer:
 			count=result[1]+1
 			cursor=MySQL.db_w.cursor()
 			#fixme: catch query failure
-			cursor.execute("update `reactions_global` set `count`=%d where `id`=%d limit 1;"%(int(count),int(result[2])))
+			cursor.execute("update `reactions_global` set `count`=%s where `id`=%s limit 1",(count,result[0]))
 			cursor.close()
 		try:
 			return result[0]
@@ -364,7 +345,7 @@ returns an integer:
 # example; we want to protect "hi".
 
 takes:
-- message_in(str): the object of the reaction # in our example: "hi"
+- message_in(unicode): the object of the reaction # in our example: "hi"
 - protect(bool): protect if True, unprotect if False # in our example: True
 
 returns an integer:
@@ -391,11 +372,10 @@ returns an integer:
 				return 3
 
 
-		message_in=filters.sql(message_in)
 		cursor=MySQL.db_w.cursor()
 		try:
-			cursor.execute("update `reactions_global` set `protected` = %d where `message_in` = '%s' limit 1;"%(protect,message_in))
-		except MySQLdb.ProgrammingError, e:
+			cursor.execute("update `reactions_global` set `protected` = %s where `message_in` = %s limit 1;",(protect,message_in))
+		except cursor.ProgrammingError, e:
 			print "\n\n  >> DATABASE ERROR: QUERY FAILED <<\n\n  >> %s\n\n"%e.__str__()
 			return 2
 		cursor.close()
@@ -416,7 +396,7 @@ returns an integer:
 		'''check if a reaction is protected (meaning only admins can change it).
 
 takes:
-- object (str): reaction to be checked for protected-ness.
+- object (unicode): reaction to be checked for protected-ness.
 
 returns:
 - 0 (int): unprotected
@@ -425,11 +405,10 @@ returns:
 - 3 (int): mysql error'''
 
 		cursor=MySQL.db_r.cursor()
-		message_in=filters.sql(message_in)
 		try:
-			if cursor.execute("select `protected` from `reactions_global` where `message_in` = '%s' limit 1;"%message_in) != 1:
+			if cursor.execute("select `protected` from `reactions_global` where `message_in` = %s limit 1;",(message_in,)) != 1:
 				return 2
-		except MySQLdb.ProgrammingError, e:
+		except cursor.ProgrammingError, e:
 			print "\n\n  >> DATABASE ERROR: QUERY FAILED <<\n\n  >> %s\n\n"%e.__str__()
 			return 3
 

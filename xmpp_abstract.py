@@ -8,16 +8,16 @@ Abstract layer to xmpp
 
 import xmpp
 import types
+#from time import time
 
 import config
 conf=config.Configuration()
 mysql=config.MySQL()
-import misc
-filters=misc.StringFilters()
+import stringfilters as filters
 import user_identification as uids
 
 class PM:
-	'''this is a class of a person we're having a conversation with.'''
+	'''this is a class of a person we're having a one-on-one conversation with.'''
 
 	def __init__(self,jid,conn,nick=None,permissions=[]):
 		'''make the instance ready for use by checking if the user was already known to us and registering him/her in the database if not. the nick attribute allows for a preset nickname to be used. if not specified, the node of the jid will be used instead. the jid may be an xmpp.JID() instance or a string. more specifically, if the jid is an instance, no matter which one, it is not modified. this means that you /could/, technically, supply an instance of your custom JID-class. also takes an instance of the xmpp connection class.'''
@@ -30,10 +30,24 @@ class PM:
 
 		self.uid=uids.addUid(jid.getStripped(),'jabber-pm')
 
+
+	def received(self,message):
+		'''message received from the other person. trims the current chat-history to the three most recent messages and adds the current message at the end of it.'''
+		#time=time.time()
+		while self.history_received.__len__() > 3:
+			history_received.remove(history_received[0])
+		history_received.append(message)
+
+
+
 	def send(self,message):
 		"""send a personal chat message to jid. takes: message (str)"""
 		xml=xmpp.Message(to=self.jid,body=message,typ="chat")
 		self.conn.send(xml)
+
+	def getAI(self):
+		'''get the reference to the AI module that is used for this conversation'''
+		return self.ai
 
 	def getJid(self):
 		'''fetch the jid of the user. returns an xmpp.JID() instance'''
@@ -59,6 +73,13 @@ class PM:
 		else:
 			return False
 
+	def setAI(self,aimodule):
+		'''set an AI module to use for this conversation'''
+		self.ai=aimodule
+
+
+
+
 
 class MUC:
 	'''this class will let you create a muc-room object. you can use that object to do room-specific tasks, like sending a message, changing the mood of that room, get the participants, change the nickname, etcetera.
@@ -72,13 +93,13 @@ temp: currently, it's just a dictionary with nicknames as keys and empty values 
 	def __init__ ( self, jid, conn, nick= conf.misc['bot_nickname'], autojoin= True, mood=70, trydifferentnick= True , behaviour = 'normal' ) :
 		'''declare some variables and join the room.
 takes:
-- jid (xmpp.JID() || str): the jid of the room (fucking-duuh!)
+- jid (xmpp.JID() || unicode): the jid of the room (fucking-duuh!)
 - the infamous connection instance...
-- nick (str): the preferred nickname of the bot
+- nick (unicode): the preferred nickname of the bot
 - autojoin (bool): whether or not to join immediately when the instance is created
 - mood (int): the mood-level that goes with this room
 - trydifferentnick (bool): whether or not to retry if the nick is already taken #fixme: make this work
-- behaviour (str): our behaviour in this room'''
+- behaviour (unicode): our behaviour in this room'''
 
 		self.mood=mood
 		self.participants={}
@@ -154,12 +175,12 @@ fixme: return True on success and False (or error message) on failure"""
 takes:
 - conn (xmpp.Client()) : xmpp connection instance to use to leave the room
 - message (bool) : if True, send a (hardcoded) goodbye message to the room before leaving
-- silent (bool) : return True (bool) instead of message (str) if silent == True
+- silent (bool) : return True (bool) instead of message (unicode) if silent == True
 - force (bool) : don't return if we are already in the room
 
 returns:
 - True (bool) : if silent==True , no matter if the function actually failed or not
-- message (str) : if silent==False (same as above)."""
+- message (unicode) : if silent==False (same as above)."""
 
 		stripped_jid = self.jid.getStripped()
 		if not self.isActive() and not force:
@@ -176,7 +197,7 @@ returns:
 
 	def send(self,message):
 		"""send a message to the room.
-takes: message (str), the message to send"""
+takes: message (unicode), the message to send"""
 
 		num_n=message.count('\n') #fixme: are there other possibilities of inserting newlines?
 		num_chars=message.__len__()
@@ -206,12 +227,9 @@ takes: message (str), the message to send"""
 				break #no need to continue.
 
 
-	def getBehaviour(self,asstring=False):
-		'''return the behaviour we have in this room as an integer. If asstring==True (bool) return a string instead.'''
-		if asstring:
-			return config.Misc.behaviour[self.behaviour]
-		else:
-			return self.behaviour
+	def getBehaviour(self):
+		'''return the behaviour we have in this room as an integer.'''
+		return self.behaviour
 
 	def getJid(self,asstring=False):
 		'''return the jid of this room as an xmpp.JID() instance. if string==True, return it as a string'''
@@ -229,7 +247,7 @@ takes: message (str), the message to send"""
 		return self.nick
 
 	def getParticipant(self,nick):
-		'''return the instance of the participant with this nick (str). note; this really raises a KeyError exception if there's no such participant'''
+		'''return the instance of the participant with this nick (unicode). note; this really raises a KeyError exception if there's no such participant'''
 		return self.participants[nick]
 
 	def getParticipants(self):
@@ -257,24 +275,12 @@ takes: message (str), the message to send"""
 		self.active=True
 
 	def setBehaviour(self,behaviour):
-		'''set the behaviour of the group to a specified level. takes a string or an integer. note that when a string is supplied, it will try to get the appropriate integer from config.Misc.behaviour. if none is found, a ValueError will be raised.'''
-		try:
-			behaviour=int(behaviour) #this recognises '1' as an integer too
-		except ValueError: #this is the exception for int('non-numerical-string')
-			for elem in config.Misc.behaviour.iteritems():
-				if elem[1]==behaviour:
-					return self.setBehaviour(elem[0])
-			#if we've gotten up till here, it means the above didn't return anything and the supplied behaviour doesn't exist:
-			raise ValueError, "Behaviour could not be found"
-		else:
-			#it's an integer now, but we gotta make sure it's a valid one:
-			if not behaviour in config.Misc.behaviour:
-				raise ValueError, "Behaviour could not be found"
-			else:
-				self.behaviour=behaviour
+		'''set the behaviour of the group to a specified level. takes and returns an integer. on success 0 is returned.'''
+		self.behaviour=behaviour
+		return 0
 
 	def setNick(self,nick):
-		'''change nickname to nick (str). actually, what this does is change self.nick and force re-joining the room if self.active is True.'''
+		'''change nickname to nick (unicode). actually, what this does is change self.nick and force re-joining the room if self.active is True.'''
 		self.nick=nick
 		if self.isActive():
 			self.join(silent=True,force=True)
@@ -303,9 +309,16 @@ class MUCParticipant:
 		if jid:
 			self.jid=xmpp.JID(jid)
 
+	def __str__(self):
+		'''textual representation of the participant. returns his nick'''
+		return self.nick
+
 	def getJid(self):
-		'''return participant's jid as an xmpp.JID() instance'''
-		return self.jid
+		'''return participant's jid as an xmpp.JID() instance or 0 (int) if not available'''
+		try:
+			return self.jid
+		except ValueError:
+			return 0
 
 	def getNick(self):
 		'''return participant's nickname'''
