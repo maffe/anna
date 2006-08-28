@@ -100,6 +100,8 @@ takes:
 - trydifferentnick (bool): whether or not to retry if the nick is already taken #fixme: make this work
 - behaviour (unicode): our behaviour in this room'''
 
+		jid=xmpp.JID(jid)
+
 		self.mood=mood
 		self.participants={}
 		self.nick=nick

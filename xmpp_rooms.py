@@ -22,6 +22,7 @@ note: if you want more flexible joining (for example; setting autojoin to False,
 		result=new(jid,conn)
 		#if the above succeeded, result should now be an instance of the room that was joined
 		if type(result)==types.InstanceType:
+			result.join()
 			message="k."
 		else:
 			message="ehmm... error?"
