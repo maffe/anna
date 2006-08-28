@@ -6,9 +6,7 @@ Check for factoids or reactions and answer to it
 ///////////////////////////////////////
 '''
 
-from config import MySQL
-from config import Configuration
-conf=Configuration()
+import mysql
 from misc import Admin
 admins=Admin()
 
@@ -42,7 +40,7 @@ returns an integer:
 			return 1
 
 		# do the db thing
-		cursor=MySQL.db_w.cursor()
+		cursor=mysql.db_w.cursor()
 		try:
 			cursor.execute("insert into `factoids`(`object`,`definition`,`uid`) values(%s,%s,%s);" , (object,definition,uid) )
 		except cursor.ProgrammingError, e:
@@ -76,7 +74,7 @@ returns an integer:
 			return 3
 
 
-		cursor=MySQL.db_w.cursor()
+		cursor=mysql.db_w.cursor()
 		try:
 			cursor.execute("delete from `factoids` where `object` = %s limit 1;" , (object,) )
 		except cursor.ProgrammingError, e:
@@ -89,7 +87,7 @@ returns an integer:
 	def exists(self,object):
 		'''return True (bool) if an entry exists for object (unicode) in the factoids table, False if not. return 0 (int) if the query failed. it returns 0 for all errors instead of a specific integer for each seperate error because this allows one to do "if exists('bla'):" without getting a false "true" when an error occurs.'''
 
-		cursor=MySQL.db_r.cursor()
+		cursor=mysql.db_r.cursor()
 		try:
 			n=cursor.execute("select `id` from `factoids` where `object`=%s limit 1;",(object,))
 		except cursor.ProgrammingError:
@@ -112,7 +110,7 @@ on failure: returns an integer with the error code:
   2: database query error"""
 
 		#create a cursor from existing database connection
-		cursor=MySQL.db_r.cursor()
+		cursor=mysql.db_r.cursor()
 		#execute
 		try:
 			cursor.execute("select `definition`,`count` from `factoids` where `object`=%s limit 1;" , (object,) )
@@ -127,7 +125,7 @@ on failure: returns an integer with the error code:
 		except TypeError: #factoid not defined
 			return 1
 		else:
-			cursor=MySQL.db_w.cursor()
+			cursor=mysql.db_w.cursor()
 			try:
 				cursor.execute("update `factoids` set `count`=%s where `object`=%s and `definition`=%s limit 1;" , (count,object,result[0]))
 			except cursor.ProgrammingError:
@@ -173,7 +171,7 @@ returns an integer:
 				return 3
 
 
-		cursor=MySQL.db_w.cursor()
+		cursor=mysql.db_w.cursor()
 		try:
 			cursor.execute("update `factoids` set `protected` = %s where `object` = %s limit 1;",(protect,object))
 		except cursor.ProgrammingError, e:
@@ -205,7 +203,7 @@ returns:
 - 2 (int): db error
 - 3 (int): object doesn't exist'''
 
-		cursor=MySQL.db_r.cursor()
+		cursor=mysql.db_r.cursor()
 		try:
 			if not cursor.execute("select `protected` from `factoids` where `object` = %s limit 1;",(object,)):
 				return 3
@@ -256,7 +254,7 @@ returns:
 
 
 		# do the db thing
-		cursor=MySQL.db_w.cursor()
+		cursor=mysql.db_w.cursor()
 		try:
 			cursor.execute("insert into `reactions_global`(`message_in`,`message_out`,`uid`) values(%s,%s,%s);",(message_in,message_out,uid))
 		except cursor.ProgrammingError, e:
@@ -283,7 +281,7 @@ returns an integer:
 			return 1
 		if not nocheck and self.isProtected(message_in):
 			return 3
-		cursor=MySQL.db_w.cursor()
+		cursor=mysql.db_w.cursor()
 		try:
 			# FIXME : check protected
 			cursor.execute("delete from `reactions_global` where `message_in` = %s limit 1;",(message_in,))
@@ -298,7 +296,7 @@ returns an integer:
 	def exists(self,message_in):
 		'''just like Factoids.exists()'''
 
-		cursor=MySQL.db_r.cursor()
+		cursor=mysql.db_r.cursor()
 		try:
 			n=cursor.execute("select `id` from `reactions_global` where `message_in`=%s limit 1;",(message_in,))
 		except cursor.ProgrammingError:
@@ -317,7 +315,7 @@ returns an integer:
 1: message_in unknown
 2: database error: query failed"""
 
-		cursor=MySQL.db_r.cursor()
+		cursor=mysql.db_r.cursor()
 		try:
 			cursor.execute("select `message_out`,`count`,`id` from `reactions_global` where `message_in`=%s limit 1;",(message_in,))
 		except cursor.ProgrammingError, e:
@@ -327,7 +325,7 @@ returns an integer:
 		cursor.close()       # fixme: if load gets high, don't close and reopen the connection but keep current one
 		if result: # increase the used counter
 			count=result[1]+1
-			cursor=MySQL.db_w.cursor()
+			cursor=mysql.db_w.cursor()
 			#fixme: catch query failure
 			cursor.execute("update `reactions_global` set `count`=%s where `id`=%s limit 1",(count,result[0]))
 			cursor.close()
@@ -372,7 +370,7 @@ returns an integer:
 				return 3
 
 
-		cursor=MySQL.db_w.cursor()
+		cursor=mysql.db_w.cursor()
 		try:
 			cursor.execute("update `reactions_global` set `protected` = %s where `message_in` = %s limit 1;",(protect,message_in))
 		except cursor.ProgrammingError, e:
@@ -404,7 +402,7 @@ returns:
 - 2 (int): reaction doesn't exist
 - 3 (int): mysql error'''
 
-		cursor=MySQL.db_r.cursor()
+		cursor=mysql.db_r.cursor()
 		try:
 			if cursor.execute("select `protected` from `reactions_global` where `message_in` = %s limit 1;",(message_in,)) != 1:
 				return 2

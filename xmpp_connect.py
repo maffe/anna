@@ -11,27 +11,25 @@ import sys
 import xmpp
 from socket import gethostname
 
-from handlers import Xmpp
-handlers = Xmpp() #create a new instance of the Xmpp class
-from config import Configuration
-conf=Configuration()
+import xmpp_handlers as handlers
+import config
 
 # Connect to jabber account :
 
 def Connect():
-	conn=xmpp.Client(conf.jabber['server'])
+	conn=xmpp.Client(config.jabber['server'])
 	conres=conn.connect()
 	if not conres:
-		sys.exit("Unable to connect to server %s!"%conf.jabber['server'])
+		sys.exit("Unable to connect to server %s!"%config.jabber['server'])
 	if conres != 'tls':
 		sys.exit("Warning: unable to estabilish secure connection - TLS failed!")
 	#use hostname as resource
 	hostname=gethostname().split('.',1)[0]
-	authres=conn.auth(conf.jabber['user'],conf.jabber['password'],hostname)
+	authres=conn.auth(config.jabber['user'],config.jabber['password'],hostname)
 	if not authres:
-		sys.exit("Unable to authorize on %s - check login/password."%conf.jabber['server'])
+		sys.exit("Unable to authorize on %s - check login/password."%config.jabber['server'])
 	if authres != 'sasl':
-		sys.exit("Warning: unable to perform SASL auth on %s. Old authentication method used!"%conf.jabber['server'])
+		sys.exit("Warning: unable to perform SASL auth on %s. Old authentication method used!"%config.jabber['server'])
 
 	#assign functions to handlers
 	conn.RegisterHandler('iq',handlers.version_request,typ='get',ns='jabber:iq:version')
@@ -42,7 +40,7 @@ def Connect():
 	conn.RegisterHandler('presence',handlers.presence)
 	conn.RegisterDisconnectHandler(Connect) #fixme: test if this actually makes it reconnect after disconnect
 	conn.sendInitPresence(0)
-	print "Bot started.\nrunning as user: %s@%s\n"%(conf.jabber['user'],conf.jabber['server'])
+	print "Bot started.\nrunning as user: %s@%s\n"%(config.jabber['user'],config.jabber['server'])
 
 	while conn.Process(1): #fixme: find out what this whole time-out value is about
 		pass

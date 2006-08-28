@@ -10,7 +10,6 @@ import sys
 import xmpp
 
 import config
-conf=config.Configuration()
 
 
 
@@ -31,10 +30,10 @@ returns:
 		# create an xmpppy JID instance (more flexible)
 		jid=xmpp.JID(jid) # note that if jid already was an xmpp.JID(), this is practically equal to pass
 		##check if it's the Pwner himself
-		if jid.bareMatch(conf.misc['owner_jid']):
+		if jid.bareMatch(config.misc['owner_jid']):
 			return True
 		# or one of his bitches, if appropriate
-		elif not owneronly and jid.getStripped() in conf.admins:
+		elif not owneronly and jid.getStripped() in config.admins:
 			return True
 		else:
 			return False

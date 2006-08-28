@@ -10,10 +10,8 @@ here we define functions that return statistics about different kinds of stuff, 
 import time
 
 import config
-conf=config.Configuration()
-mysql=config.MySQL()
-from xmpp_abstract import MUCRooms
-roomsHandler=MUCRooms()
+import mysql
+import xmpp_rooms as roomsHandler
 
 
 

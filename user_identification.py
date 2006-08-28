@@ -2,9 +2,7 @@
 
 
 
-import config
-conf=config.Configuration()
-mysql=config.MySQL()
+import mysql
 import stringfilters as filters
 
 def addUid(name,typ):

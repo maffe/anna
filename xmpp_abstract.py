@@ -11,8 +11,7 @@ import types
 #from time import time
 
 import config
-conf=config.Configuration()
-mysql=config.MySQL()
+import mysql
 import stringfilters as filters
 import user_identification as uids
 
@@ -90,7 +89,7 @@ temp: currently, it's just a dictionary with nicknames as keys and empty values 
 
 
 
-	def __init__ ( self, jid, conn, nick= conf.misc['bot_nickname'], autojoin= True, mood=70, trydifferentnick= True , behaviour = 'normal' ) :
+	def __init__ ( self, jid, conn, nick= config.misc['bot_nickname'], autojoin= True, mood=70, trydifferentnick= True , behaviour = 'normal' ) :
 		'''declare some variables and join the room.
 takes:
 - jid (xmpp.JID() || unicode): the jid of the room (fucking-duuh!)
@@ -360,113 +359,3 @@ class MUCParticipant:
 	def setStatus(self,status):
 		'''set the status of a certain dude-participant (there are no women on the internet, and most certainly not on jabber)'''
 		self.status=status
-
-
-
-
-class MUCRooms:
-	'''use this class to handle the whole collection of MUC-rooms known to us'''
-
-
-	def join(self,jid,conn):
-		'''join a muc room. use the existing instance if available, create a new one if not.
-note: if you want more flexible joining (for example; setting autojoin to False, chaging some values before joining, etcetera), you can do this instead:
-- create the new room with self.new first, setting autojoin=False
-- get the instance of the new room with self.getByJid()
-- suit that instance to fit your needs
-- use its join() method to finally join the room'''
-		if not type(jid)==types.InstanceType:
-			jid=xmpp.JID(jid)
-		try:
-			room=self.getByJid(jid)
-			message=room.join(silent=False)
-		except ValueError:
-			result=self.new(jid,conn)
-			#if the above succeeded, result should now be an instance of the room that was joined
-			if type(result)==types.InstanceType:
-				message="k."
-			else:
-				message="ehmm... error?"
-		return message
-
-
-	def leave(self,jid):
-		'''leave a muc room. self.getByJid()'s return value is not checked, so if the room is not a known one, you'll get a ValueError. '''
-		self.getByJid(jid).leave()
-
-
-
-
-	def new(self,jid,conn,silent=True,autojoin=True):
-		'''add a room with a specified jid to the list and join it automatically (unless autojoin==False). return its instance.'''
-		if self.isExistant(jid):
-			if silent:
-				return False
-			else:
-				return "Im already in this room.."
-		newroom=MUC(jid,conn,autojoin=autojoin)
-		config.Misc.rooms.append(newroom)
-		return newroom
-
-	def remove(self,jid,silent=True):
-		'''remove a room with this jid from the list'''
-		try:
-			room=self.getByJid(jid)
-		except ValueError:
-			if silent:
-				return False
-			else:
-				return "I don't know that room anyway..."
-
-		message=room.leave()
-		config.Misc.rooms.remove(room)
-		return message
-
-
-	def getActive(self):
-		'''return a tuple with all instances of rooms that are active (also look at self.getAll() )'''
-		result=()
-		for elem in config.Misc.rooms:
-			if elem.isActive():
-				result+=(elem,)
-		return result
-
-	def getAll(self):
-		'''return a tuple with all instances of the known rooms (you will generally want to use self.getActive() )'''
-		result=()
-		for elem in config.Misc.rooms:
-			result+=(elem,)
-		return result
-
-
-	def getByJid(self,jid):
-		'''return the room instance by providing it's jid (xmpp.JID() instance or string). raises a ValueError if not found.'''
-		jid=xmpp.JID(jid)
-		for elem in config.Misc.rooms:
-			if jid.bareMatch(elem.getJid()):
-				return elem
-		#if we get up to here, there is no such room
-		raise ValueError
-
-
-	def isExistant(self,jid):
-		'''return True if a specified jid is known to us as a muc room, return False if it isn't (similar to getByJid(), but not entirely the same)'''
-		jid=xmpp.JID(jid)
-		for elem in config.Misc.rooms:
-			if elem.getJid()==jid:
-				return True
-			else:
-				return False
-
-	def isActive(self,jid):
-		'''similar to self.isExistant(), but slightly different: only return True (bool) if the room is not only known but also active'''
-		jid=xmpp.JID(jid)
-		for elem in config.Misc.rooms:
-			if elem.getJid()==jid and elem.isActive():
-				return True
-			else:
-				return False
-
-
-
-pass

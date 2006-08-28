@@ -39,6 +39,7 @@ def direct(message,identity,typ):
 
 	reply=None
 	uid=identity.getUid()
+	message=filters.xstrip(message)
 
 
 	if identity.isAllowedTo('stop') and message=="stop":
@@ -48,7 +49,6 @@ def direct(message,identity,typ):
 	#fixme: todo:
 	#tell the conversations module about the message
 	#conversations.received(message,uid)
-
 
 	elif message[:12]=="load module " and message[12:]: #prevent trying to load an empty module
 		result=aihandler.setAID(uid,message[12:]) #fixme: security?
