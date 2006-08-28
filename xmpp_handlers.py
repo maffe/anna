@@ -26,7 +26,7 @@ def pm(conn,mess):
 	message=mess.getBody()
 	jid=mess.getFrom()
 	#prevent overloaded messages
-	if message.__len__()>255 :
+	if not message or message.__len__()>255:
 		return False
 	pm=xmpp_abstract.PM(jid,conn)
 
@@ -80,7 +80,7 @@ def muc(conn,mess):
 
 
 	message=mess.getBody()
-	if message.__len__()>255 :
+	if not message or message.__len__()>255 :
 		return False
 	if mess.getProperties().count("jabber:x:delay"): #stop if this is a delayed message
 		return False
