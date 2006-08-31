@@ -93,11 +93,11 @@ def muc(conn,mess):
 	try:
 		room=rooms.getByJid(jid)
 	except ValueError:
-		room=rooms.new(jid,conn,autojoin=False)
+		room=rooms.new(jid,conn)
 
 
 
-	#load the aimodule the same way as in self.direct()
+	#load the aimodule the same way as in direct()
 	aimodule=aihandler.getAIReferenceByUID(room.getUid())
 	if type(aimodule)==types.IntType:
 		aimodule=aihandler.getAIReferenceByAID('chat_english')
@@ -129,9 +129,17 @@ if not 2, get the existing instance, otherwise create a new one. pass this on to
 			situation=1
 		else: # situation 0
 			situation=0
-	#fixme: we need a more elegant solution
-	aimodule=aihandler.getAIReferenceByAID('chat_english')
+
+	#load the aimodule the same way as in direct()
+	aimodule=aihandler.getAIReferenceByUID(room.getUid())
+	if type(aimodule)==types.IntType:
+		aimodule=aihandler.getAIReferenceByAID('chat_english')
+		if type(aimodule)==types.IntType:
+			sys.exit('default AI module ai/chat_english.py wasnt found.')
+
 	aimodule.invitedToMuc(room,situation,by,reason)
+
+
 
 
 def presence(conn,presence):
@@ -173,6 +181,20 @@ return False if type attribute == 'error'. '''
 			jid =item.getAttr('jid')
 			participant=xmpp_abstract.MUCParticipant(nick,presence,role,jid)
 			room.addParticipant(participant)
+
+
+
+def subscribtion(conn,presence):
+	'''Handle <presence type='subscribe' />.
+
+We don't (actively) keep all users in the roster too. First of all; because this is just the jabber front-end to the actual AI module. it should be possible to replace this with, say, an icq front-end without having to adjust anything in the AI module. Second; there's no use of keeping them all in the roster if we're gonna keep them all in our own database too anyway (uids).
+
+Only subscription matters: we allow the other to see the status and add this JID to his roster.
+
+http://www.ietf.org/rfc/rfc3921.txt chapter 8'''
+
+	reply=xmpp.Presence(to=presence.getFrom(),typ='subscribed',xmlns=None)
+	conn.send(reply)
 
 
 
