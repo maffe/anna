@@ -23,7 +23,7 @@ def simple():
 	(uptime,unit)=(time.time()-config.Misc.starttime,"seconds")
 	if uptime>3e5:
 		(uptime,unit)=(uptime/86400,"days")
-	elif uptime>1e3:
+	elif uptime>1e4:
 		(uptime,unit)=(uptime/3600,"hours")
 	elif uptime>100:
 		(uptime,unit)=(uptime/60,"minutes")
