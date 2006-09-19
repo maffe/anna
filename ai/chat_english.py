@@ -10,7 +10,8 @@ import types
 
 import factoids_reactions
 Factoids=factoids_reactions.Factoids()
-Reactions=factoids_reactions.Reactions()
+ReactionsGlobal=factoids_reactions.ReactionsGlobal()
+ReactionsDirect=factoids_reactions.ReactionsDirect()
 
 from misc import Admin
 admin=Admin()
@@ -61,9 +62,9 @@ def direct(message,identity,typ):
 	elif identity.isAllowedTo('protect') and message[:8]=="protect ":
 		message=message[8:]
 		if message[:16]=="the reaction to ":
-			result = Reactions.protect(message[16:],silent=False)
+			result = ReactionsGlobal.protect(message[16:],silent=False)
 		elif message[:12]=="reaction to ":
-			result = Reactions.protect(message[12:],silent=False)
+			result = ReactionsGlobal.protect(message[12:],silent=False)
 		elif message[:8]=="factoid ":
 			result = Factoids.protect(message[8:],silent=False)
 		else:
@@ -92,17 +93,19 @@ def direct(message,identity,typ):
 			for handler in plugin.plughandlers[command]:
 				reply=handler(identity)
 
+	#fixme: need a more elegant solution
 	if not reply:
 		reply=handleProtection(message)
-	if not reply:
-		reply=handleReactions(message,uid)
-	if not reply:
-		reply=handleFactoids(message,uid)
-	#otheriwse, check for reaction
-	if not reply:
-		reply = Reactions.get(message)
-		if type(reply) == types.IntType:
-			reply=None
+		if not reply:
+			reply=handleReactions(message,uid)
+			if not reply:
+				reply=handleFactoids(message,uid)
+				if not reply:
+					reply=ReactionsDirect.get(message)
+					if not reply or type(reply) == types.IntType:
+						reply=ReactionsGlobal.get(message)
+						if type(reply)==types.IntType:
+							reply=None
 
 		if reply:
 			#replace some stuff in the reply:
@@ -117,7 +120,8 @@ def direct(message,identity,typ):
 			except StandardError, e:
 				reply='I was taught to say "%s" now, but there seems to be something wrong with that..'%reply
 
-	identity.send(reply)
+	if reply:
+		identity.send(reply)
 
 
 
@@ -133,10 +137,14 @@ def room(message,sender,typ,room):
 
 
 	nickname = room.getNick()
+	_muc_replace_dictionary={
+	 'user':sender,
+	 'nick':room.getNick()
+	 }
+	global _muc_replace_dictionary
 
 	if sender.lower()==nickname.lower():
 		return False  #prevent loops
-
 	message=filters.xstrip(message)
 	reply=None
 
@@ -144,8 +152,9 @@ def room(message,sender,typ,room):
 	nick_len = nickname.__len__()+1
 	for elem in config.Misc.hlchars:
 		# Check if we have nickanme + one hlchars
-		if message.lower()[:nick_len]==nickname+elem:
+		if message[:nick_len]==nickname+elem:
 			reply=mucHighlight(message[nick_len:].strip(),room,prepend=sender)
+			break
 
 
 	if reply: #if reply is set, skip the checks.
@@ -165,19 +174,12 @@ def room(message,sender,typ,room):
 
 
 	if not reply:
-		reply=Reactions.get(message)
-		if type(reply)==types.IntType: #if an error ocurred
-			reply=None #ignore it
-
-		if reply:
-			replacedict={'user':sender, \
-									'nick':room.getNick() }
-			try:
-				reply=reply%replacedict
-			except KeyError, e:
-				reply='''I was told to say "%s" now but I don't know what to replace %%(%s)s with'''%(reply,e[0])
-			except StandardError, e:
-				reply='I was taught to say "%s" now, but there seems to be something wrong with that..'%reply
+		reply=ReactionsGlobal.get(message)
+		if reply: #if there was no reaction don't bother doing anything else
+			if type(reply)==types.IntType: #if an error ocurred
+				reply=None #ignore it
+			else:
+				reply=mucReplaceString(reply)
 
 
 	if reply and room.getBehaviour(): #if silent: don't speak
@@ -226,28 +228,55 @@ if the prepend (str) is set, this is prepended to the output with a random highl
 
 	if not reply:
 		reply=handleProtection(message)
-	if not reply:
-		reply=handleReactions(message,uid)
-	if not reply:
-		reply=handleFactoids(message,uid)
-	#otheriwse, check for reaction
-	if not reply:
-		reply = Reactions.get(message)
-		if type(reply)==types.IntType: #if error
-			reply=None #ignore
+		if not reply:
+			reply=handleReactions(message,uid)
+			if not reply:
+				reply=handleFactoids(message,uid)
+				#otheriwse, check for reaction
+				if not reply:
+					reply=ReactionsDirect.get(message)
+					if type(reply) not in types.StringTypes: #ReactionsDirect.get() returns an integer upon error, but we want to ignore errors.
+						reply=ReactionsGlobal.get(message)
+						#temp:
+						if not reply:
+							pass
+						elif type(reply)==types.IntType: #if error
+							reply=None #ignore
+						else:
+							prepend=None #don't address the sender if it was a global reaction
+
+					#check again because it might have changed in the meanwhile
+					if reply:
+						reply=mucReplaceString(reply)
 
 
-	if prepend and reply:
-		#pick a random highlighting char:
-		n=randint(0,config.Misc.hlchars.__len__()-1)
-		hlchar=config.Misc.hlchars[n]
-		del n
-		reply="%s%s %s"%(prepend,hlchar,reply)
+	if reply:
+
+		if prepend:
+			#pick a random highlighting char:
+			n=randint(0,config.Misc.hlchars.__len__()-1)
+			hlchar=config.Misc.hlchars[n]
+			del n
+			reply="%s%s %s"%(prepend,hlchar,reply)
+
+		return reply
+
+
+def mucReplaceString(message):
+	'''this function replaces the message with elements from the dict. if an error occurs (eg.: due to wrong formatting of the message) it is catched and an appropriate message is returned.
+this is defined in a seperate function because the same thing (this) is done twice; once in room() and once in mucHighlight().
+because mucHighLight() doesn't know the name of the other person (and because of flexibility issues) the replacedictionary is'''
 
 	try:
-		return reply
-	except AttributeError:
-		return None
+		return message%_muc_replace_dictionary
+	except KeyError, e:
+		return '''I was told to say "%s" now but I don't know what to replace %%(%s)s with'''%(message,e[0])
+	except StandardError, e:
+		return 'I was taught to say "%s" now, but there seems to be something wrong with that..'%message
+
+
+
+
 
 
 
@@ -354,9 +383,9 @@ def handleProtection(message):
 		#check if we're requesting for protectedness of a reaction:
 		dunno="I don't know what to say to that anyway..."
 		if message[:12].lower()=="reaction to ":
-			isprotected=Reactions.isProtected(message[12:])
+			isprotected=ReactionsGlobal.isProtected(message[12:])
 		elif message[:16].lower()=="the reaction to ":
-			isprotected=Reactions.isProtected(message[16:])
+			isprotected=ReactionsGlobal.isProtected(message[16:])
 
 		#and if not requesting for reactions, assume factoid:
 		else:
@@ -378,72 +407,112 @@ def handleProtection(message):
 		return None
 
 
+
+
 def handleReactions(message,uid):
 	'''same as handleFactoids, except this one is for reactions. it doesn't fetch em though! only for adding/deleting em.'''
-						### GLOBAL REACTIONS ####
 
-	#add global reaction
-	if message[:12].lower()=="reaction to " and " is " in message[12:]:
-		(listenfor,reaction)=[elem.strip() for elem in message[12:].split(" is ",1)]
+	reply=None
 
-
-		if uidIsAllowedTo(uid,'protect'):
-
-			result=None
-			if reaction =="protected":
-				result=Reactions.protect(listenfor)
-			elif reaction in ('public','unprotected'):
-				result=Reactions.unProtect(listenfor)
-			#fixme: this means you will get the same answer no matter if you protect or unprotect. I don't care, but it could be done nicer.
-			if result==None:
-				pass
-			elif result==0:
-				reply="k"
-			elif result==1:
-				reply="I don't know what to say to that"
-			elif result==2:
-				reply="ah crap crap crap... database error!"
-			elif result==3:
-				reply="yeah, I know.."
-			else: #unspecified error messages
-				reply="hmm.. error."
+	#if there's " is " in the message, do more checking.
+	if " is " in message:
 
 
-		try:
-			reply
-		except NameError: #reply has not been set yet
-			#if reaction[:xx]==" and append a questionmark" #fixme; make this
-			result=Reactions.get(listenfor)
+
+		def _IS(message,direct):
+			'''this function is called internally by handleReactions(). if globalordirect is False, global is assumed. if True: direct.'''
+
+			(listenfor,reaction)=[elem.strip() for elem in message.split(" is ",1)]
+
+			if uidIsAllowedTo(uid,'protect'):
+
+				result=None
+
+				if reaction =="protected":
+					result=ReactionsGlobal.protect(listenfor)
+				elif reaction in ('public','unprotected'):
+					result=ReactionsGlobal.unProtect(listenfor)
+				#fixme: this means you will get the same answer no matter if you protect or unprotect. I don't care, but it could be done nicer.
+				if result==None:
+					pass
+				elif result==0:
+					return "k"
+				elif result==1:
+					return "I don't know what to say to that"
+				elif result==2:
+					return "ah crap crap crap... database error!"
+				elif result==3:
+					return "yeah, I know.."
+				else: #unspecified error messages
+					return "hmm.. error."
+
+			if reaction[-26:]==" and append a questionmark":
+				reaction=reaction[:-26] + '?'
+
+			#by creating a compatible reference with the same name for both situations we can use one block of code to do two things, depending on the situation.
+			if direct:
+				ReactionsClass=ReactionsDirect
+			else:
+				ReactionsClass=ReactionsGlobal
+
+			result=ReactionsClass.get(listenfor)
 			if result==1: # object is not known yet
-				Reactions.add(listenfor,reaction,uid)
-				reply="k"
+				ReactionsClass.add(listenfor,reaction,uid)
+				return "k"
 			elif result==2:
-				reply="oh noes, a database error!"
+				return "oh noes, a database error!"
 			elif type(result) in types.StringTypes: #means that result holds the definition of the object and not an error code
 				if result == reaction:
-					reply="I know"
+					return "I know"
 				else:
-					reply="but the reaction to %s is %s"%(listenfor,result)
+					return "but the reaction to %s is %s"%(listenfor,result)
 			else: #an unspecified error occured:
-				reply="uhh... error?"
+				return "uhh... error?"
 
+
+		#end _IS()
+
+
+		#determine whether it's a global or direct reaction:
+		if message[:12].lower()=="reaction to ":
+			reply=_IS(message[12:],True)
+		elif message[:19].lower()=="direct reaction to ":
+			reply=_IS(message[19:],True)
+		elif message[:19].lower()=="global reaction to ":
+			reply=_IS(message[19:],False)
+
+		if reply: # don't bother continuing if we already have a reply
+			return reply
+
+
+
+
+
+	def _DEL(listen_for,direct):
+		'''delete a reaction. this function is called internally, just like _IS().'''
+		if direct:
+			result = ReactionsDirect.delete(listen_for)
+		else:
+			result = ReactionsGlobal.delete(listen_for)
+
+		if result==0:
+			return "k"
+		elif result==1:
+			return "I don't know what that means anyway"
+		elif result==3: #this is more likely to happen
+			return "that factoid is protected. an admin needs to unprotect it before you can remove it."
+		elif result==2:
+			return "shit, db error."
 
 	#del global reaction
-	elif message[:19].lower()=="forget reaction to ":
-		result = Reactions.delete(message[19:])
-		if result==0:
-			reply="k"
-		elif result==1:
-			reply="I don't know what that means anyway"
-		elif result==2:
-			reply="shit, db error."
-		elif result==3:
-			reply="that factoid is protected. an admin needs to unprotect it before you can remove it."
-
-	try:
-		return reply
-	except NameError:
-		return None
+	if message[:19].lower()=="forget reaction to ":
+		return _DEL(message[19:],True)
+	elif message[:26].lower()=="forget direct reaction to ":
+		return _DEL(message[26:],True)
+	elif message[:26].lower()=="forget global reaction to ":
+		return _DEL(message[26:],False)
+	else:
+		return None #don't bother defining the function below; we're not gonna use it anyway
 
 
 

@@ -1,11 +1,9 @@
 # -- coding: utf-8 --
-'''the nazi game, a very interesting game for nazi's and non-nazi's alike!'''
+'''the nazi game, a very interesting game for nazis and non-nazis alike!'''
 
 import types
 
-from config import MySQL
-db_r,db_w=MySQL.db_r,MySQL.db_w
-del MySQL
+from mysql import db_r,db_w
 
 
 

@@ -7,8 +7,6 @@ Check for factoids or reactions and answer to it
 '''
 
 import mysql
-from misc import Admin
-admins=Admin()
 
 
 
@@ -234,7 +232,7 @@ returns:
     ### REACTIONS ###
 
 class Reactions:
-	'''functions that handle everything there is to reactions'''
+	'''functions that handle everything there is to reactions. Parent class of ReactionsGlobal and ReactionsDirect. The table names are left out and should be set by the derived classes.'''
 
 
 	def add(self,message_in,message_out,uid):
@@ -256,7 +254,7 @@ returns:
 		# do the db thing
 		cursor=mysql.db_w.cursor()
 		try:
-			cursor.execute("insert into `reactions_global`(`message_in`,`message_out`,`uid`) values(%s,%s,%s);",(message_in,message_out,uid))
+			cursor.execute("insert into `"+self.table_name+"`(`message_in`,`message_out`,`uid`) values(%s,%s,%s);",(message_in,message_out,uid))
 		except cursor.ProgrammingError, e:
 			print "\n\n  >> DATABASE ERROR: QUERY FAILED <<\n\n  >> %s\n\n"%e.__str__()
 			return 2
@@ -284,7 +282,7 @@ returns an integer:
 		cursor=mysql.db_w.cursor()
 		try:
 			# FIXME : check protected
-			cursor.execute("delete from `reactions_global` where `message_in` = %s limit 1;",(message_in,))
+			cursor.execute("delete from `"+self.table_name+"` where `message_in` = %s limit 1;",(message_in,))
 		except cursor.ProgrammingError, e:
 			print "\n\n  >> DATABASE ERROR: QUERY FAILED <<\n\n  >> %s\n\n"%e.__str__()
 			return 2
@@ -298,7 +296,7 @@ returns an integer:
 
 		cursor=mysql.db_r.cursor()
 		try:
-			n=cursor.execute("select `id` from `reactions_global` where `message_in`=%s limit 1;",(message_in,))
+			n=cursor.execute("select `id` from `"+self.table_name+"` where `message_in`=%s limit 1;",(message_in,))
 		except cursor.ProgrammingError:
 			return 0
 		cursor.close()
@@ -317,7 +315,7 @@ returns an integer:
 
 		cursor=mysql.db_r.cursor()
 		try:
-			cursor.execute("select `message_out`,`count`,`id` from `reactions_global` where `message_in`=%s limit 1;",(message_in,))
+			cursor.execute("select `message_out`,`count`,`id` from `"+self.table_name+"` where `message_in`=%s limit 1;",(message_in,))
 		except cursor.ProgrammingError, e:
 			print "\n\n  >> DATABASE ERROR: QUERY FAILED <<\n\n  >> %s\n\n"%e.__str__()
 			return 2
@@ -327,7 +325,7 @@ returns an integer:
 			count=result[1]+1
 			cursor=mysql.db_w.cursor()
 			#fixme: catch query failure
-			cursor.execute("update `reactions_global` set `count`=%s where `id`=%s limit 1",(count,result[0]))
+			cursor.execute("update `"+self.table_name+"` set `count`=%s where `id`=%s limit 1",(count,result[0]))
 			cursor.close()
 		try:
 			return result[0]
@@ -372,7 +370,7 @@ returns an integer:
 
 		cursor=mysql.db_w.cursor()
 		try:
-			cursor.execute("update `reactions_global` set `protected` = %s where `message_in` = %s limit 1;",(protect,message_in))
+			cursor.execute("update `"+self.table_name+"` set `protected` = %s where `message_in` = %s limit 1;",(protect,message_in))
 		except cursor.ProgrammingError, e:
 			print "\n\n  >> DATABASE ERROR: QUERY FAILED <<\n\n  >> %s\n\n"%e.__str__()
 			return 2
@@ -404,7 +402,7 @@ returns:
 
 		cursor=mysql.db_r.cursor()
 		try:
-			if cursor.execute("select `protected` from `reactions_global` where `message_in` = %s limit 1;",(message_in,)) != 1:
+			if cursor.execute("select `protected` from `"+self.table_name+"` where `message_in` = %s limit 1;",(message_in,)) != 1:
 				return 2
 		except cursor.ProgrammingError, e:
 			print "\n\n  >> DATABASE ERROR: QUERY FAILED <<\n\n  >> %s\n\n"%e.__str__()
@@ -414,6 +412,25 @@ returns:
 		cursor.close()
 		return int(result[0])
 
+
+
+class ReactionsGlobal(Reactions):
+	'''global reactions (contrary of the ReactionsGlobal class). for example:
+<user> /me dances *
+<anna> /me dances too *
+
+a global reaction is a reaction to something not directly addressed to the bot but rather to a remark somebody makes, just like that.'''
+	def __init__(self):
+		self.table_name='reactions_global'
+
+class ReactionsDirect(Reactions):
+	'''direct reactions (contrary of the ReactionsGlobal class). for example:
+<user> anna: help
+<anna> user: you can define things for me and I will remember them.
+
+a direct reaction is a reaction to something directly addressed to the chatbot. if the user would just have said "help" in our example, the reaction would not have been appropriate.'''
+	def __init__(self):
+		self.table_name='reactions_direct'
 
 
 
