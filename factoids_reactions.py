@@ -325,7 +325,7 @@ returns an integer:
 			count=result[1]+1
 			cursor=mysql.db_w.cursor()
 			#fixme: catch query failure
-			cursor.execute("update `"+self.table_name+"` set `count`=%s where `id`=%s limit 1",(count,result[0]))
+			cursor.execute("update `"+self.table_name+"` set `count`=%s where `id`=%s limit 1",(count,result[2]))
 			cursor.close()
 		try:
 			return result[0]
