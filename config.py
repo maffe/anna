@@ -10,6 +10,23 @@ import sys
 '''get the data from the configuration file located at ~/.anna/config and store it in itself. see config.example for more details. if the file doesn't exist, create it and sys.exit().'''
 
 
+def create_first_conf(config_loc):
+	# Create config file
+	f=open(config_loc, 'w')
+
+	#find out where the sample configuration file is
+	currentdir        = os.path.abspath('.')
+	script_name       = sys.argv[0]
+	script_loc        = os.path.abspath(currentdir + '/' + script_name)
+	script_dir        = os.path.dirname(script_loc)
+	config_sample_loc = script_dir + '/config.sample'
+
+	#copy the sample configuration to the config file
+	config_sample=open(config_sample_loc)
+	config_sample_str=config_sample.read()
+	f.write(config_sample_str)
+
+
 #these values will hold the information read from the config file
 mysql={}
 #example: self.mysql{'host': 'localhost'}
@@ -60,27 +77,6 @@ for line in config_lines:
 				misc[key]=value
 	except IndexError:
 		pass
-
-
-def create_first_conf(config_loc):
-	# Create config file
-	f=open(config_loc, 'w')
-
-	#find out where the sample configuration file is
-	currentdir        = os.path.abspath('.')
-	script_name       = sys.argv[0]
-	script_loc        = os.path.abspath(currentdir + '/' + script_name)
-	script_dir        = os.path.dirname(script_loc)
-	config_sample_loc = script_dir + '/config.sample'
-
-	#copy the sample configuration to the config file
-	config_sample=open(config_sample_loc)
-	config_sample_str=config_sample.read()
-	f.write(config_sample_str)
-
-
-
-
 
 
 class Misc:
