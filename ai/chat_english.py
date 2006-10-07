@@ -45,7 +45,7 @@ def direct(message,identity,typ):
 
 	if identity.isAllowedTo('stop') and message=="stop":
 		#pm.send(identity,"ok, well, I'm leaving...") #fixme: we need a nice and clean solution for this that fits the idea! what about returning a message, waiting till it is delivered and stopping only after that?
-		admin.stop(nocheck=True) #only admins get here so no need to check again
+		admin.stop()
 
 	#fixme: todo:
 	#tell the conversations module about the message
