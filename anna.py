@@ -4,10 +4,10 @@
 from time import time
 starttime=time()
 
-import xmpp_connect
+from frontends.xmpp.connect import connect
 import config
 
 config.Misc.starttime=starttime
 
 ###start connect###
-xmpp_connect.Connect()
+connect()

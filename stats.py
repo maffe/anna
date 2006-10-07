@@ -11,7 +11,7 @@ import time
 
 import config
 import mysql
-import xmpp_rooms as roomsHandler
+from frontends.xmpp import rooms as roomsHandler
 
 
 

@@ -40,17 +40,10 @@ returns:
 
 
 
-	def stop(self,jid=None,nocheck=False):
-		"""kill the bot.
-takes:
-#conn : xmpp.Client()
-jid (str)   : jid calling this function
-force (bool): if True jid will be checked for being admin
+	def stop(self):
+		"""kill the bot."""
 
-returns:
-- False (bool): unallowed"""
-
-		#fixme: we need to disconnect etc. how to get the conn variable? and! we need to check if this is an admin if nocheck==False
+		#fixme: we need to disconnect etc. how to get the conn variable?
 		#conn.send(xmpp.Presence(typ="unavailable"))
 		#conn.disconnect()
 		print "remote exit initiated"
