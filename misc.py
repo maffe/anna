@@ -15,7 +15,7 @@ import config
 
 class Admin:
 
-	def isAdmin(self,jid,owneronly=False):
+	def isAdmin( self, jid, owneronly = False ):
 		'''check if a jid has admin rights.
 
 takes:
@@ -28,9 +28,9 @@ returns:
 
 
 		# create an xmpppy JID instance (more flexible)
-		jid=xmpp.JID(jid) # note that if jid already was an xmpp.JID(), this is practically equal to pass
+		jid = xmpp.JID( jid ) # note that if jid already was an xmpp.JID(), this is practically equal to pass
 		##check if it's the Pwner himself
-		if jid.bareMatch(config.misc['owner_jid']):
+		if jid.bareMatch( config.misc['owner_jid'] ):
 			return True
 		# or one of his bitches, if appropriate
 		elif not owneronly and jid.getStripped() in config.admins:
@@ -40,7 +40,7 @@ returns:
 
 
 
-	def stop(self):
+	def stop( self ):
 		"""kill the bot."""
 
 		#fixme: we need to disconnect etc. how to get the conn variable?

@@ -6,7 +6,16 @@ import mysql
 import stringfilters as filters
 
 def addUid(name,typ):
-	'''add a new uid to the database. the typ argument is passed directly to the function for checking types, the name is inserted in the database. Do note that if self.getTypeId() raises an exception, it will not be catched. it will just return None if the uid already exists.'''
+	'''add a new uid to the database. the typ argument is passed
+directly to the function for checking types, the name is inserted
+in the database. Do note that if self.getTypeId() raises an exception,
+it will not be catched. If the uid already exists it will return its
+uid.
+
+fixme; this function is pretty ugly. addUid() shouldn't return the
+uid of an already existing entry. also, it shouldn't use try:
+except: statements if it's going to check for it anyway. (only
+use try: except: if you don't expect something to happen!)'''
 	try:
 		return getId(name,typ)
 	except ValueError: #if new, then continue
@@ -99,14 +108,16 @@ def getPermissions(uid):
 	'''return an iterable object that holds all the permissions a uid has
 #fixme: currently, this just returns 'all' if the uid matches the jid of an admin, hardcoded here. obviously, we need a real system for this.'''
 	if int(uid) == 6:
-		return ('all',)
+		return ( 'all', )
 	else:
 		return ()
 
 
-def isAllowedTo(uid,whatdoeshewanttodothen):
-	'''check if uid (int) is allowed to do whatdoeshewanttodothen (str). returns True (bool) if allowed, False otherwise.'''
-	for elem in getPermissions(uid):
-		if elem in (whatdoeshewanttodothen,'all'):
-			return True
-	return False
+def isAllowedTo( uid, whatdoeshewanttodothen ):
+	'''check if uid (int) is allowed to do whatdoeshewanttodothen (str).
+returns True (bool) if allowed, False otherwise.'''
+	permissions = getPermissions( uid )
+	if 'all' in permissions:
+		return True
+	else:
+		return whatdoeshewanttodothen in permissions

@@ -1,0 +1,95 @@
+most up-to-date information can always be found on the wiki:
+http://0brg.xs4all.nl/anna/wiki/Install
+
+To install and run the chatbot, you will have to install a few
+software-packages as well as download some data. This guide should
+help you get started.
+
+
+   ## 0) PREPARATIONS ##
+
+A short list of dependencies:
+
+- Python: 2.4 is known to work (http://www.python.org/)
+- MySQL-python: 1.2.1 or higher (http://sourceforge.net/projects/mysql-python)
+- xmpppy: 0.3.1 is known to work (http://xmpppy.sourceforge.net/)
+
+furthermore, you need access to a MySQL database and you need a
+jabber-account for the chatbot.
+
+For the MySQL account, two accounts can be configured:
+read-account:  SELECT on CHATBOTDBNAME.*
+write-account: SELECT, INSERT, UPDATE, DELETE on CHATBOTDBNAME.*
+
+This is mainly for permission freaks or paranoid sysops, feel free
+to use one and the same account for both (do note that if you do,
+this account will need to meet all requirments for BOTH accounts!)
+
+
+   ## 1) DOWNLOAD ##
+
+Currently the source-code is only available through subversion. To
+download the latest trunk, execute the following command:
+
+  $ svn co svn://0brg.xs4all.nl/anna/trunk
+
+If you don't have a subversion client you can get the official client
+from [http://subversion.tigris.org/], or search the web for another one.
+
+
+   ## 2) INSTALL ##
+
+The only thing to install is the configuration-file, but the anna.py
+script should do this for you automatically. Try running this first:
+
+  $ python anna.py
+
+
+   ## 3) EXECUTE ##
+
+If everything worked out, you now have a directory called ".anna" in
+your home-directory, containing a file called "config". Edit that file
+and make sure all required fields are filled out, then run the command
+again:
+
+  $ python anna.py
+
+Hopefully you now see a lot of coloured debug-output (this is from the
+xmpppy module).
+
+
+   ## 4) EXECUTE IN BACKGROUND ##
+
+Once the chatbot is up and running, you will probably want to run it in
+the background and close the login sessions you have with the server.
+This command won't do the trick though:
+
+  $ python anna.py &
+
+The problem is that, in case you're using SSH at least, once you
+disconnect from the server by typing "exit", for example, the HANGUP
+(HUP for short) command is sent to all running processes of your session.
+This includes the anna.py process you started above. To prevent this
+from happening, use the nohup command:
+
+  $ nohup python anna.py &
+
+The nohup command catches all HANGUP signals sent to it and ignores them.
+This will also mean that, once logged out, there will be no way to pull
+the running bot in fore-ground again. If you want that, use screen. more
+information on screen can be found with the man command; "man screen".
+
+A small note about nohup; it saves all output (stdout as well as stderr)
+to a file called nohup.out in your working directory. This means that all
+debugging will be stored in a file. After a while, this file can grow
+pretty large. If you don't want that, try this:
+
+  $ nohup python anna.py &> /dev/null &
+
+
+   ## 5) MISCELLANEOUS ##
+
+Want to complain? Contribute? Dance? join us in:
+bot@conference.jabber.xs4all.nl
+
+Good luck =]

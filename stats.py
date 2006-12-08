@@ -11,8 +11,7 @@ import time
 
 import config
 import mysql
-from frontends.xmpp import rooms as roomsHandler
-
+import rooms as roomsHandler
 
 
 def simple():
@@ -88,23 +87,23 @@ def factoidsAndReactions():
 	return stats
 
 
-def rooms(sorted=False):
-	'''return information about the rooms we're in. sort it if sorted==True (bool).'''
+def rooms( sorted = False ):
+	'''return information about the rooms we're in. sort it if sorted == True (bool).'''
 
-	roomlist=roomsHandler.getActive()
+	roomlist = roomsHandler.getActive()
 	if not roomlist:
 		return "I'm not in any rooms atm..."
 
-	roomlist=list(roomlist) #roomsHandler.getActive() returns a tuple, which is unmutable and thus insortable. make it a list first.
+	#roomsHandler.getActive() returns a tuple, which is unmutable and thus insortable. make it a list first.
+	roomlist = list( roomlist )
 	roomlist.sort()
 
-	result="rooms I'm in atm:"
+	result = "rooms I'm in atm:"
 	for elem in roomlist:
 		if elem.isActive():
-			result+='\n- ' + elem.__str__()
+			result += '\n- ' + elem.__str__()
+
 	return result
-
-
 
 
 def uids():
@@ -143,9 +142,9 @@ def uids():
 def extended():
 	'''put all other statistics together and blurt them out!'''
 
-	stats=simple()
-	stats+='\n\n'+factoidsAndReactions()
-	stats+='\n\n'+rooms()
-	#stats+='\n\n'+uids()
+	stats = simple()
+	stats += '\n\n' + factoidsAndReactions()
+	stats += '\n\n' + rooms()
+	#stats += '\n\n' + uids()
 
 	return stats

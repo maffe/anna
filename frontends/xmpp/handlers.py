@@ -1,10 +1,5 @@
 # -- coding: utf-8 --
-'''
-handlers.py
-///////////////////////////////////////
-Define the handlers
-///////////////////////////////////////
-'''
+'''Define the handlers'''
 
 import xmpp
 import types
@@ -13,101 +8,104 @@ import misc
 admin=misc.Admin()
 import stringfilters as filters
 import user_identification as uids
-from frontends.xmpp import abstract as xmpp_abstract
-from frontends.xmpp import rooms
+import frontends.xmpp as xmpp_frontend
+import rooms
 
 import aihandler
 
+#xmpppy connection object.
+#conn = 
 
-def pm(conn,mess):
+def pm( conn, mess ):
 	"""handler that deals with messages directed directly to the bot by PM."""
 
 
-	message=mess.getBody()
-	jid=mess.getFrom()
-	#prevent overloaded messages
-	if not message or message.__len__()>255:
+	message = mess.getBody()
+	jid     = mess.getFrom()
+	#ignore empty and overloaded messages
+	if not message or message.__len__() > 255:
 		return False
-	pm=xmpp_abstract.PM(jid,conn)
+
+	#create a Private Message instance
+	pm = xmpp_frontend.PM( jid, conn )
 
 	# prepare some variables
 
 
 	#check if this is a direct pm or a pm through a muc room
-	if rooms.isActive(jid):
-		counterpart=jid.getResource() #the name of the person we're talking with
-	else: # if the room is either known but not active, or not known at all, this is to be assumed to be a direct PM:
-		counterpart=jid.getNode()
-
-	if admin.isAdmin(jid.getStripped()):
-		permissions=['all']
+	if rooms.isActive( jid, 'xmpp' ):
+		counterpart = jid.getResource() #the name of the person we're talking with
 	else:
-		permissions=[]
+		# if the room is either known but not active, or not known at all, this is
+		#to be assumed to be a direct PM:
+		counterpart = jid.getNode()
 
-	counterpart=xmpp_abstract.PM(jid,conn,nick=counterpart,permissions=permissions)
+	if admin.isAdmin( jid.getStripped() ):
+		permissions = ['all']
+	else:
+		permissions = []
 
-	#this is a problem. how do we fit this in the new idea of seperating the jabber part and the ai part? for now, I can't think of anything simple.
-	if message[:5].lower()=="join ":
-		return rooms.join(message[5:],conn)
-	elif message[:13].lower()=="please leave ":
-		try:
-			room=rooms.getByJid(message[13:])
-			return room.leave()
-		except ValueError:
-			return "uhh.. I'm not even in there.."
+	counterpart = xmpp_frontend.PM( jid, nick = counterpart, permissions = permissions )
 
 
-	if message[:10]=="send raw: " and counterpart.isAllowedTo('send_raw'): #this is solely jabber-related, so it belongs here.
-		conn.send(message[10:])
+	if message[:10] == "send raw: " and counterpart.isAllowedTo('send_raw'):
+		#this is solely jabber-related, so it belongs here.
+		conn.send( message[10:] )
 		return 'k.'
+
 	else:
 		#to get our AIModule we first check if this uid already has a certain ai module in use.
-		aimodule=aihandler.getAIReferenceByUID(counterpart.getUid())
+		aimodule = aihandler.getAIReferenceByUID( counterpart.getUid() )
 		#if there was an error aimodule is now types.IntType
-		if type(aimodule)==types.IntType:
+		if type( aimodule ) == types.IntType:
 			#in that case we just force the chat.english ai module
-			aimodule=aihandler.getAIReferenceByAID('chat_english')
-			if type(aimodule)==types.IntType:
-				sys.exit('default AI module ai/chat_english.py wasnt found.')
-		return aimodule.direct(message,counterpart,typ='jabber')
+			aimodule = aihandler.getAIReferenceByAID( 'chat_english' )
+			if type( aimodule ) == types.IntType:
+				sys.exit( 'default AI module ai/chat_english.py wasnt found.' )
+		return aimodule.direct( message, counterpart, typ = 'xmpp' )
 
 
 
 
 
-def muc(conn,mess):
+def muc( conn, mess ):
 	'''handler for multi user chitchat messages =D hurray.'''
 
 
-	message=mess.getBody()
-	if not message or message.__len__()>255 :
-		return False
-	if mess.getProperties().count("jabber:x:delay"): #stop if this is a delayed message
+	message = mess.getBody()
+	#stop if this is a delayed message or if there is no content
+	if not message or mess.getProperties().count( xmpp.NS_DELAY ):
 		return False
 
-	jid=mess.getFrom()
-	user=jid.getResource() # the sender of the message
-	if not user: #<message type='groupchat' /> without resource
-		return False #IF by horror one finds a room that does not set the nick as resource, a loop cannot be prevented. therefore: ignore. type='groupchat' from rooms aren't interesting anyway, so we don't care (A)
-	#copy or create an instance
+	jid  = mess.getFrom().getStripped()
+	user = mess.getFrom().getResource() # the sender of the message
+
+	if not user:
+		#<message type='groupchat' /> without resource
+		return False
+		#messages from groupchats are not interesting
+
+	#copy or create an instance. there could be a weird situation where a
+	#message is received from a groupchat that isn't registered yet (not
+	#expected, but it COULD happen). in that case: create a new room instance
 	try:
-		room=rooms.getByJid(jid)
+		room = rooms.get( jid, 'xmpp' )
 	except ValueError:
-		room=rooms.new(jid,conn)
+		room = rooms.new( jid, 'xmpp' )
 
 
 
 	#load the aimodule the same way as in direct()
-	aimodule=aihandler.getAIReferenceByUID(room.getUid())
-	if type(aimodule)==types.IntType:
-		aimodule=aihandler.getAIReferenceByAID('chat_english')
-		if type(aimodule)==types.IntType:
-			sys.exit('default AI module ai/chat_english.py wasnt found.')
+	aimodule = aihandler.getAIReferenceByUID( room.getUid() )
+	if type(aimodule) == types.IntType: #if error:
+		aimodule = aihandler.getAIReferenceByAID('chat_english')
+		if type(aimodule) == types.IntType:
+			sys.exit( "default AI module <chat_english> not found." )
 
-	return aimodule.room(message,sender=user,typ='jabber',room=room)
+	return aimodule.room( message, sender = user, typ = 'xmpp', room = room )
 
 
-def joinmuc(conn,mess):
+def joinmuc( conn, mess ):
 	"""handle invitation to a muc.
 three possible situations:
 0) already active in room: return an excuse message to the room
@@ -116,93 +114,95 @@ three possible situations:
 
 if not 2, get the existing instance, otherwise create a new one. pass this on to the ai module and have that handle delivering messages etc. not that it is up to the ai module to actually join! this gives the opportunity to tweak the instance before joining the room."""
 
-	jid=mess.getFrom()
-	by=xmpp.JID(mess.getTag('x').getTag('invite').getAttr('from'))
-	reason=mess.getTag('x').getTag('invite').getTagData("reason")
-	try:
-		room=rooms.getByJid(jid)
-	except ValueError: # situation 2
-		room=rooms.new(jid,conn)
-		situation=2
+	jid    = mess.getFrom()
+	by     = xmpp.JID( mess.getTag( 'x' ).getTag( 'invite' ).getAttr( 'from' ) )
+	reason = mess.getTag( 'x' ).getTag( 'invite' ).getTagData( 'reason' )
+
+	if rooms.isActive( jid, 'xmpp' ):
+		situation = 0
+		room = rooms.get( jid, 'xmpp' )
+	elif rooms.exists( jid, 'xmpp' ):
+		situation = 1
+		room = rooms.get( jid, 'xmpp' )
+		room.join()
 	else:
-		if room.join(): # situation 1
-			situation=1
-		else: # situation 0
-			situation=0
+		situation = 2
+		room = rooms.new( jid, 'xmpp' )
+		room.join()
 
 	#load the aimodule the same way as in direct()
-	aimodule=aihandler.getAIReferenceByUID(room.getUid())
-	if type(aimodule)==types.IntType:
-		aimodule=aihandler.getAIReferenceByAID('chat_english')
-		if type(aimodule)==types.IntType:
-			sys.exit('default AI module ai/chat_english.py wasnt found.')
+	aimodule = aihandler.getAIReferenceByUID( room.getUid() )
+	if type( aimodule ) == types.IntType:
+		aimodule = aihandler.getAIReferenceByAID( 'chat_english' )
+		if type( aimodule ) == types.IntType:
+			sys.exit( 'default AI module <chat_english> not found.' )
 
-	aimodule.invitedToMuc(room,situation,by,reason)
-
-
+	aimodule.invitedToMuc( room, situation, by, reason )
 
 
-def presence(conn,presence):
+
+
+def presence( conn, presence ):
 	'''handle <presence/>.
-return False if type attribute == 'error'. '''
+return False if type attribute == 'error'.'''
 
-	presencetype=presence.getType()
-	if presencetype=="error":
+	presencetype = presence.getType()
+	if presencetype == "error":
 		return False
 
-	x=presence.getTag('x')
+	x = presence.getTag( 'x' )
 	try:
-		ns=x.getNamespace()
+		ns = x.getNamespace()
 	except AttributeError:
 		return False
 
-	jid=presence.getFrom()
+	jid = presence.getFrom()
 
-	if ns=='http://jabber.org/protocol/muc#user':
+	if ns == xmpp.NS_MUC_USER:
 
-		nick=jid.getResource()
-
-		#get the instance of the room
-		try:
-			room=rooms.getByJid(jid)
-		except ValueError: #if this room doesn't exist already, join it
-			#return False # uncomment this to ignore presence messages from unknown rooms instead of joining 'em
-			room=rooms.new(jid,conn)
+		#get the instance of the room (create one if there ain't none yet)
+		room = rooms.exists(jid, "xmpp") and rooms.get(jid, "xmpp") or rooms.new(jid, "xmpp")
+		nick = jid.getResource()
 
 		#if it was a 'leave presence', remove the participant
-		if presencetype=='unavailable':
+		if presencetype == 'unavailable':
 			try:
-				room.delParticipant(nick)
+				room.delParticipant( nick )
 			except KeyError:
 				pass
 		else:
-			item=x.T.item
-			role=item.getAttr('role')
-			jid =item.getAttr('jid')
-			participant=xmpp_abstract.MUCParticipant(nick,presence,role,jid)
-			room.addParticipant(participant)
+			item        = x.T.item
+			role        = item.getAttr('role')
+			jid         = item.getAttr('jid')
+			participant = xmpp_frontend.MUCParticipant( nick, presence, role, jid )
+			room.addParticipant( participant )
 
 
 
-def subscribtion(conn,presence):
+def subscribtion( conn, presence ):
 	'''Handle <presence type='subscribe' />.
 
-We don't (actively) keep all users in the roster too. First of all; because this is just the jabber front-end to the actual AI module. it should be possible to replace this with, say, an icq front-end without having to adjust anything in the AI module. Second; there's no use of keeping them all in the roster if we're gonna keep them all in our own database too anyway (uids).
+We don't (actively) keep all users in the roster too. First of all;
+because this is just the jabber front-end to the actual AI module.
+If we relied on the roster it would make the whole code xmpp-dependant.
+Second; there's no use of keeping them all in the roster if we're
+gonna keep them all in our own database too anyway (uids).
 
 Only subscription matters: we allow the other to see the status and add this JID to his roster.
 
 http://www.ietf.org/rfc/rfc3921.txt chapter 8'''
 
-	reply=xmpp.Presence(to=presence.getFrom(),typ='subscribed',xmlns=None)
-	conn.send(reply)
+	reply = xmpp.Presence( to = presence.getFrom(), typ = 'subscribed', xmlns = None )
+	conn.send( reply )
 
 
 
 
-def version_request(conn,iq):
+def version_request( conn, iq ):
 	'''respond to a version info request. of course, this is a #fixme; we should check .svn/entries for the current revision instead of returning 666.'''
-	reply=iq.buildReply('result')
+	reply = iq.buildReply( 'result' )
 	#add <name/> and <version/> in accordance with JEP-0092
-	reply.T.query.addChild(name='name',payload=['Anna'])
-	reply.T.query.addChild(name='version',payload=['666'])
-	conn.send(reply)
+	reply.T.query.addChild( name = 'name',    payload = ['Anna'] )
+	reply.T.query.addChild( name = 'version', payload = ['666'] )
+
+	conn.send( reply )

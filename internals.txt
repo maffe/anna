@@ -1,0 +1,59 @@
+This file tries to explain the way the bot works internally.
+
+Short index:
+  1) anna.py is started and starts up different front-ends in the background
+  2) a message arrives at the frontend somehow
+  3) the frontend calls the appropriate frontend-specific handler for the
+     message
+  4) the handler identifies the user, assigns it a uid and calls aihandler.py
+  5) aihandler.py looks up the AI module for this uid and returns the module
+  6) back to the handler: it passes the message to the ai module it got
+  7) the ai module does whatever it wants.
+
+Note that steps 3 through 5 are optional; the only thing that matters is that A
+ai module gets the message. Whether this is done dynamically (aihandler.py) or
+hard-coded, is a matter of taste. If the frontend is programmed to forward all
+messages directly to the english chat ai module as direct messages, that's fine.
+
+  ==1) ANNA.PY==
+
+What exactly this file does isn't decided yet. Currently, it assumes some things
+and calls some frontends (hard-coded). Of course, an appropriate and strict
+protocol should be designed.
+
+
+  ==2) MESSAGE -> FRONTEND==
+
+The frontend typically just sits and waits for an incoming message. This is also
+why the frontends are started as threads; two can't wait at once.
+
+  ==3) FRONTEND -> HANDLER (optional)==
+
+Once a message arrives, the type of the message is determined. Most importantly
+there should be a distinction between a private message and a message that was
+sent to a groupchat in which the bot is participating. Subsequently, an
+according front-end is called.
+
+  ==4) UID? (optional)==
+
+The handler tries to identify the user and asks aihandler.py which AI (art
+ificial intelligence) module goes with him/her. If the user could not be
+identified it gets uid 0, which means anonymous.
+
+  ==5) AI? (optional)==
+
+aihandler.py looks up the AI module that goes with the given UID and returns
+a reference to it.
+
+  ==6) HANDLER -> AI==
+
+Once a reference to an AI module is obtained the message is passed to it. AI
+modules have a strict API which is defined in ai/__init__.py. A front-end
+independant identity instance is passed along with the message which the AI
+module uses to, for example, communicate with the sender.
+
+  ==7) PROCESS MESSAGE==
+
+The AI module can now do what it wants with the supplied objects (the message
+and the sender). It can, for example, call aihandler.py and tell it to change
+the ai module that goes with this person (or with another uid if it wants).

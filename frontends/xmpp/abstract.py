@@ -89,27 +89,30 @@ temp: currently, it's just a dictionary with nicknames as keys and empty values 
 
 
 
-	def __init__ ( self, jid, conn, nick= config.misc['bot_nickname'], autojoin= True, mood=70, trydifferentnick= True , behaviour = 'normal' ) :
+	def __init__ (
+		self,
+		jid,
+		nick      = config.misc['bot_nickname'],
+		mood      = 70,
+		behaviour = 'normal',
+	):
 		'''declare some variables and join the room.
 takes:
 - jid (xmpp.JID() || unicode): the jid of the room (fucking-duuh!)
-- the infamous connection instance...
 - nick (unicode): the preferred nickname of the bot
-- autojoin (bool): whether or not to join immediately when the instance is created
 - mood (int): the mood-level that goes with this room
-- trydifferentnick (bool): whether or not to retry if the nick is already taken #fixme: make this work
 - behaviour (unicode): our behaviour in this room'''
 
 		jid=xmpp.JID(jid)
 
-		self.mood=mood
-		self.participants={}
-		self.nick=nick
-		self.jid=xmpp.JID(jid)
-		self.active=False #set to True when we are in this room
+		self.mood         = mood
+		self.participants = {}
+		self.nick         = nick
+		self.jid          = xmpp.JID(jid)
+		self.active       = False #set to True when we are in this room
 		self.setBehaviour(behaviour)
-		self.participants=[]
-		self.conn=conn
+		self.participants = []
+		self.conn         = config.jabber["conn"]
 		if autojoin:
 			self.join(silent=True)
 		self.uid=uids.addUid(jid.getStripped(),'jabber-muc')
@@ -122,7 +125,7 @@ takes:
 
 
 
-	def join(self,silent=True,force=False):
+	def join( self, force=False):
 		"""join a muc room. more precisely; send presence to it.
 
 takes:
@@ -130,8 +133,6 @@ takes:
 - force (bool): don't stop if we are already in there
 
 fixme: return True on success and False (or error message) on failure"""
-
-
 
 		if self.active and not force:
 			if silent:
@@ -149,67 +150,59 @@ fixme: return True on success and False (or error message) on failure"""
 		#(jid: node@domain/resource)
 
 
-		jid=self.jid
-		jid.setResource(self.nick)
+		jid = self.jid
+		jid.setResource( self.nick )
 
-		xml=xmpp.Presence(show='online',status="online")
-		xml.setTo(jid.__str__())
+		xml = xmpp.Presence( show = 'online', status = "online" )
+		xml.setTo( jid.__str__() )
 		#add <x xmlns="http://jabber.org/protocol/muc" />
-		xml.addChild('x',namespace='http://jabber.org/protocol/muc')
+		xml.addChild( 'x', namespace = xmpp.NS_MUC )
 
 		#from here on we don't need the nickname anymore:
-		jid.setResource(None)
+		jid.setResource( None )
 
-		self.conn.send(xml)
-		self.active=True
-
-		if silent:
-			return True
-		else:
-			return "k."
+		self.conn.send( xml )
+		self.active = True
 
 
-
-	def leave(self,message=True,silent=False,force=False):
+	def leave( self, force=False ):
 		"""leave the muc room. sends the message
 
 takes:
 - conn (xmpp.Client()) : xmpp connection instance to use to leave the room
-- message (bool) : if True, send a (hardcoded) goodbye message to the room before leaving
-- silent (bool) : return True (bool) instead of message (unicode) if silent == True
 - force (bool) : don't return if we are already in the room
 
-returns:
-- True (bool) : if silent==True , no matter if the function actually failed or not
-- message (unicode) : if silent==False (same as above)."""
+returns an integer:
+- 0: all went well
+- 1: the bot wasn't active in this room in the first place"""
 
 		stripped_jid = self.jid.getStripped()
+		
 		if not self.isActive() and not force:
-			return "I'm not in that room anyway"
-		if message:
-			self.send("sorry guys, gotta go ")
-			self.send("bye!")
-		xml=xmpp.Presence(to=stripped_jid,typ='unavailable')
-		self.conn.send(xml)
+			return 1
+
+		xml = xmpp.Presence( to = stripped_jid, typ = 'unavailable' )
+		self.conn.send( xml )
 		self.setInActive()
 		return silent or "k."
 
 
 
-	def send(self,message):
+	def send( self, message ):
 		"""send a message to the room.
 takes: message (unicode), the message to send"""
 
-		num_n=message.count('\n') #fixme: are there other possibilities of inserting newlines?
-		num_chars=message.__len__()
+		num_n = message.count( '\n' )
+		#fixme: are there other possibilities of inserting newlines?
+		num_chars = message.__len__()
 		if num_n > 2 or num_chars > 255:
 			#note that we just expect this to occur when someone asked something; this function is also called
 			#internally though. so, we better watch out not to have (error) messages trigger this, or it'll
 			#look helluva weird for the other occupiants :)
 			message = "sorry, if I'd react to that here it would spam the room too much. talk to me in PM"
 
-		xml=xmpp.Message(to=self.jid,body=message,typ='groupchat')
-		self.conn.send(xml)
+		xml = xmpp.Message( to = self.jid, body = message, typ = 'groupchat' )
+		self.conn.send( xml )
 
 
 
@@ -218,7 +211,7 @@ takes: message (unicode), the message to send"""
 		if not force and participant in self.participants:
 			return False
 		else:
-			self.participants.append(participant)
+			self.participants.append( participant )
 
 	def delParticipant(self,nick):
 		'''delete a user from the list of participants'''
@@ -257,6 +250,10 @@ takes: message (unicode), the message to send"""
 		for elem in self.participants:
 			result+=(elem.__str__(),)
 		return result
+
+	def getType( self ):
+		'''get the type of this room (returns a string 'xmpp')'''
+		return 'xmpp'
 
 	def getUid(self):
 		'''return the uid (int) of this room.'''
