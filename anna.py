@@ -2,8 +2,8 @@
 # -- coding: utf-8 --
 
 from time import time
-import config
-config.Misc.starttime = time()
+import stats
+stats.starttime = time()
 import sys
 import frontends.xmpp.connection as xmpp
 import frontends.console.connection as console
