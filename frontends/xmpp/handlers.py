@@ -203,10 +203,12 @@ http://www.ietf.org/rfc/rfc3921.txt chapter 8'''
 
 
 def version_request( conn, iq ):
-	'''respond to a version info request. of course, this is a #fixme; we should check .svn/entries for the current revision instead of returning 666.'''
+	'''Respond to a version info request.
+TODO: It would be nice to return the revision number in the version
+tag instead of just "svn".'''
 	reply = iq.buildReply( 'result' )
 	#add <name/> and <version/> in accordance with JEP-0092
 	reply.T.query.addChild( name = 'name',    payload = ['Anna'] )
-	reply.T.query.addChild( name = 'version', payload = ['666'] )
+	reply.T.query.addChild( name = 'version', payload = ['svn'] )
 
 	conn.send( reply )

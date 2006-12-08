@@ -666,7 +666,7 @@ the entire bot, but it's not necessary.'''
 		messages[0] = "I was invited to this room again but I'm already in here..."
 	#below we also mention who invited to show the admins of the muc.
 	messages[1] = "Hey all. Thanks for inviting me again, %s." % by
-	messages[2] = "Lo, I'm a chatbot. I was invitied here by %s." % by
+	messages[2] = "Lo, I'm a chatbot. I was invited here by %s." % by
 
 	room.send( messages[ situation ] )
 	if situation != 0:
