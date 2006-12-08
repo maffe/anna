@@ -5,7 +5,7 @@ import xmpp
 import types
 
 import misc
-admin=misc.Admin()
+admin = misc.Admin()
 import stringfilters as filters
 import user_identification as uids
 import frontends.xmpp as xmpp_frontend
@@ -112,10 +112,14 @@ three possible situations:
 1) room known, but inactive: join it and say thx 4 inviting
 2) room unknown: create it, join it and say thx
 
-if not 2, get the existing instance, otherwise create a new one. pass this on to the ai module and have that handle delivering messages etc. not that it is up to the ai module to actually join! this gives the opportunity to tweak the instance before joining the room."""
+if not 2, get the existing instance, otherwise create a new one. pass this
+on to the ai module and have that handle delivering messages etc. not that
+it is up to the ai module to actually join! this gives the opportunity to
+tweak the instance before joining the room."""
 
 	jid    = mess.getFrom()
 	by     = xmpp.JID( mess.getTag( 'x' ).getTag( 'invite' ).getAttr( 'from' ) )
+	by     = by.getStripped()
 	reason = mess.getTag( 'x' ).getTag( 'invite' ).getTagData( 'reason' )
 
 	if rooms.isActive( jid, 'xmpp' ):
