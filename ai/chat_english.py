@@ -14,8 +14,7 @@ Factoids = factoids_reactions.Factoids()
 ReactionsGlobal = factoids_reactions.ReactionsGlobal()
 ReactionsDirect = factoids_reactions.ReactionsDirect()
 
-from misc import Admin
-admin = Admin()
+import admin
 import stringfilters as filters
 import stats
 import config
@@ -112,15 +111,15 @@ def direct( message, identity, typ ):
 				reply = reply % replacedict
 			except KeyError, e:
 				if e[0] == "nick":
-					reply = 'I was told to say "%s" now but since this is a' \
+					reply = 'I was told to say "%s" now but since this is a' % reply \
 					      + ' private conversation it seems awkward to replace' \
-								+ ' %%(nick)s by something...' % reply
+								+ ' %%(nick)s by something...'
 				else:
-					reply = '''I was told to say "%s" now but I don't know what''' \
-					      + ' to replace %%(%s)s with' % ( reply, e[0] )
+					reply = '''I was told to say "%s" now but I'''  % ( reply, e[0] )\
+					      + " don't know what to replace %%(%s)s with"
 			except StandardError, e:
-				reply = 'I was taught to say "%s" now, but there seems to be' \
-				      + 'something wrong with that..' % reply
+				reply = 'I was taught to say "%s" now, but there seems' % reply \
+				      + ' to besomething wrong with that..'
 
 	if not reply and message[:5] == "join ":
 		message = message[5:].split()

@@ -1,10 +1,6 @@
 # -- coding: utf-8 --
-'''
-xmpp_abstract.py
-///////////////////////////////////////
-Abstract layer to xmpp
-///////////////////////////////////////
-'''
+'''Abstract layer to xmpp. This file makes the PM and MUC classes for the xmpp
+frontend.'''
 
 import xmpp
 import types
@@ -18,11 +14,11 @@ import user_identification as uids
 class PM:
 	'''this is a class of a person we're having a one-on-one conversation with.'''
 
-	def __init__(self,jid,conn,nick=None,permissions=[]):
+	def __init__( self, jid, conn, nick = None, permissions = [] ):
 		'''make the instance ready for use by checking if the user was already known to us and registering him/her in the database if not. the nick attribute allows for a preset nickname to be used. if not specified, the node of the jid will be used instead. the jid may be an xmpp.JID() instance or a string. more specifically, if the jid is an instance, no matter which one, it is not modified. this means that you /could/, technically, supply an instance of your custom JID-class. also takes an instance of the xmpp connection class.'''
-		if not type(jid)==types.InstanceType:
-			jid=xmpp.JID(jid)
-		self.jid=jid
+		if not type(jid) == types.InstanceType:
+			jid = xmpp.JID( jid )
+		self.jid = jid
 		self.nick = nick or jid.getNode()
 		self.conn=conn
 		self.permissions=permissions

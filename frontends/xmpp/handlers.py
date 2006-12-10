@@ -4,8 +4,7 @@
 import xmpp
 import types
 
-import misc
-admin = misc.Admin()
+import admin
 import stringfilters as filters
 import user_identification as uids
 import frontends.xmpp as xmpp_frontend
@@ -192,11 +191,16 @@ If we relied on the roster it would make the whole code xmpp-dependant.
 Second; there's no use of keeping them all in the roster if we're
 gonna keep them all in our own database too anyway (uids).
 
-Only subscription matters: we allow the other to see the status and add this JID to his roster.
+Only subscription matters: we allow the other to see the status and
+add this JID to his roster.
 
 http://www.ietf.org/rfc/rfc3921.txt chapter 8'''
 
-	reply = xmpp.Presence( to = presence.getFrom(), typ = 'subscribed', xmlns = None )
+	reply = xmpp.Presence(
+		to = presence.getFrom(),
+		typ = 'subscribed',
+		xmlns = None
+	)
 	conn.send( reply )
 
 
