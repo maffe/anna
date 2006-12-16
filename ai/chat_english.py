@@ -113,10 +113,10 @@ def direct( message, identity, typ ):
 				if e[0] == "nick":
 					reply = 'I was told to say "%s" now but since this is a' % reply \
 					      + ' private conversation it seems awkward to replace' \
-								+ ' %%(nick)s by something...'
+								+ ' %(nick)s by something...'
 				else:
-					reply = '''I was told to say "%s" now but I'''  % ( reply, e[0] )\
-					      + " don't know what to replace %%(%s)s with"
+					reply = 'I was told to say "%s" now but I' % reply \
+					      + " don't know what to replace %%(%s)s with" % e[0]
 			except StandardError, e:
 				reply = 'I was taught to say "%s" now, but there seems' % reply \
 				      + ' to besomething wrong with that..'
