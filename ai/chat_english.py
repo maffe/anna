@@ -179,9 +179,17 @@ def direct( message, identity, typ ):
 			return
 		
 		roomID = ' '.join( message )
-		if not force and not rooms.exists( roomID, roomType ):
-			reply = 'Meh, I wasn\'t even in there. say "leave %s of type %s' % (roomID, typ) + \
-			        ' forcefully" if you want me to try and leave that anyway.'
+		if not rooms.exists( roomID, roomType ):
+
+			if force:
+				#rooms.new() returns existing instance if present
+				room = rooms.new( roomID, roomType )
+				room.send( "Sorry guys, %s told me to leave. Bye." % identity )
+				rooms.remove( roomID, roomType )
+				reply = "k."
+			else:
+				reply = 'Meh, I wasn\'t even in there. say "leave %s of type %s' % (roomID, typ) + \
+				        ' forcefully" if you want me to try and leave that anyway.'
 		else:
 			room = rooms.get( roomID, roomType )
 			room.send( "Sorry guys, %s told me to leave. Bye." % identity )
