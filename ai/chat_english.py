@@ -545,7 +545,7 @@ fetch em though! only for adding/deleting em.'''
 			if globalordirect is False, global is assumed. if True: direct.'''
 
 			try:
-				(listenfor, reaction) = 
+				(listenfor, reaction) = \
 					[elem.strip() for elem in message.split(" is ",1)]
 			except ValueError:
 				return "There's an error in that message..."
