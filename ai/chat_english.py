@@ -18,7 +18,7 @@ import admin
 import stringfilters as filters
 import stats
 import config
-import plugin
+import pluginhandler
 from user_identification import isAllowedTo as uidIsAllowedTo
 import aihandler
 import frontendhandler
@@ -542,15 +542,20 @@ fetch em though! only for adding/deleting em.'''
 
 		def _IS(message,direct):
 			'''this function is called internally by handleReactions().
-if globalordirect is False, global is assumed. if True: direct.'''
+			if globalordirect is False, global is assumed. if True: direct.'''
 
-			(listenfor,reaction)=[elem.strip() for elem in message.split(" is ",1)]
+			try:
+				(listenfor, reaction) = 
+					[elem.strip() for elem in message.split(" is ",1)]
+			except ValueError:
+				return "There's an error in that message..."
+				#TODO: this vulnerability is probably elsewhere too - no time now!
 
 			if uidIsAllowedTo(uid,'protect'):
 
 				result=None
 
-				if reaction =="protected":
+				if reaction == "protected":
 					result=ReactionsGlobal.protect(listenfor)
 				elif reaction in ('public','unprotected'):
 					result=ReactionsGlobal.unProtect(listenfor)
