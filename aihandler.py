@@ -3,17 +3,11 @@
 '''use this module as a front-end to the ai module instead of accessing
 it directly.'''
 
-
-
 import types
-
-
-
-
 
 #this dictionary will hold which UID is connected to which AID identity
 #like this: { 7: 'chat-english' , 23 : 'chat-english' , 57: 'chat-german' }
-dictionary={}
+dictionary = {}
 
 #these functions will be used to access the data stored in the above
 #dictionary. note that it is important to use these functions and not access
@@ -42,7 +36,7 @@ is no such aid.'''
 
 def getAIReferenceByAID( aid ):
 	'''this function returns a reference to the actual AI module that belongs
-to a given AID. if there is no such AID, 1 (int) is returned.'''
+	to a given AID. if there is no such AID, 1 (int) is returned.'''
 	try:
 		return aipool[aid]
 	except KeyError:
@@ -50,8 +44,8 @@ to a given AID. if there is no such AID, 1 (int) is returned.'''
 
 def getAIReferenceByUID( uid ):
 	'''this function returns a reference to the actual AI module given a UID.
-if the uid doesn't exist 1 (int) is returned. if the AID assigned to the
-UID is false, 2 (int) is returned.'''
+	if the uid doesn't exist 1 (int) is returned. if the AID assigned to the
+	UID is false, 2 (int) is returned.'''
 
 	aid = getAID( uid )
 	if type( aid ) == types.IntType:

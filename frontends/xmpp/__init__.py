@@ -18,12 +18,12 @@ class PM:
 
 	def __init__( self, jid, nick = None, permissions = [] ):
 		'''make the instance ready for use by checking if the user was already known to
-us and registering him/her in the database if not. the nick attribute allows for a
-preset nickname to be used. if not specified, the node of the jid will be used
-instead. the jid may be an xmpp.JID() instance or a string. more specifically, if
-the jid is an instance, no matter which one, it is not modified. this means that
-you /could/, technically, supply an instance of your custom JID-class. also takes
-an instance of the xmpp connection class.'''
+		us and registering him/her in the database if not. the nick attribute allows for a
+		preset nickname to be used. if not specified, the node of the jid will be used
+		instead. the jid may be an xmpp.JID() instance or a string. more specifically, if
+		the jid is an instance, no matter which one, it is not modified. this means that
+		you /could/, technically, supply an instance of your custom JID-class. also takes
+		an instance of the xmpp connection class.'''
 		jid = xmpp.JID( jid )
 		self.jid = jid
 		self.nick = nick or jid.getNode()
@@ -64,7 +64,7 @@ an instance of the xmpp connection class.'''
 
 	def getPermissions( self ):
 		'''return an iterable object with the permissions of this user (this is
-currently a list, but that might change)'''
+		currently a list, but that might change)'''
 		return self.permissions
 
 	def getUid( self ):
@@ -89,19 +89,19 @@ currently a list, but that might change)'''
 
 class MUC:
 	'''this class will let you create a muc-room object. you can use that object
-to do room-specific tasks, like sending a message, changing the mood of that
-room, get the participants, change the nickname, etcetera.
+	to do room-specific tasks, like sending a message, changing the mood of that
+	room, get the participants, change the nickname, etcetera.
 
-self.participants is a dictionary that holds all the members of the room and
-info about them. their nick (unicode string) is used as key and an instance of
-MUCParticipant is used as the content. use the self.getParticipants() functions
-(and other related ones) to access this list rather than accessing it directly.
+	self.participants is a dictionary that holds all the members of the room and
+	info about them. their nick (unicode string) is used as key and an instance of
+	MUCParticipant is used as the content. use the self.getParticipants() functions
+	(and other related ones) to access this list rather than accessing it directly.
 
-note: this doesn't actually join the group chat, it just creates an instance
-of it. to join it, call the join() method.
-
-temp: currently, it's just a dictionary with nicknames as keys and empty values
-(None). this will change soon.'''
+	note: this doesn't actually join the group chat, it just creates an instance
+	of it. to join it, call the join() method.
+	
+	temp: currently, it's just a dictionary with nicknames as keys and empty values
+	(None). this will change soon.'''
 
 
 
@@ -113,11 +113,11 @@ temp: currently, it's just a dictionary with nicknames as keys and empty values
 		behaviour = 'normal',
 	):
 		'''declare some variables and join the room.
-takes:
-- jid (xmpp.JID() || unicode): the jid of the room (fucking-duuh!)
-- nick (unicode): the preferred nickname of the bot
-- mood (int): the mood-level that goes with this room
-- behaviour (unicode): our behaviour in this room'''
+		takes:
+		- jid (xmpp.JID() || unicode): the jid of the room (fucking-duuh!)
+		- nick (unicode): the preferred nickname of the bot
+		- mood (int): the mood-level that goes with this room
+		- behaviour (unicode): our behaviour in this room'''
 
 		jid = xmpp.JID(jid)
 
@@ -142,10 +142,10 @@ takes:
 	def join( self, force = False ):
 		"""join a muc room. more precisely; send presence to it.
 
-takes:
-- force (bool): don't stop if we are already in there
+		takes:
+		- force (bool): don't stop if we are already in there
 
-fixme: return an integer indicating the exit status."""
+		TODO: return an integer indicating the exit status."""
 
 		if self.active and not force:
 			return False
@@ -174,11 +174,11 @@ fixme: return an integer indicating the exit status."""
 
 	def leave( self, force = False ):
 		"""leave the muc room. returns if the bot isn't in the room
-(ie: if room.isActive() is False) unless force == True.
+		(ie: if room.isActive() is False) unless force == True.
 
-returns an integer:
-- 0: all went well
-- 1: the bot wasn't active in this room in the first place"""
+		returns an integer:
+		- 0: all went well
+		- 1: the bot wasn't active in this room in the first place"""
 		
 		if not self.isActive() and not force:
 			return 1
@@ -192,27 +192,22 @@ returns an integer:
 
 	def send( self, message ):
 		"""send a message to the room.
-takes: message (unicode), the message to send"""
+		takes: message (unicode), the message to send. returns an integer: 0 if
+		the message was sent and 1 if it was too long."""
 
-		num_n = message.count( '\n' )
-		#fixme: are there other possibilities of inserting newlines?
-		num_chars = message.__len__()
-		if num_n > 2 or num_chars > 255:
-			#note that we just expect this to occur when someone asked something;
-			#this function is also called internally though. so, we better watch
-			#out not to have (error) messages trigger this, or it'll look helluva
-			#weird for the other occupiants :)
-			message = "sorry, if I'd react to that here it would spam the room" \
-			        + " too much. talk to me in PM"
+		#TODO: check if newlines can be inserted in another way
+		if message.count( '\n' ) > 2 or len( message ) > 255:
+			return 1
 
 		xml = xmpp.Message( to = self.jid, body = message, typ = 'groupchat' )
 		self.conn.send( xml )
+		return 0
 
 
 
 	def addParticipant( self, participant, force = False ):
 		'''add a participant to the pool of participants. if force==True, don't
-return False if the participant already exists.'''
+		return False if the participant already exists.'''
 		if not force and participant in self.participants:
 			return False
 		else:
@@ -232,7 +227,7 @@ return False if the participant already exists.'''
 
 	def getJid( self, asstring = False ):
 		'''return the jid of this room as an xmpp.JID() instance. if string==True,
-return it as a string'''
+		return it as a string'''
 		if asstring:
 			return self.jid.__str__()
 		else:
@@ -248,7 +243,7 @@ return it as a string'''
 
 	def getParticipant( self, nick ):
 		'''return the instance of the participant with this nick (unicode). note;
-this really raises a KeyError exception if there's no such participant'''
+		this really raises a KeyError exception if there's no such participant'''
 		return self.participants[nick]
 
 	def getParticipants( self ):
@@ -281,13 +276,13 @@ this really raises a KeyError exception if there's no such participant'''
 
 	def setBehaviour( self, behaviour ):
 		'''set the behaviour of the group to a specified level. takes and returns
-an integer. on success 0 is returned.'''
+		an integer. on success 0 is returned.'''
 		self.behaviour = behaviour
 		return 0
 
 	def setNick( self, nick ):
 		'''change nickname to nick (unicode). actually, what this does is change
-self.nick and force re-joining the room if self.active is True.'''
+		self.nick and force re-joining the room if self.active is True.'''
 		self.nick = nick
 		if self.isActive():
 			#re-send the <presence/> with the new nickname
@@ -308,7 +303,7 @@ self.nick and force re-joining the room if self.active is True.'''
 
 class MUCParticipant:
 	'''a member of a groupchat. it holds information like wether he/she is an
-admin, what his/her nickname is, etcetera.'''
+	admin, what his/her nickname is, etcetera.'''
 
 	def __init__(self,nick,role,status,jid=None):
 		'''create the values that will be needed later on'''
@@ -324,7 +319,7 @@ admin, what his/her nickname is, etcetera.'''
 
 	def getJid(self):
 		'''return participant's jid as an xmpp.JID() instance or 0 (int) if not
-available'''
+		available'''
 		try:
 			return self.jid
 		except ValueError:
@@ -343,7 +338,7 @@ available'''
 
 	def isActive(self):
 		'''check if a participant is active. it is not uncommon, though, to expect
-this to be True if the instance is present without checking.'''
+		this to be True if the instance is present without checking.'''
 		if self.status!='unavailable':
 			return True
 		else:
@@ -351,7 +346,7 @@ this to be True if the instance is present without checking.'''
 
 	def isAdmin(self):
 		'''return True (bool) if participant's role is admin. useful for interoperability
-with other protocols.'''
+		with other protocols.'''
 		if self.role == 'moderator':
 			return True
 		else:
@@ -371,5 +366,5 @@ with other protocols.'''
 
 	def setStatus(self,status):
 		'''set the status of a certain dude-participant (there are no women on the
-internet, and most certainly not on jabber)'''
+		internet, and most certainly not on jabber)'''
 		self.status=status
