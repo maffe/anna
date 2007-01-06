@@ -194,7 +194,7 @@ def direct( message, identity, typ ):
 
 	for plugin in pluginhandler.getPlugins( uid ):
 		#.process needs a reply=None if no reply, and that's default, so it's ok.
-		reply = plugin.process( message, reply )
+		reply = plugin.process( identity, message, reply )
 
 	if reply:
 		identity.send( reply )
@@ -263,7 +263,7 @@ chat message.
 
 	#apply plugins
 	for plugin in pluginhandler.getPlugins( room.getUid() ):
-		reply = plugin.process( message, reply )
+		reply = plugin.process( room, message, reply )
 
 	if reply and room.getBehaviour() != 0:
 		result = room.send( reply )
@@ -352,7 +352,7 @@ def mucHighlight( message, sender, room ):
 
 	#apply plugins
 	for plugin in pluginhandler.getPlugins( uid ):
-		reply = plugin.process( message, reply )
+		reply = plugin.process( room, message, reply )
 
 
 	if reply and room.getBehaviour() != 0:
@@ -475,18 +475,18 @@ def handleFactoids( message, uid ):
 
 
 		if not reply:
-			result=Factoids.get(object)
-			if result==1: # object is not known yet
+			result = Factoids.get(object)
+			if result == 1: # object is not known yet
 				Factoids.add(object,definition,uid)
-				reply="k"
-			elif result==2:
-				reply="oh noes, a database error!"
-			elif type(result) in types.StringTypes:
+				reply = "k"
+			elif result == 2:
+				reply = "oh noes, a database error!"
+			elif type( result ) in types.StringTypes:
 				#the result holds an error code
 				if result == definition:
-					reply="I know"
+					reply = "I know"
 				else:
-					reply="but... but... %s is %s"%(object,result)
+					reply = "but... but... %s is %s" % (object, result)
 
 
 	try:
@@ -513,14 +513,14 @@ def handlePlugins( message, uid ):
 			return "plugin not found."
 	
 	if message.lower() == "list plugins":
-		reply = ''
-		for plugin in pluginhandler.getPlugins( uid ):
-			reply += "- %s\n" % plugin.__name__.split('.')[-1]
-		if not reply:
+		plugins = pluginhandler.getPlugins( uid )
+		if not plugins:
 			return "no plugins loaded"
-		else:
-			#remove the last "\n" added during the loop
-			return reply[:-1]
+		reply = "plugins:"
+		for plugin in plugins:
+			#TODO isn't it ugly to access __name__ directly?
+			reply += "\n- %s" % plugin.__name__.split('.')[-1]
+		return reply
 	
 	#if it wasn't anything, return None.
 	return None
