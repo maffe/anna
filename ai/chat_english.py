@@ -293,10 +293,11 @@ def mucHighlight( message, sender, room ):
 		return
 
 	elif message[:4] == "act ":
-		if not isBehaviour( message[4:] ):
+		try:
+			room.setBehaviour( getBehaviourID( message[4:] ) )
+			reply = "k."
+		except ValueError:
 			reply = "behaviour not found"
-		room.setBehaviour( getBehaviourID( message[4:] ) )
-		reply = 'k.'
 
 	elif message[:24] == "change your nickname to ":
 		#TODO: this is not the right place for conflict checking;
@@ -522,6 +523,10 @@ def handlePlugins( message, uid ):
 			reply += "\n- %s" % plugin.__name__.split('.')[-1]
 		return reply
 	
+	if message.lower() == "list available plugins":
+		#TODO: nice textual representation of this iterable element
+		return str( pluginhandler.getAllPlugins() )
+	
 	#if it wasn't anything, return None.
 	return None
 
@@ -734,7 +739,7 @@ def getBehaviourID( text ):
 	for elem in behaviour.iteritems():
 		if elem[1] == text:
 			return elem[0]
-	raise KeyError, text
+	raise ValueError, text
 
 def isBehaviour( arg ):
 	'''returns True if supplied behaviour (textual OR numerical) is valid.'''
