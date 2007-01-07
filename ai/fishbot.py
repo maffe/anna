@@ -138,42 +138,9 @@ def room( message, sender, typ, room ):
 			return
 
 def invitedToMuc( room, situation, by = None, reason = None ):
-	#<message from="test@conference.drz.ath.cx" to="d0k@drz.ath.cx" type="normal"><x xmlns="http://jabber.org/protocol/muc#user"><invite from="d0ktorz@jabber.ccc.de/home"><reason>moep</reason></invite></x><x xmlns="jabber:x:conference" jid="test@conference.drz.ath.cx">moep</x></message>
 	
 	if situation != 0:
 		room.join()
 
 	msg = '/me m00s contentedly at %s.' % by
 	room.send( msg )
-
-#def connect():
-	#client = xmpp.Client(jid.getDomain())#, debug=[])
-	#conres = client.connect()
-		
-	#if not conres:
-		#print "Unable to connect to server %s!"%jid.getDomain()
-		#sys.exit(1)
-	#if conres<>'tls':
-		#print "Warning: unable to estabilish secure connection - TLS failed!"
-	#authres = client.auth(jid.getNode(),password,resource)
-	#if not authres:
-		#print "Unable to authorize on %s - check login/password."%jid.getDomain()
-		#sys.exit(1)
-	#if authres<>'sasl':
-		#print "Warning: unable to perform SASL auth os %s. Old authentication method used!"%jid.getDomain()
-
-	#client.RegisterHandler('message',messageCB)
-	#client.RegisterHandler('iq',version_request,typ='get',ns='jabber:iq:version')
-	#client.RegisterDisconnectHandler(connect)
-
-	#client.sendInitPresence(-1)
-
-	#for conf in roster:
-		#presence = xmpp.Presence(to='%s/%s'%(conf,resource))
-		#presence.setTag('status').setData('moo')
-		#presence.setTag('x',namespace = xmpp.NS_MUC)#.setTagData('password',confpassword)
-		#presence.getTag('x').addChild('history',{'maxchars':'0','maxstanzas':'0'})
-		#client.send(presence)
-
-	#while client.Process(1):
-		#pass

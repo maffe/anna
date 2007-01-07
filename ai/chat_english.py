@@ -306,8 +306,7 @@ def mucHighlight( message, sender, room ):
 			if elem == message[24:]:
 				reply = "that nick is already in use"
 
-		room.setNick( message[24:] )
-		return #nothing more needs to be done.
+		room.changeNick( message[24:] )
 
 	elif message[:12] == "load module " and message[12:]:
 	#the "and message[12:]" prevents trying to load an empty module
@@ -317,9 +316,7 @@ def mucHighlight( message, sender, room ):
 		elif result == 1:
 			reply = "no such module"
 	#TODO: optimize line below
-	elif type( re.match( '(what\'s|what is) your behaviour\?$', message ) ) \
-		!= types.NoneType:
-		#re.match() matches a regexp to the beginning of a string.
+	elif message == "what's your behaviour?":
 		reply = room.getBehaviour()
 
 	if not reply:

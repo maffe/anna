@@ -106,15 +106,15 @@ def muc( conn, mess ):
 
 def joinmuc( conn, mess ):
 	"""handle invitation to a muc.
-three possible situations:
-0) already active in room: return an excuse message to the room
-1) room known, but inactive: join it and say thx 4 inviting
-2) room unknown: create it, join it and say thx
+	three possible situations:
+	0) already active in room: return an excuse message to the room
+	1) room known, but inactive: join it and say thx 4 inviting
+	2) room unknown: create it, join it and say thx
 
-if not 2, get the existing instance, otherwise create a new one. pass this
-on to the ai module and have that handle delivering messages etc. not that
-it is up to the ai module to actually join! this gives the opportunity to
-tweak the instance before joining the room."""
+	if not 2, get the existing instance, otherwise create a new one. pass this
+	on to the ai module and have that handle delivering messages etc. not that
+	it is up to the ai module to actually join! this gives the opportunity to
+	tweak the instance before joining the room."""
 
 	jid    = mess.getFrom()
 	by     = xmpp.JID( mess.getTag( 'x' ).getTag( 'invite' ).getAttr( 'from' ) )
@@ -147,7 +147,7 @@ tweak the instance before joining the room."""
 
 def presence( conn, presence ):
 	'''handle <presence/>.
-return False if type attribute == 'error'.'''
+	return False if type attribute == 'error'.'''
 
 	presencetype = presence.getType()
 	if presencetype == "error":
@@ -168,15 +168,23 @@ return False if type attribute == 'error'.'''
 		nick = jid.getResource()
 
 		#if it was a 'leave presence', remove the participant
-		if presencetype == 'unavailable':
+		if presencetype == "unavailable":
 			try:
 				room.delParticipant( nick )
 			except KeyError:
 				pass
 		else:
 			item        = x.T.item
-			role        = item.getAttr('role')
-			jid         = item.getAttr('jid')
+			role        = item.getAttr( "role")
+			jid         = item.getAttr( "jid")
+			try:
+				if nick == room.getNick() and item.T.status.getAttr( "code" ) == "303":
+					#the bot's nick got changed
+					room.setNick( item.getAttr( 'nick' ) )
+					return
+			except AttributeError:
+				#<item/> has no <status/> child
+				pass
 			participant = xmpp_frontend.MUCParticipant( nick, presence, role, jid )
 			room.addParticipant( participant )
 
@@ -185,16 +193,16 @@ return False if type attribute == 'error'.'''
 def subscribtion( conn, presence ):
 	'''Handle <presence type='subscribe' />.
 
-We don't (actively) keep all users in the roster too. First of all;
-because this is just the jabber front-end to the actual AI module.
-If we relied on the roster it would make the whole code xmpp-dependant.
-Second; there's no use of keeping them all in the roster if we're
-gonna keep them all in our own database too anyway (uids).
+	We don't (actively) keep all users in the roster too. First of all;
+	because this is just the jabber front-end to the actual AI module.
+	If we relied on the roster it would make the whole code xmpp-dependant.
+	Second; there's no use of keeping them all in the roster if we're
+	gonna keep them all in our own database too anyway (uids).
 
-Only subscription matters: we allow the other to see the status and
-add this JID to his roster.
+	Only subscription matters: we allow the other to see the status and
+	add this JID to his roster.
 
-http://www.ietf.org/rfc/rfc3921.txt chapter 8'''
+	http://www.ietf.org/rfc/rfc3921.txt chapter 8'''
 
 	reply = xmpp.Presence(
 		to = presence.getFrom(),
@@ -204,12 +212,10 @@ http://www.ietf.org/rfc/rfc3921.txt chapter 8'''
 	conn.send( reply )
 
 
-
-
 def version_request( conn, iq ):
 	'''Respond to a version info request.
-TODO: It would be nice to return the revision number in the version
-tag instead of just "svn".'''
+	TODO: It would be nice to return the revision number in the version
+	tag instead of just "svn".'''
 	reply = iq.buildReply( 'result' )
 	#add <name/> and <version/> in accordance with JEP-0092
 	reply.T.query.addChild( name = 'name',    payload = ['Anna'] )

@@ -80,6 +80,7 @@ def process( identity, message, current = None ):
 		try:
 			return "Game %s created with typical bit '%s'" % gameid[0], message
 		except TypeError:
+			#newGame() returns an int on error; int[0] raises a TypeError
 			return "Something appears to have gone wrong."
 
 	elif command == "invite":

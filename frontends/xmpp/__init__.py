@@ -33,7 +33,7 @@ class PM:
 		self.uid = uids.addUid( jid.getStripped(), 'jabber-pm' )
 
 	def __str__( self ):
-		return "xmpp:" + self.jid.getStripped()
+		return "xmpp:%s" % self.jid.getStripped()
 
 	#def received( self, message ):
 	#	'''message received from the other person. trims the current chat-history to
@@ -136,20 +136,34 @@ class MUC:
 		self.uid = uids.addUid(jid.getStripped(),'jabber-muc')
 
 
-	def __str__(self):
-		'''return the jid of the room as a string'''
-		return "xmpp:" + self.jid.__str__()
+	def __str__( self ):
+		'''Return the jid of the room as a string'''
+		return "xmpp:%s" + self
 
 
-
+	def changeNick( self, new ):
+		'''Try to change the nickname into this. This function is conflict-safe;
+		it will not change the nickname when there is a conflict (in fact, it
+		will never change the nickname at all but wait for the conference server
+		to tell the handler to do this - though that is xmpp specific, whereas
+		the aforementioned is not.)'''
+		#a presence stanza with the new nickname must be sent, so instead of
+		#copying the whole join() method again, might as well re-use it. it's
+		#not perfect, but it's not that bad.
+		if self.isActive():
+			old = self.nick
+			self.nick = new
+			self.join( force = True )
+			self.nick = old
+		
 
 	def join( self, force = False ):
-		"""join a muc room. more precisely; send presence to it.
+		'''Join a muc room. more precisely; send presence to it.
 
-		takes:
+		Takes:
 		- force (bool): don't stop if we are already in there
 
-		TODO: return an integer indicating the exit status."""
+		TODO: Return an integer indicating the exit status.'''
 
 		if self.active and not force:
 			return False
@@ -168,7 +182,7 @@ class MUC:
 		jid.setResource( self.nick )
 
 		xml = xmpp.Presence( show = "online", status = "online" )
-		xml.setTo( jid.__str__() )
+		xml.setTo( str( jid ) )
 		#add <x xmlns="http://jabber.org/protocol/muc" />
 		xml.addChild( "x", namespace = xmpp.NS_MUC )
 
@@ -288,9 +302,6 @@ class MUC:
 		'''change nickname to nick (unicode). actually, what this does is change
 		self.nick and force re-joining the room if self.active is True.'''
 		self.nick = nick
-		if self.isActive():
-			#re-send the <presence/> with the new nickname
-			self.join( force = True )
 
 	def setInActive( self ):
 		'''inverse of self.Active()'''
