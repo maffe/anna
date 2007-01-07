@@ -1,6 +1,7 @@
 '''functions that allow manipulation of the database of unique user identities. these functions include things like fetching the name corresponding to a certain id or vice-versa, adding new identities, etc.'''
 
-
+#TODO: a good function is needed to get a UID from a string. one that,
+#for example, correctly handles xmpp:node@domain/resource
 
 import mysql
 import stringfilters as filters

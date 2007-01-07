@@ -7,6 +7,8 @@ since the uid is used as identifier, the plugins are kept even after
 changing AI modules.
 '''
 
+import plugins
+
 #every callable in this list will be called upon in order. once the
 #list has been walked through the result is returned. the plugins
 #dictionary maps the lists to the according uids, much like the AIhandler.
@@ -38,6 +40,11 @@ def addPlugin( uid, pluginID ):
 	except KeyError:
 		_dict[uid] = [ref]
 
+def getAllPlugins():
+	'''Return an iterable object holding a textual representation of
+	every available plugin in a seperate element.'''
+	return plugins.__all__
+
 def getPlugins( uid ):
 	'''Get the list of plugins assigned to this uid. Returns an iterable
 	object. If there is no plugin assigned to this uid, an empty iterable
@@ -58,8 +65,6 @@ def removePlugin( uid, pluginID ):
 def setPluginRefs( uid, referenceList ):
 	'''Like getPlugins, except that it sets it.'''
 	_dict[uid] = referenceList
-
-import plugins
 
 for elem in plugins.__all__:
 	#here all plugin modules are imported as _plugin_<modulename> . then, a

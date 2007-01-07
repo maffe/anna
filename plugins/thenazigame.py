@@ -16,9 +16,11 @@ submissions are posted.
 # - function-names
 # - using exceptions instead of return values
 
+import sys
 import types
 
 from mysql import db_r, db_w
+import user_identification
 
 
 def process( identity, message, current = None ):
@@ -72,12 +74,50 @@ def process( identity, message, current = None ):
 			return "An unknown error occured."
 
 
-	elif command == "invite":
-		try: 
+	elif command == "create":
+		#create a new game
+		gameid = newGame( message, identity.getUid() )
 		try:
-			result = addParticipant( identity.getUid(), int(message) )
+			return "Game %s created with typical bit '%s'" % gameid[0], message
+		except TypeError:
+			return "Something appears to have gone wrong."
+
+	elif command == "invite":
+		#invite a user to a game. only possible if identity is already
+		#a participant of that game.
+		
+		#step 1: determine which game id and store it in variable gameid
+		#code copied from above if-block. maybe this could be a function?
+		try:
+			gameid = getGameIDs( identity.getUid() )[0]
+		except IndexError:
+			pass
+
+		try:
+			x, id = message.split( ' ' )[-2:]
+			if x == "to":
+				gameid = int( id )
+				message = message.split( ' ' )[:-2]
 		except ValueError:
-			return "Wrong game id"
+			pass
+
+		#step 2: check if this user is a participant of this game
+		try:
+			if not participates( identity.getUid(), gameid ):
+				return "You need to be a participant of the game before" \
+				     + " you can invite someone."
+		except NameError:
+			return "Didn't understand which game you mean."
+
+		#step 3: get the uid of the invitee
+		#TODO: this needs more flexibility
+		try:
+			uidInvitee = user_identification.getId( message, identity.getType() )
+		except ValueError:
+			return "User not found."
+
+		#step 4: add the invitee to the game
+		result = addParticipant( uidInvitee, gameid )
 		if result == 0:
 			return "k."
 		elif result == 1:
@@ -99,10 +139,14 @@ def entryExists( entry, gameid ):
 	query exceptions (to prevent interpreting an error code as True (bool))
 	TODO: this smells fishy - who the hell wrote this? ;P'''
 	cursor = db_r.cursor()
-	n = cursor.execute(
-		"select `id` from `thenazigame` where `entry` = %s and `gameid` = %s limit 1",
-		(entry, gameid)
-	)
+	try:
+		n = cursor.execute(
+			"select `id` from `thenazigame` where `entry` = '%s' and `gameid` = %s limit 1",
+			(entry, gameid)
+		)
+	except cursor.ProgrammingError, e:
+		print "\n\n\n%s\n\n\n" % e[1]
+		sys.exit()
 	cursor.close()
 	return n and True or False
 
@@ -110,7 +154,7 @@ def entryExists( entry, gameid ):
 def entryAdd( entry, gameid, uid ):
 	'''add an entry to the database. returns 0 (int) on success, 2 on database
 	error, 1 if the entry already exists.'''
-	if entryExists( entry ):
+	if entryExists( entry, gameid ):
 		return 1
 	cursor = db_w.cursor()
 	try:
@@ -212,7 +256,7 @@ def getGameIDs( uid ):
 
 
 def getParticipants( gameid ):
-	'''Get an iterable object holding all uid's taking part in a thenazigame.
+	'''Get an iterable object holding all uids taking part in a thenazigame.
 	Takes an integer. If _getParticipantsRaw() returns an integer (error) that
 	integer is also returned by this function.'''
 
@@ -250,15 +294,16 @@ def _getParticipantsRaw( gameid ):
 		cursor.close()
 		return result[0]
 
-
-def newGame( azi ):
+def newGame( azi, uid = None ):
 	'''Create a new thenazigame with charasteristic azi (str). returns a tuple
 	with the id of the game as the only element on success, an integer with an
 	error code otherwise. Notice that by design this can be expected to generate a
 	database error (return value 2 (int)), if this function is started, and then
 	started again while still running. In this case, both times it would try to
 	create a new game with the same gameid, creating a query error for the run
-	that finishes last.'''
+	that finishes last.
+	If a uid is provided it is automatically added as the first participant of
+	the newly created game.'''
 
 	#TODO:
 	#I don't know how to see what the id was of a newly inserted row so we have to
@@ -286,4 +331,11 @@ def newGame( azi ):
 		cursor.close()
 		return 2
 
-	return gameid
+	if not uid is None:
+		addParticipant( uid, gameid )
+
+	return (gameid,)
+
+def participates( uid, gameid ):
+	'''Determine if given uid is participating in given game.'''
+	return uid in getParticipants( gameid )

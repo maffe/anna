@@ -102,7 +102,7 @@ know which network to join a muc on: irc? xmpp?'''
 
 
 __all__=[
+	'all_echo',
 	'chat_english',
-	'chat_theenglishnazigame',
-	'all_echo'
+	'fishbot',
 	]

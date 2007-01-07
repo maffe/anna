@@ -156,6 +156,13 @@ def uptime():
 
 	return "uptime: %d %s" % (uptime, unit)
 
+def uptimeSecs():
+	'''Returns the number of seconds the bot is up (will soon be renamed uptime)'''
+	try:
+		return time.time() - starttime
+	except NameError:
+		return 0
+
 
 def extended():
 	'''put all other statistics together and blurt them out!'''

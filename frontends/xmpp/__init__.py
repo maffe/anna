@@ -66,6 +66,10 @@ class PM:
 		'''return an iterable object with the permissions of this user (this is
 		currently a list, but that might change)'''
 		return self.permissions
+	
+	def getType( self ):
+		'''Returns the type of this identity: "xmpp"'''
+		return "xmpp"
 
 	def getUid( self ):
 		'''if you don't understand this one... then...'''

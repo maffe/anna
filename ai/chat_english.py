@@ -718,9 +718,10 @@ def invitedToMuc( room, situation, by = None, reason = None ):
 	messages[1] = "Hey all. Thanks for inviting me again, %s." % by
 	messages[2] = "Lo, I'm a chatbot. I was invited here by %s." % by
 
-	room.send( messages[ situation ] )
 	if situation != 0:
 		room.join()
+
+	room.send( messages[ situation ] )
 
 
 # a directory representing the different behaviour-levels and their textual representations
