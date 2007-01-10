@@ -8,11 +8,7 @@ import sys
 import frontends.xmpp.connection as xmpp
 import frontends.console.connection as console
 
-###start connect###
-xmppThread = xmpp.ConnectThread()
-xmppThread.start()
-#consoleThread = console.ConnectThread()
-#consoleThread.start()
-
-print >> sys.stderr, "threads started succesfully. program will", \
-	"end when all threads have ended."
+#TODO: find a way to run multiple frontends simultaneously AND stably
+if __name__ == "__main__":
+	#console.connect()
+	xmpp.connect()

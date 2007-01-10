@@ -118,7 +118,7 @@ class MUC:
 	):
 		'''declare some variables and join the room.
 		takes:
-		- jid (xmpp.JID() || unicode): the jid of the room (fucking-duuh!)
+		- jid (xmpp.JID() || unicode): the jid of the room
 		- nick (unicode): the preferred nickname of the bot
 		- mood (int): the mood-level that goes with this room
 		- behaviour (unicode): our behaviour in this room'''
@@ -192,7 +192,7 @@ class MUC:
 		"""leave the muc room. returns if the bot isn't in the room
 		(ie: if room.isActive() is False) unless force == True.
 
-		returns an integer:
+	returns an integer:
 		- 0: all went well
 		- 1: the bot wasn't active in this room in the first place"""
 		
@@ -207,9 +207,9 @@ class MUC:
 
 
 	def send( self, message ):
-		"""send a message to the room.
-		takes: message (unicode), the message to send. returns an integer: 0 if
-		the message was sent and 1 if it was too long."""
+		'''Send a message to the room.
+		Takes: message (unicode), the message to send. Returns an integer: 0 if
+		the message was sent and 1 if it was too long.'''
 
 		#TODO: check if newlines can be inserted in another way
 		if message.count( '\n' ) > 2 or len( message ) > 255:
@@ -222,7 +222,7 @@ class MUC:
 
 
 	def addParticipant( self, participant, force = False ):
-		'''add a participant to the pool of participants. if force==True, don't
+		'''Add a participant to the pool of participants. If force==True, don't
 		return False if the participant already exists.'''
 		if not force and participant in self.participants:
 			return False
@@ -230,79 +230,80 @@ class MUC:
 			self.participants.append( participant )
 
 	def delParticipant( self, nick ):
-		'''delete a user from the list of participants'''
+		'''Delete a user from the list of participants'''
 		for elem in self.participants:
 			if elem.nick == nick:
 				self.participants.remove( elem )
-				break #no need to continue.
+				return #no need to continue.
 
 
 	def getBehaviour( self ):
-		'''return the behaviour we have in this room as an integer.'''
+		'''Return the behaviour we have in this room as an integer.'''
 		return self.behaviour
 
 	def getJid( self, asstring = False ):
-		'''return the jid of this room as an xmpp.JID() instance. if string==True,
-		return it as a string'''
+		'''Return the jid of this room as an xmpp.JID() instance. The asstring
+		parameter will be removed soon. Use str( getJid ) if you want a string.'''
 		if asstring:
-			return self.jid.__str__()
+			print >> sys.stderr, "WARNING: using deprecated argument 'asstring'."
+			return str( self.jid )
 		else:
 			return self.jid
 
 	def getMood( self ):
-		'''return the mood value of this room'''
+		'''Return the mood value of this room'''
 		return self.mood
 
 	def getNick( self ):
-		'''return the nick we have in this chatroom'''
+		'''Return the nick we have in this chatroom'''
 		return self.nick
 
 	def getParticipant( self, nick ):
-		'''return the instance of the participant with this nick (unicode). note;
+		'''Return the instance of the participant with this nick (unicode). Note;
 		this really raises a KeyError exception if there's no such participant'''
 		return self.participants[nick]
 
 	def getParticipants( self ):
-		'''return an iterable object with all the participants'''
+		'''Return an iterable object with all the participants'''
 		result = []
 		for elem in self.participants:
-			result.append( elem.__str__() )
+			result.append( str( elem ) )
 		return result
 
 	def getType( self ):
-		'''get the type of this room (returns a string 'xmpp') '''
-		return 'xmpp'
+		'''Get the type of this room (returns a string 'xmpp') '''
+		return "xmpp"
 
 	def getUid( self ):
-		'''return the uid (int) of this room.'''
+		'''Return the uid (int) of this room.'''
 		return self.uid
 
 
 	def isActive( self ):
-		'''return a boolean that indicates whether we are or are not in this room'''
+		'''Return a boolean that indicates whether we are or are not in this room'''
 		return self.active
 
 	def isParticipant( self, nick ):
-		'''return True if nick is a participant of the room, False if not'''
+		'''Return True if nick is a participant of the room, False if not'''
 		return nick in self.participants
 
 	def setActive( self ):
-		'''set the self.active value to True (bool)'''
+		'''Set the self.active value to True (bool)'''
 		self.active = True
 
 	def setBehaviour( self, behaviour ):
-		'''set the behaviour of the group to a specified level. takes and returns
-		an integer. on success 0 is returned.'''
+		'''Set the behaviour of the group to a specified level. Takes and returns
+		an integer. On success 0 is returned.'''
 		self.behaviour = behaviour
 		return 0
 
 	def setNick( self, nick ):
-		'''change nickname to nick (unicode). actually, what this does is change
+		'''Change nickname to nick (unicode). Actually, what this does is change
 		self.nick and force re-joining the room if self.active is True.'''
 		self.nick = nick
 
 	def setInActive( self ):
-		'''inverse of self.Active()'''
+		'''Inverse of self.Active()'''
 		self.active = False
 
 

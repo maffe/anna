@@ -3,25 +3,33 @@
 import sys
 import os
 import pwd #password database, for uid <--> username lookup
-import threading
 
 import frontends.console as console_frontend
 import aihandler
+import admin
 
-class ConnectThread( threading.Thread ):
+username = pwd.getpwuid( os.getuid() )[0]
+identity = console_frontend.PM( username )
 
-	def __init__( self ):
-		threading.Thread.__init__( self )
-	
-	def run( self ):
-		'''take over the stdin and do nifty stuff... etc.'''
+def connect():
+	'''take over the stdin and do nifty stuff... etc.'''
 
-		print "Welcome to the interactive Anna shell. just type a message as you normally would."
+	print "Welcome to the interactive Anna shell. just type a message as you normally would."
+	print "To quit, hit ctrl + d."
 
-		while( True ):
-			username = pwd.getpwuid( os.getuid() )[0]
-			identity = console_frontend.PM( username )
-			sys.stdout.write( "<" + identity.getNick() + "> " )
-			message = sys.stdin.readline()
-			ai = aihandler.getAIReferenceByAID( "chat_english" );
-			ai.direct( message, identity, "console" )
+	try:
+	 while( True ):
+
+		sys.stdout.write( "<%s> " % identity )
+
+		message = sys.stdin.readline()
+		if not message: #EOF
+			print #print a newline to prevent outputting on the input line
+			admin.stop()
+
+		ai = aihandler.getAIReferenceByAID( "chat_english" )
+		ai.direct( message, identity, "console" )
+
+	except KeyboardInterrupt:
+		print
+		admin.stop()
