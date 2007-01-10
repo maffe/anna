@@ -122,7 +122,7 @@ def direct( message, identity, typ ):
 		message = message[5:].split()
 
 		#what type is it? if none specified, assume type of calling frontend
-		if message.__len__() > 2 and message[-2] == "type":
+		if len( message ) > 2 and message[-2] == "type":
 			roomType = message[-1]
 			message = message[:-2]
 		else:
@@ -132,7 +132,7 @@ def direct( message, identity, typ ):
 			reply = "no such type: %s" % typ
 
 		#see if a certain nick was specified:
-		if message.__len__() > 2 and message[-2] == "as":
+		if len( message ) > 2 and message[-2] == "as":
 			nick = message[-1]
 			message = message[:-2]
 		else:
@@ -147,7 +147,6 @@ def direct( message, identity, typ ):
 		room.setNick( nick )
 		room.join()
 		room.send( "lo, Im a chatbot. was told to join this room by %s" % identity )
-		#TODO maybe using identity.__str__() isn't the best way of indicating who this was
 		reply = "k"
 	#end if "join such and such room"
 
@@ -161,7 +160,7 @@ def direct( message, identity, typ ):
 			force = False
 
 		#determine the type
-		if message.__len__() > 3 and ' '.join( message[-3:-1] ) == "of type":
+		if len( message ) > 3 and ' '.join( message[-3:-1] ) == "of type":
 			roomType = message[-1]
 			message = message[:-3]
 		else:
@@ -300,12 +299,6 @@ def mucHighlight( message, sender, room ):
 			reply = "behaviour not found"
 
 	elif message[:24] == "change your nickname to ":
-		#TODO: this is not the right place for conflict checking;
-		#we should catch the error message returned by the conference server
-		for elem in room.getParticipants():
-			if elem == message[24:]:
-				reply = "that nick is already in use"
-
 		room.changeNick( message[24:] )
 
 	elif message[:12] == "load module " and message[12:]:

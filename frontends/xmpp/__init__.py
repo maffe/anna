@@ -138,7 +138,7 @@ class MUC:
 
 	def __str__( self ):
 		'''Return the jid of the room as a string'''
-		return "xmpp:%s" + self
+		return "xmpp:%s" % self.jid
 
 
 	def changeNick( self, new ):
@@ -147,14 +147,12 @@ class MUC:
 		will never change the nickname at all but wait for the conference server
 		to tell the handler to do this - though that is xmpp specific, whereas
 		the aforementioned is not.)'''
-		#a presence stanza with the new nickname must be sent, so instead of
-		#copying the whole join() method again, might as well re-use it. it's
-		#not perfect, but it's not that bad.
-		if self.isActive():
-			old = self.nick
-			self.nick = new
-			self.join( force = True )
-			self.nick = old
+		if not self.isActive():
+			return
+		to = xmpp.JID( self.jid )
+		to.setResource( new )
+		xml = xmpp.Presence( to = to )
+		conn.send( xml )
 		
 
 	def join( self, force = False ):

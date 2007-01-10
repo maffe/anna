@@ -163,30 +163,38 @@ def presence( conn, presence ):
 
 	if ns == xmpp.NS_MUC_USER:
 
-		#get the instance of the room (create one if there ain't none yet)
-		room = rooms.exists(jid, "xmpp") and rooms.get(jid, "xmpp") or rooms.new(jid, "xmpp")
-		nick = jid.getResource()
+		roomjid = xmpp.JID( jid.getStripped() )
 
-		#if it was a 'leave presence', remove the participant
-		if presencetype == "unavailable":
-			try:
-				room.delParticipant( nick )
-			except KeyError:
-				pass
+		#get the instance of the room (create one if there ain't none yet)
+		room = rooms.exists( roomjid, "xmpp" ) \
+			and rooms.get( roomjid, "xmpp")      \
+			or  rooms.new( roomjid, "xmpp")
+
+		nick  = jid.getResource()
+		item  = x.T.item
+		role  = item.getAttr( "role" )
+		jid   = item.getAttr( "jid" )
+
+		if presencetype != "unavailable":
+			participant = xmpp_frontend.MUCParticipant( nick, presence, role, jid )
+			room.addParticipant( participant )
+			return
+
 		else:
-			item        = x.T.item
-			role        = item.getAttr( "role")
-			jid         = item.getAttr( "jid")
 			try:
-				if nick == room.getNick() and item.T.status.getAttr( "code" ) == "303":
+				if nick == room.getNick() and x.T.status.getAttr( "code" ) == "303":
 					#the bot's nick got changed
 					room.setNick( item.getAttr( 'nick' ) )
 					return
 			except AttributeError:
 				#<item/> has no <status/> child
 				pass
-			participant = xmpp_frontend.MUCParticipant( nick, presence, role, jid )
-			room.addParticipant( participant )
+
+			try:
+				#if it was a 'leave presence', remove the participant
+				room.delParticipant( nick )
+			except KeyError:
+				pass
 
 
 
