@@ -114,14 +114,14 @@ class MUC:
 		jid,
 		nick      = config.misc['bot_nickname'],
 		mood      = 70,
-		behaviour = 'normal',
+		behaviour = 2,
 	):
 		'''declare some variables and join the room.
 		takes:
 		- jid (xmpp.JID() || unicode): the jid of the room
 		- nick (unicode): the preferred nickname of the bot
 		- mood (int): the mood-level that goes with this room
-		- behaviour (unicode): our behaviour in this room'''
+		- behaviour (int): our behaviour in this room'''
 
 		jid = xmpp.JID(jid)
 
@@ -207,18 +207,10 @@ class MUC:
 
 
 	def send( self, message ):
-		'''Send a message to the room.
-		Takes: message (unicode), the message to send. Returns an integer: 0 if
-		the message was sent and 1 if it was too long.'''
-
-		#TODO: check if newlines can be inserted in another way
-		if message.count( '\n' ) > 2 or len( message ) > 255:
-			return 1
+		'''Send a message to the room. Takes: message (unicode), the message to send.'''
 
 		xml = xmpp.Message( to = self.jid, body = message, typ = 'groupchat' )
 		self.conn.send( xml )
-		return 0
-
 
 
 	def addParticipant( self, participant, force = False ):

@@ -189,11 +189,12 @@ def direct( message, identity, typ ):
 			reply = "k."
 	
 	if not reply:
+		#handlePlugins() does not actually apply plugins; just checks commands to moderate them
 		reply = handlePlugins( message, uid )
 
 	for plugin in pluginhandler.getPlugins( uid ):
 		#.process needs a reply=None if no reply, and that's default, so it's ok.
-		reply = plugin.process( identity, message, reply )
+		message, reply = plugin.process( identity, message, reply )
 
 	if reply:
 		identity.send( reply )
@@ -262,13 +263,14 @@ chat message.
 
 	#apply plugins
 	for plugin in pluginhandler.getPlugins( room.getUid() ):
-		reply = plugin.process( room, message, reply )
+		message, reply = plugin.process( room, message, reply )
 
 	if reply and room.getBehaviour() != 0:
-		result = room.send( reply )
-		if result == 1:
+		if (reply.count( '\n' ) > 2 or len( reply ) > 255) and room.getBehaviour() < 3:
 			room.send( "Sorry, if I would react to that it would spam the room too"
 			         + " much. Please repeat it to me in PM." )
+		else:
+			room.send( reply )
 
 
 
@@ -308,9 +310,10 @@ def mucHighlight( message, sender, room ):
 			reply = "success!"
 		elif result == 1:
 			reply = "no such module"
-	#TODO: optimize line below
 	elif message == "what's your behaviour?":
-		reply = room.getBehaviour()
+		#TODO: this wil crash the bot if room.getBehaviour() returns a false value.
+		#bug or feature?
+		reply = getBehaviour( room.getBehaviour() )
 
 	if not reply:
 		reply = handlePlugins( message, uid )
@@ -343,7 +346,7 @@ def mucHighlight( message, sender, room ):
 
 	#apply plugins
 	for plugin in pluginhandler.getPlugins( uid ):
-		reply = plugin.process( room, message, reply )
+		message, reply = plugin.process( room, message, reply )
 
 
 	if reply and room.getBehaviour() != 0:
@@ -356,10 +359,12 @@ def mucHighlight( message, sender, room ):
 			del n
 			reply = "%s%s %s" % (sender, hlchar, reply)
 
-		result = room.send( reply )
-		if result == 1:
+		#TODO: check if newlines can be inserted in another way
+		if (reply.count( '\n' ) > 2 or len( reply ) > 255) and room.getBehaviour() < 3:
 			room.send( "Sorry, if I would react to that it would spam the room too"
 			         + " much. Please repeat it to me in PM." )
+		else:
+			room.send( reply )
 
 
 def mucReplaceString(message):
