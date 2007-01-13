@@ -48,11 +48,16 @@ def getAllPlugins():
 def getPlugins( uid ):
 	'''Get the list of plugins assigned to this uid. Returns an iterable
 	object. If there is no plugin assigned to this uid, an empty iterable
-	is returned.'''
+	is returned. If there is no record of this uid (probably meaning this
+	person is talking to the bot for the first time since it started),
+	the default plugins are loaded for him and stored in the dictionary.'''
 	try:
 		return _dict[uid]
 	except KeyError:
-		return () # empty tuple
+		_dict[uid] = []
+		for elem in plugins.default:
+			_dict[uid].append( getPlugRef( elem ) )
+		return _dict[uid]
 
 def removePlugin( uid, pluginID ):
 	'''Remove this plugin from this uid. Raises a ValueError if this pluginID
