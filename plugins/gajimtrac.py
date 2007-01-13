@@ -5,6 +5,7 @@
 import urllib
 import re
 from xml.dom import minidom
+from HTMLParser import HTMLParser
 
 TRACURL = "http://trac.gajim.org"
 
@@ -12,6 +13,36 @@ def custom_error_handler(self, url, fp, errcode, errmsg, headers):
 	'''Raise an IndexError when the return status isn't 200.'''
 	raise IndexError
 urllib.http_error_default = custom_error_handler
+
+class MyHTMLParser( HTMLParser ):
+	'''Custom HTML parser that filters out all html tags.'''
+
+	#TODO: this is a hack.. isn't there any other way?
+	result = ""
+
+	def handle_data( self, data ):
+		self.result += data
+
+	def getResult( self ):
+		x = self.result
+		self.result = ""
+		return x
+	
+	def parse( self, data ):
+		'''Custom parse function that does everything - from parser.feed()
+		to parser.close().'''
+		self.feed( data )
+		raw = self.getResult().strip()
+
+		#rex equivalent: res = re.sub( r'\n+', '\n', raw )
+		res = raw[0]
+		for i in xrange( 1, len( raw ) ):
+			if not ( raw[i-1] == "\n" and raw[i] == "\n" ):
+				res += raw[i]
+
+		return res
+
+parser = MyHTMLParser()
 
 def process( identity, message, current ):
 
@@ -30,9 +61,10 @@ def process( identity, message, current ):
 			text = getTicketDesc( id )
 			uri = "%s/ticket/%s" % (TRACURL, id)
 	except ValueError:
+		#if something went wrong, assume the message wasn't for this.
 		return (message, current)
 	except IndexError, e:
-		return ( message, "No such ticket/comment." )
+		return (message, "No such ticket/comment.")
 
 	return (message, "%s\n- %s" % (text, uri))
 
@@ -49,7 +81,11 @@ def getTicketDesc( id ):
 	'''Get the description of this ticket.'''
 	dom = _fetchTicketXML( id )
 	desc = dom.getElementsByTagName( "description" )[0]
-	return desc.firstChild.data
+	try:
+		return parser.parse( desc.firstChild.data )
+	except AttributeError:
+		#there was no description
+		return ""
 
 def getTicketComment( ticket, comment ):
 	'''Get the n-th comment for this ticket. Needless to say that this raises
@@ -57,9 +93,10 @@ def getTicketComment( ticket, comment ):
 	dom = _fetchTicketXML( ticket )
 	item = dom.getElementsByTagName( "item" )[ comment - 1 ]
 	author = item.getElementsByTagName( "author" )[0].firstChild.data
-	content = item.getElementsByTagName( "description" )[0].firstChild.data
-	return "Comment %s by %s:\n%s" % ( comment, author, content.strip() )
-
-#def getTicket( id ):
-#	'''Return information about this ticket.'''
-	
+	try:
+		content = item.getElementsByTagName( "description" )[0].firstChild.data
+	except AttributeError:
+		#there was no content in this comment
+		return "This is an empty comment."
+	content = parser.parse( content )
+	return "Comment %s by %s:\n%s" % ( comment, author, content )
