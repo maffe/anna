@@ -116,7 +116,7 @@ def direct( message, identity, typ ):
 					      + " don't know what to replace %%(%s)s with" % e[0]
 			except StandardError, e:
 				reply = 'I was taught to say "%s" now, but there seems' % reply \
-				      + ' to besomething wrong with that..'
+				      + ' to be something wrong with that..'
 
 	if not reply and message[:5] == "join ":
 		message = message[5:].split()
