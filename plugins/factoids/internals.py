@@ -1,7 +1,7 @@
-# -- coding: utf-8 --
+# vim:fileencoding=utf-8
 
-'''
-factoids_internal.py
+"""
+internals.py
 
 Module that takes care of everything you need to do with factoids:
 add()
@@ -11,13 +11,13 @@ get()
 protect()
 unProtect()
 isProtected()
-'''
+"""
 
 import mysql
 
 
 def add( object, definition, uid ):
-	'''check if a factoid exists, and if not, add it to the database.
+	"""check if a factoid exists, and if not, add it to the database.
 
 	takes:
 	- object and definition (unicode): ... duuh.
@@ -26,7 +26,7 @@ def add( object, definition, uid ):
 	returns an integer:
 	0: success
 	1: object already exists
-	2: database error: query failed'''
+	2: database error: query failed"""
 
 
 	#check if it doesn't exist already:
@@ -80,11 +80,11 @@ def delete( object, isadmin = False, silent = False ):
 
 
 def exists( object ):
-	'''return True (bool) if an entry exists for object (unicode) in the
+	"""return True (bool) if an entry exists for object (unicode) in the
 	factoids table, False if not. return 0 (int) if the query failed. it returns
 	0 for all errors instead of a specific integer for each seperate error
 	because this allows one to do "if exists('bla'):" without getting a false
-	"true" when an error occurs.'''
+	"true" when an error occurs."""
 
 	cursor = mysql.db_r.cursor()
 	try:
@@ -143,7 +143,7 @@ def get( object ):
 
 
 def protect(  object, protect = True, silent = False ):
-	'''set a factoid to be (un)protected. usually you'll want only admins to be
+	"""set a factoid to be (un)protected. usually you'll want only admins to be
 	able to do this.
 
 	# example; we want to protect "chuck norris".
@@ -156,7 +156,7 @@ def protect(  object, protect = True, silent = False ):
 	0: success
 	1: unknown object
 	2: db error: query failed
-	3: it's already protected or unprotected'''
+	3: it's already protected or unprotected"""
 
 	#check if factoid exists:
 	if not exists( object ):
@@ -190,7 +190,7 @@ def protect(  object, protect = True, silent = False ):
 
 
 def unProtect( object ):
-	'''inverted alias for protect()'''
+	"""inverted alias for protect()"""
 	return protect( object, protect = False )
 
 
@@ -198,7 +198,7 @@ def unProtect( object ):
 
 
 def isProtected( object ):
-	'''check if a factoid is protected (meaning only admins can change it).
+	"""check if a factoid is protected (meaning only admins can change it).
 
 	takes:
 	- object (unicode): factoid to be checked for protected-ness.
@@ -207,7 +207,7 @@ def isProtected( object ):
 	- 0 (int): unprotected
 	- 1 (int): protected
 	- 2 (int): db error
-	- 3 (int): object doesn't exist'''
+	- 3 (int): object doesn't exist"""
 
 	cursor = mysql.db_r.cursor()
 	try:

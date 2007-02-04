@@ -1,5 +1,5 @@
 # -- encoding: utf-8 --
-'''Functions only available to admins.'''
+"""Functions only available to admins."""
 
 import sys
 import xmpp
@@ -8,7 +8,7 @@ import config
 
 
 def isAdmin( jid, owneronly = False ):
-	'''check if a jid has admin rights.
+	"""check if a jid has admin rights.
 
 takes:
 - jid (string || xmpp.JID() instance): jid to be checked for admin rights. note: resource will be stripped out.
@@ -16,7 +16,7 @@ takes:
 
 returns:
 - True (bool): if the jid has admin permissions
-- False (bool): otherwise'''
+- False (bool): otherwise"""
 
 
 	# create an xmpppy JID instance (more flexible)

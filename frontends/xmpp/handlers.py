@@ -1,5 +1,5 @@
 # -- coding: utf-8 --
-'''Define the handlers'''
+"""Define the handlers"""
 
 import xmpp
 import types
@@ -22,7 +22,7 @@ def pm( conn, mess ):
 	message = mess.getBody()
 	jid     = mess.getFrom()
 	#ignore empty and overloaded messages
-	if not message or message.__len__() > 255:
+	if not message or len( message ) > 255:
 		return False
 
 	#create a Private Message instance
@@ -57,10 +57,10 @@ def pm( conn, mess ):
 		aimodule = aihandler.getAIReferenceByUID( counterpart.getUid() )
 		#if there was an error aimodule is now types.IntType
 		if type( aimodule ) == types.IntType:
-			#in that case we just force the chat.english ai module
-			aimodule = aihandler.getAIReferenceByAID( 'chat_english' )
+			#in that case we just force the annai ai module
+			aimodule = aihandler.getAIReferenceByAID( 'annai' )
 			if type( aimodule ) == types.IntType:
-				sys.exit( 'default AI module ai/chat_english.py wasnt found.' )
+				sys.exit( 'default AI module ai/annai.py wasnt found.' )
 		return aimodule.direct( message, counterpart, typ = 'xmpp' )
 
 
@@ -68,7 +68,7 @@ def pm( conn, mess ):
 
 
 def muc( conn, mess ):
-	'''handler for multi user chitchat messages =D hurray.'''
+	"""handler for multi user chitchat messages =D hurray."""
 
 
 	message = mess.getBody()
@@ -97,9 +97,9 @@ def muc( conn, mess ):
 	#load the aimodule the same way as in direct()
 	aimodule = aihandler.getAIReferenceByUID( room.getUid() )
 	if type(aimodule) == types.IntType: #if error:
-		aimodule = aihandler.getAIReferenceByAID('chat_english')
+		aimodule = aihandler.getAIReferenceByAID('annai')
 		if type(aimodule) == types.IntType:
-			sys.exit( "default AI module <chat_english> not found." )
+			sys.exit( "default AI module <annai> not found." )
 
 	return aimodule.room( message, sender = user, typ = 'xmpp', room = room )
 
@@ -146,8 +146,8 @@ def joinmuc( conn, mess ):
 
 
 def presence( conn, presence ):
-	'''handle <presence/>.
-	return False if type attribute == 'error'.'''
+	"""handle <presence/>.
+	return False if type attribute == 'error'."""
 
 	presencetype = presence.getType()
 	if presencetype == "error":
@@ -199,7 +199,7 @@ def presence( conn, presence ):
 
 
 def subscribtion( conn, presence ):
-	'''Handle <presence type='subscribe' />.
+	"""Handle <presence type='subscribe' />.
 
 	We don't (actively) keep all users in the roster too. First of all;
 	because this is just the jabber front-end to the actual AI module.
@@ -210,7 +210,7 @@ def subscribtion( conn, presence ):
 	Only subscription matters: we allow the other to see the status and
 	add this JID to his roster.
 
-	http://www.ietf.org/rfc/rfc3921.txt chapter 8'''
+	http://www.ietf.org/rfc/rfc3921.txt chapter 8"""
 
 	reply = xmpp.Presence(
 		to = presence.getFrom(),
@@ -221,9 +221,9 @@ def subscribtion( conn, presence ):
 
 
 def version_request( conn, iq ):
-	'''Respond to a version info request.
+	"""Respond to a version info request.
 	TODO: It would be nice to return the revision number in the version
-	tag instead of just "svn".'''
+	tag instead of just "svn"."""
 	reply = iq.buildReply( 'result' )
 	#add <name/> and <version/> in accordance with JEP-0092
 	reply.T.query.addChild( name = 'name',    payload = ['Anna'] )

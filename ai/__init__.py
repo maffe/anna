@@ -1,6 +1,6 @@
 # -- coding: utf-8 --
 
-'''ai/__init__.py
+"""ai/__init__.py
 
 
 the AI module for anna.
@@ -98,11 +98,11 @@ for messages that hold instruction for modifying certain aspects of
 it. Example:
 an xmpp message is received: "join bot@conference.jabber.xs4all.nl".
 If we don't tell the AI module this was an xmpp message, it doesn't
-know which network to join a muc on: irc? xmpp?'''
+know which network to join a muc on: irc? xmpp?"""
 
 
 __all__=[
 	'all_echo',
-	'chat_english',
+	'annai',
 	'fishbot',
 	]

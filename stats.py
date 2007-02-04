@@ -1,7 +1,7 @@
 # -- coding: utf-8 --
-'''stats.py
+"""stats.py
 This file defines functions that report statistics about various things like
-the rooms the chatbot is active in, the amount of factoids it remembered, etc.'''
+the rooms the chatbot is active in, the amount of factoids it remembered, etc."""
 
 
 import time
@@ -31,13 +31,13 @@ def simple():
 		return "oh dear, the database query failed."
 	cursor.close()
 
-	stats += '''
+	stats += """
 number of factoids remembered: %d
 number of factoids entered: %d
 number of global reactions remembered: %d
 number of global reactions entered: %d
 number of direct reactions remembered: %d
-number of direct reactions entered: %d''' % \
+number of direct reactions entered: %d""" % \
 	(results['factoids'][4],
 	results['factoids'][10] - 1,
 	results['reactions_global'][4],
@@ -49,7 +49,7 @@ number of direct reactions entered: %d''' % \
 
 
 def factoidsAndReactions():
-	'''get verbose information about the factoids and reactions'''
+	"""get verbose information about the factoids and reactions"""
 
 	cursor = mysql.db_r.cursor()
 
@@ -77,7 +77,7 @@ def factoidsAndReactions():
 
 
 def rooms( sorted = False ):
-	'''return information about the rooms we're in. sort it if sorted == True (bool).'''
+	"""return information about the rooms we're in. sort it if sorted == True (bool)."""
 
 	roomlist = roomsHandler.getActive()
 	if not roomlist:
@@ -98,7 +98,7 @@ def rooms( sorted = False ):
 
 
 def uids():
-	'''fetch all uid-info'''
+	"""fetch all uid-info"""
 
 	reply = "contacts I know:"
 
@@ -136,7 +136,7 @@ def uids():
 
 
 def uptime():
-	'''Returns the uptime, nicely formatted (in english).'''
+	"""Returns the uptime, nicely formatted (in english)."""
 
 	#starttime is usually set by the starting script
 	try:
@@ -157,7 +157,7 @@ def uptime():
 	return "uptime: %d %s" % (uptime, unit)
 
 def uptimeSecs():
-	'''Returns the number of seconds the bot is up (will soon be renamed uptime)'''
+	"""Returns the number of seconds the bot is up (will soon be renamed uptime)"""
 	try:
 		return time.time() - starttime
 	except NameError:
@@ -165,7 +165,7 @@ def uptimeSecs():
 
 
 def extended():
-	'''put all other statistics together and blurt them out!'''
+	"""put all other statistics together and blurt them out!"""
 
 	stats = simple()
 	stats += '\n\n' + factoidsAndReactions()

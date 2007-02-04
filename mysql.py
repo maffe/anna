@@ -1,5 +1,5 @@
 # -- coding: utf-8 --
-'''handle mysql connections'''
+"""handle mysql connections"""
 
 import MySQLdb
 import sys

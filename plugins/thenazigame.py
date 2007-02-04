@@ -1,5 +1,5 @@
 # -- coding: utf-8 --
-'''
+"""
 Thenazigame, a very interesting game for nazis and non-nazis alike! OK,
 seriously now. This is a word-game where two players try to find as much words
 that rhyme with a given word as possible. The first time we played this, we
@@ -10,7 +10,7 @@ This plugin uses two database tables: thenazigames and thenazigame. The first
 table holds all different games going on and the uids participating in those
 games. The second table holds submissions and the gameid to which those
 submissions are posted.
-'''
+"""
 
 #TODO: this module needs some cleaning up concerning:
 # - function-names
@@ -24,10 +24,10 @@ import user_identification
 
 
 def process( identity, message, current = None ):
-	'''Process a message to see if it was intented for thenazigame. If it was,
+	"""Process a message to see if it was intented for thenazigame. If it was,
 	the plugin will handle it even if there already is a current reaction. This
 	means that any output from previous plugins will be lost.
-	TODO: decide if this is wanted behaviour.'''
+	TODO: decide if this is wanted behaviour."""
 
 	if not message[:4] == "tng ":
 		return current
@@ -135,10 +135,10 @@ def process( identity, message, current = None ):
 
 
 def entryExists( entry, gameid ):
-	'''Check if a specified entry exists in the database (for this game).
+	"""Check if a specified entry exists in the database (for this game).
 	return True (bool) if yes, False if no. Warning: does NOT catch database
 	query exceptions (to prevent interpreting an error code as True (bool))
-	TODO: this smells fishy - who the hell wrote this? ;P'''
+	TODO: this smells fishy - who the hell wrote this? ;P"""
 	cursor = db_r.cursor()
 	try:
 		n = cursor.execute(
@@ -153,8 +153,8 @@ def entryExists( entry, gameid ):
 
 
 def entryAdd( entry, gameid, uid ):
-	'''add an entry to the database. returns 0 (int) on success, 2 on database
-	error, 1 if the entry already exists.'''
+	"""add an entry to the database. returns 0 (int) on success, 2 on database
+	error, 1 if the entry already exists."""
 	if entryExists( entry, gameid ):
 		return 1
 	cursor = db_w.cursor()
@@ -172,8 +172,8 @@ def entryAdd( entry, gameid, uid ):
 
 
 def entryGetAuthor( entry, gameid ):
-	'''Get the uid of who entered the specified entry (str). Doesn't catch the
-	query error exception. Returns 0 (int) if entry was not found.'''
+	"""Get the uid of who entered the specified entry (str). Doesn't catch the
+	query error exception. Returns 0 (int) if entry was not found."""
 	cursor = db_r.cursor()
 	cursor.execute(
 		"select `uid` from `thenazigame` where `entry` = %s and `gameid` = %s limit 1",
@@ -191,10 +191,10 @@ def entryGetAuthor( entry, gameid ):
           #### FUNCTIONS FOR THE GAMES TABLE ####
 
 def addParticipant( uid, gameid ):
-	'''Add a participant to an existing game. Uses _getParticipantsRaw() and
+	"""Add a participant to an existing game. Uses _getParticipantsRaw() and
 	returns any error code received from that function directly. On database
 	error, return 2 (int). If the uid (int) is already a participant of the game,
-	return 3.'''
+	return 3."""
 
 	raw = _getParticipantsRaw( gameid )
 	if type( raw ) == types.IntType: #on error
@@ -217,9 +217,9 @@ def addParticipant( uid, gameid ):
 
 
 def getAzi( gameid ):
-	'''Get the characteristic part that goes with the provided gameid(int).
+	"""Get the characteristic part that goes with the provided gameid(int).
 	returns 1 if the game does not exist, 2 on database error. Returns a string
-	containing the result on success.'''
+	containing the result on success."""
 	cursor = db_r.cursor()
 	try:
 		n = cursor.execute(
@@ -237,9 +237,9 @@ def getAzi( gameid ):
 
 
 def getGameIDs( uid ):
-	'''Get all games a specified uid is participating in. Basically, this function
+	"""Get all games a specified uid is participating in. Basically, this function
 	checks all games to see if the user is taking place in them, so as you can
-	imagine this is a pretty resource intensive function.'''
+	imagine this is a pretty resource intensive function."""
 	result = []
 	cursor = db_r.cursor()
 	try:
@@ -257,9 +257,9 @@ def getGameIDs( uid ):
 
 
 def getParticipants( gameid ):
-	'''Get an iterable object holding all uids taking part in a thenazigame.
+	"""Get an iterable object holding all uids taking part in a thenazigame.
 	Takes an integer. If _getParticipantsRaw() returns an integer (error) that
-	integer is also returned by this function.'''
+	integer is also returned by this function."""
 
 	raw = _getParticipantsRaw( gameid )
 	if type( raw ) == types.IntType: #if error
@@ -273,10 +273,10 @@ def getParticipants( gameid ):
 
 
 def _getParticipantsRaw( gameid ):
-	'''Get the participants-list as it is stored in the database without
+	"""Get the participants-list as it is stored in the database without
 	alternation. Returns a string on success. this function is mostly used by
 	other functions in this module to prevent duplicating code. Returns 1 (int) if
-	the game does not exist and 2 if there was a database error.'''
+	the game does not exist and 2 if there was a database error."""
 	cursor = db_r.cursor()
 	try:
 		n = cursor.execute(
@@ -296,7 +296,7 @@ def _getParticipantsRaw( gameid ):
 		return result[0]
 
 def newGame( azi, uid = None ):
-	'''Create a new thenazigame with charasteristic azi (str). returns a tuple
+	"""Create a new thenazigame with charasteristic azi (str). returns a tuple
 	with the id of the game as the only element on success, an integer with an
 	error code otherwise. Notice that by design this can be expected to generate a
 	database error (return value 2 (int)), if this function is started, and then
@@ -304,7 +304,7 @@ def newGame( azi, uid = None ):
 	create a new game with the same gameid, creating a query error for the run
 	that finishes last.
 	If a uid is provided it is automatically added as the first participant of
-	the newly created game.'''
+	the newly created game."""
 
 	#TODO:
 	#I don't know how to see what the id was of a newly inserted row so we have to
@@ -338,5 +338,5 @@ def newGame( azi, uid = None ):
 	return (gameid,)
 
 def participates( uid, gameid ):
-	'''Determine if given uid is participating in given game.'''
+	"""Determine if given uid is participating in given game."""
 	return uid in getParticipants( gameid )

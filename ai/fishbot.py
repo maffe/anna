@@ -79,7 +79,7 @@ for of, to in raw.items():
 	compiled.append( (regex, to) )
 
 
-def direct( message, identity, typ ):
+def direct( message, identity ):
 
 	if message[:12] == "load module " and message[12:]:
 		#prevent trying to load an empty module
@@ -90,7 +90,7 @@ def direct( message, identity, typ ):
 		identity.send( "Sorry, PMs are not (yet) supported." )
 
 
-def room( message, sender, typ, room ):
+def room( message, sender, room ):
 
 	nick = sender
 	conference = str( room )

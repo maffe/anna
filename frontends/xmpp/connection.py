@@ -1,8 +1,8 @@
 # -- coding: utf-8 --
-'''connection.py
+"""connection.py
 
 Connect to the jabber account. Define connection handlers. Get config
-from config file.'''
+from config file."""
 
 import sys
 import xmpp
@@ -14,10 +14,10 @@ import config
 
 
 def connect():
-	'''connect to the jabber server as specified in the configuration. quits if the
+	"""connect to the jabber server as specified in the configuration. quits if the
 	connection is insecure, loops infinitely until a disconnection is detected.
 	TODO: more flexible debugging and non-secure connection establishment.
-	TODO 2: certificate checking.'''
+	TODO 2: certificate checking."""
 	conn = xmpp.Client( config.jabber['server'] )
 	#copy the reference to the connection object to the parent module (__init__.py)
 	#before doing anything else because much functions depend on this:

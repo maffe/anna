@@ -1,14 +1,14 @@
 # -- coding: utf-8 --
 
-'''functions that help formatting a string'''
+"""functions that help formatting a string"""
 
 import re
 
 def xstrip( haystack ):
-	'''cleanup a string in three steps:
+	"""cleanup a string in three steps:
 	1) trim whitespaces
 	2) remove appending dot, if the character before it wasn't a dot too
-	3) remove one appending whitespace if present'''
+	3) remove one appending whitespace if present"""
 	haystack = haystack.strip()
 	pattern = r'[^\.] ?\.$'
 	result = re.search( pattern, haystack )
@@ -21,7 +21,7 @@ def xstrip( haystack ):
 
 
 def stripQM( text ):
-	'''return the input with the last character removed if it was a question mark'''
+	"""return the input with the last character removed if it was a question mark"""
 	#TODO this function looks useless. remove it?
 	if text[-1] == "?":
 		return text[:-1]

@@ -1,5 +1,6 @@
-# -- coding: utf-8 --
-'''english localisation for anna'''
+# vim:fileencoding=utf-8
+################################################################################
+"""The 'official' AI module for Anna (english)."""
 
 from random import randint
 import re
@@ -24,7 +25,6 @@ import aihandler
 import frontendhandler
 import rooms
 
-
 #pre-compiled regular expressions
 _REX_PM_LEAVE_MUC = re.compile( "((please )?leave|exit) ", re.IGNORECASE )
 
@@ -33,11 +33,13 @@ _REX_PM_LEAVE_MUC = re.compile( "((please )?leave|exit) ", re.IGNORECASE )
 #TODO: this is GODDAMNED UGLY, k? kk.
 _muc_replace_dictionary = {}
 
-def direct( message, identity, typ ):
-	'''a message directed specifically towards us'''
 
-	reply   = None
-	uid     = identity.getUid()
+def direct( message, identity ):
+	"""A message directed specifically towards the bot."""
+
+	typ = identity.getType()
+	reply = None
+	uid = identity.getUid()
 	message = filters.xstrip( message )
 
 
@@ -54,7 +56,7 @@ def direct( message, identity, typ ):
 		if   result == 0:
 			reply = "success!"
 		elif result == 1:
-			reply = "no such module"
+				reply = "no such module"
 
 	elif identity.isAllowedTo( "protect" ) and message[:8] == "protect ":
 		message = message[8:]
@@ -90,20 +92,20 @@ def direct( message, identity, typ ):
 	#fixme: need a more elegant solution
 	if not reply:
 		reply = handleProtection(message)
-		if not reply:
-			reply = handleReactions(message,uid)
-			if not reply:
+		#if not reply:
+			#reply = handleReactions(message,uid)
+			#if not reply:
 				#reply = handleFactoids(message,uid)
-				if not reply:
-					reply = ReactionsDirect.get(message)
-					if not reply or type(reply) == types.IntType:
-						reply = ReactionsGlobal.get(message)
-						if type(reply) == types.IntType:
-							reply = None
+				#if not reply:
+					#reply = ReactionsDirect.get(message)
+					#if not reply or type(reply) == types.IntType:
+						#reply = ReactionsGlobal.get(message)
+						#if type(reply) == types.IntType:
+						#	reply = None
 
 		if reply:
 			#replace some stuff in the reply:
-			replacedict={'user':identity.getNick()}
+			replacedict = {'user': identity.getNick()}
 			try:
 				reply = reply % replacedict
 			except KeyError, e:
@@ -189,10 +191,11 @@ def direct( message, identity, typ ):
 			reply = "k."
 	
 	if not reply:
-		#handlePlugins() does not actually apply plugins; just checks commands to moderate them
+		#handlePlugins() does not actually apply plugins; just checks commands to
+		#moderate them
 		reply = handlePlugins( message, uid )
 	
-	for plugin in pluginhandler.getPlugins( uid ):
+	for plugin in identity.getPlugins():
 		#.process needs a reply=None if no reply, and that's default, so it's ok.
 		message, reply = plugin.process( identity, message, reply )
 
@@ -203,16 +206,16 @@ def direct( message, identity, typ ):
 
 
 def room( message, sender, typ, room ):
-	'''use this function to get yourself a reply that fits a mutli user
-chat message.
+	"""use this function to get yourself a reply that fits a mutli user
+	chat message.
 
-- if the message starts with the current nickname followed by a
-  highlighting character, handle it with mucHighlight()
-- check if someone asked for a factoid, by filtering "what is", "?", etc.
-- finally, if all else failed, check if there's a reaction connected to
-  this message
-- if any of the above gave a result by setting the "message" variable,
-  send that very variable back to the room with muc.send()'''
+	- if the message starts with the current nickname followed by a
+	  highlighting character, handle it with mucHighlight()
+	- check if someone asked for a factoid, by filtering "what is", "?", etc.
+	- finally, if all else failed, check if there's a reaction connected to
+	  this message
+	- if any of the above gave a result by setting the "message" variable,
+	  send that very variable back to the room with muc.send()"""
 
 
 
@@ -275,7 +278,7 @@ chat message.
 
 
 def mucHighlight( message, sender, room ):
-	'''This is for when highlighted in a groupchat.'''
+	"""This is for when highlighted in a groupchat."""
 
 	reply = None
 	uid = room.getUid()
@@ -321,30 +324,34 @@ def mucHighlight( message, sender, room ):
 
 	if not reply:
 		reply = handleProtection( message )
-		if not reply:
-			reply = handleReactions( message, uid )
-			if not reply:
+		#if not reply:
+			#reply = handleReactions( message, uid )
+			#if not reply:
 				#reply = handleFactoids( message, uid )
 				#otheriwse, check for reaction
-				if not reply:
-					reply = ReactionsDirect.get( message )
-					if type( reply ) not in types.StringTypes:
+				#if not reply:
+					#reply = ReactionsDirect.get( message )
+					#if type( reply ) not in types.StringTypes:
 					#ReactionsDirect.get() returns a integer upon error.
-						reply = ReactionsGlobal.get( message )
+						#reply = ReactionsGlobal.get( message )
 						#ignore the not-found error (1)
-						if type( reply ) == types.IntType:
+						#if type( reply ) == types.IntType:
 							#for the sake of < python2.5
-							reply = ( reply == 1 and (None,) or ("an error occured.",) )[0]
+							#reply = ( reply == 1 and (None,) or ("an error occured.",) )[0]
 							#python 2.5:
 							#reply = None if reply == 1 else "an error occured."
-						else:
-							raw = True #don't address the sender if it was a global reaction
+						#else:
+							#raw = True #don't address the sender if it was a global reaction
 
 					#check again because it might have changed in the meanwhile
-					if reply:
-						reply = mucReplaceString( reply )
+					#if reply:
+						#reply = mucReplaceString( reply )
 
-	#apply plugins
+	# Apply plugins that are loaded for this room. For the moment being, treat
+	# MUCHighlight as PM. This has a few caveats (eg; you can't unload such a
+	# plugin) so it should be replaced by a better mechanism. (TODO)
+	for plugin in pluginhandler.getDefaultPM():
+		message, reply = plugin.process( room, message, reply )
 	for plugin in pluginhandler.getPlugins( uid ):
 		message, reply = plugin.process( room, message, reply )
 
@@ -368,7 +375,7 @@ def mucHighlight( message, sender, room ):
 
 
 def mucReplaceString(message):
-	'''this function replaces the message with elements from the dict. if
+	"""this function replaces the message with elements from the dict. if
 	an error occurs (eg.: due to wrong formatting of the message) it is
 	catched and an appropriate message is returned.
 
@@ -376,14 +383,14 @@ def mucReplaceString(message):
 	is done twice; once in room() and once in mucHighlight().
 
 	because mucHighLight() doesn't know the name of the other person (and
-	because of flexibility issues) the replacedictionary is'''
+	because of flexibility issues) the replacedictionary is"""
 
 	try:
 		return message % _muc_replace_dictionary
 
 	except KeyError, e:
-		return '''I was told to say "%s" now but I don't know what to''' % message + \
-		       '''replace %%(%s)s with''' % e[0]
+		return """I was told to say "%s" now but I don't know what to""" % message + \
+		       """replace %%(%s)s with""" % e[0]
 
 	except StandardError, e:
 		return 'I was taught to say "%s" now, but there seems to be' % message + \
@@ -394,16 +401,16 @@ def mucReplaceString(message):
 
 
 def handlePlugins( message, uid ):
-	'''Checks if the message wants to modify plugin settings and applies
-	them to given uid.'''
-	if message.lower()[:12] == "load plugin ":
+	"""Checks if the message wants to modify plugin settings and applies
+	them to given uid."""
+	if message.startswith( "load plugin " ):
 		try:
 			pluginhandler.addPlugin( uid, message[12:] )
 			return "k."
 		except ValueError:
 			return "plugin not found."
 	
-	if message.lower()[:14] == "unload plugin ":
+	if message.startswith( "unload plugin " ):
 		try:
 			pluginhandler.removePlugin( uid, message[14:] )
 			return "k."
@@ -414,11 +421,8 @@ def handlePlugins( message, uid ):
 		plugins = pluginhandler.getPlugins( uid )
 		if not plugins:
 			return "no plugins loaded"
-		reply = "plugins:"
-		for plugin in plugins:
-			#TODO isn't it ugly to access __name__ directly?
-			reply += "\n- %s" % plugin.__name__.split('.')[-1]
-		return reply
+		else:
+			return "plugins:\n- " + "\n- ".join([plugin.ID for plugin in plugins])
 	
 	if message.lower() == "list available plugins":
 		#TODO: nice textual representation of this iterable element
@@ -429,7 +433,7 @@ def handlePlugins( message, uid ):
 
 
 def handleProtection( message ):
-	'''same as handleFactoids(), except this is for protections'''
+	"""same as handleFactoids(), except this is for protections"""
 
 
 	if message[:3].lower() == "is " and message[-11:] == " protected?":
@@ -462,11 +466,90 @@ def handleProtection( message ):
 		return None
 
 
+def invitedToMuc( room, situation, by = None, reason = None ):
+	"""handler to call if invited to a muc room.
+	takes:
+		- room: the instance of the (unjoined room)
+		- situation: the situation we are in and the reason for the invitation.
+		  situations:
+		  0) already active in room: return an excuse message to the room
+		  1) room known, but inactive: join it and say thx 4 inviting
+		  2) room unknown: create it, join it and say thx
+		- by: a unicode containing the name of the person that invited the bot
+		- reason: unicode containing the reason for the invite as supplied by
+		  the inviter
+	technically speaking, the by and reason attributes are valid as long as
+	they have a .__str__() method. of course, unicode should be used throughout
+	the entire bot, but it's not necessary."""
+	
+	#this dictionary holds all the messages that could be sent. it's not very
+	#nice because you construct them all even though one is going to be used,
+	#but since this is called not very often I thought it would be nice,
+	#because it also improves readability. also note that right now the indexes
+	#are the situation codes, but that could very well be changed.
+	messages = {}
+	if reason:
+		messages[0] = "I was invited to this room, being told '%s'," % reason \
+		            + "but I'm already in here..."
+	else:
+		messages[0] = "I was invited to this room again but I'm already in here..."
+	#below we also mention who invited to show the admins of the muc.
+	messages[1] = "Hey all. Thanks for inviting me again, %s." % by
+	messages[2] = "Lo, I'm a chatbot. I was invited here by %s." % by
+
+	if situation != 0:
+		room.join()
+
+	room.send( messages[ situation ] )
+
+
+# a directory representing the different behaviour-levels and their textual representations
+behaviour = {
+0:'silent',# with this behaviour you should typically not say anything
+1:'shy'   ,# only talk when talked to
+2:'normal',# react to everything you can react to, even if not addressed
+3:'loud'   # say random things at random moments, be annoying
+}
+
+def getBehaviour( id ):
+	return behaviour[id]
+
+def getBehaviourID( text ):
+	"""get the numerical ID of the specified behaviour"""
+	for elem in behaviour.iteritems():
+		if elem[1] == text:
+			return elem[0]
+	raise ValueError, text
+
+def isBehaviour( arg ):
+	"""returns True if supplied behaviour (textual OR numerical) is valid."""
+	return type(arg) == types.IntType and ( arg in behaviour ) or ( arg in behaviour.values() )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#DEBUG: DELETE THIS
+
 
 
 def handleReactions(message,uid):
-	'''same as handleFactoids, except this one is for reactions. it doesn't
-fetch em though! only for adding/deleting em.'''
+	"""same as handleFactoids, except this one is for reactions. it doesn't
+fetch em though! only for adding/deleting em."""
+	return "ERROR: using deprecated function handleReactions()"
 
 	reply=None
 
@@ -476,8 +559,8 @@ fetch em though! only for adding/deleting em.'''
 
 
 		def _IS(message,direct):
-			'''this function is called internally by handleReactions().
-			if globalordirect is False, global is assumed. if True: direct.'''
+			"""this function is called internally by handleReactions().
+			if globalordirect is False, global is assumed. if True: direct."""
 
 			try:
 				(listenfor, reaction) = \
@@ -556,7 +639,7 @@ fetch em though! only for adding/deleting em.'''
 
 
 	def _DEL(listen_for,direct):
-		'''delete a reaction. this function is called internally, just like _IS().'''
+		"""delete a reaction. this function is called internally, just like _IS()."""
 		if direct:
 			result = ReactionsDirect.delete(listen_for)
 		else:
@@ -582,63 +665,3 @@ fetch em though! only for adding/deleting em.'''
 		return None #don't bother defining the function below; we're not gonna use it anyway
 
 
-
-
-def invitedToMuc( room, situation, by = None, reason = None ):
-	'''handler to call if invited to a muc room.
-	takes:
-		- room: the instance of the (unjoined room)
-		- situation: the situation we are in and the reason for the invitation.
-		  situations:
-		  0) already active in room: return an excuse message to the room
-		  1) room known, but inactive: join it and say thx 4 inviting
-		  2) room unknown: create it, join it and say thx
-		- by: a unicode containing the name of the person that invited the bot
-		- reason: unicode containing the reason for the invite as supplied by
-		  the inviter
-	technically speaking, the by and reason attributes are valid as long as
-	they have a .__str__() method. of course, unicode should be used throughout
-	the entire bot, but it's not necessary.'''
-	
-	#this dictionary holds all the messages that could be sent. it's not very
-	#nice because you construct them all even though one is going to be used,
-	#but since this is called not very often I thought it would be nice,
-	#because it also improves readability. also note that right now the indexes
-	#are the situation codes, but that could very well be changed.
-	messages = {}
-	if reason:
-		messages[0] = "I was invited to this room, being told '%s'," % reason \
-		            + "but I'm already in here..."
-	else:
-		messages[0] = "I was invited to this room again but I'm already in here..."
-	#below we also mention who invited to show the admins of the muc.
-	messages[1] = "Hey all. Thanks for inviting me again, %s." % by
-	messages[2] = "Lo, I'm a chatbot. I was invited here by %s." % by
-
-	if situation != 0:
-		room.join()
-
-	room.send( messages[ situation ] )
-
-
-# a directory representing the different behaviour-levels and their textual representations
-behaviour = {
-0:'silent',# with this behaviour you should typically not say anything
-1:'shy'   ,# only talk when talked to
-2:'normal',# react to everything you can react to, even if not addressed
-3:'loud'   # say random things at random moments, be annoying
-}
-
-def getBehaviour( id ):
-	return behaviour[id]
-
-def getBehaviourID( text ):
-	'''get the numerical ID of the specified behaviour'''
-	for elem in behaviour.iteritems():
-		if elem[1] == text:
-			return elem[0]
-	raise ValueError, text
-
-def isBehaviour( arg ):
-	'''returns True if supplied behaviour (textual OR numerical) is valid.'''
-	return type(arg) == types.IntType and ( arg in behaviour ) or ( arg in behaviour.values() )

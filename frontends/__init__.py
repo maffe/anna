@@ -1,4 +1,4 @@
-'''crappy docs: all frontend modules should provide MUC and PM classes
+"""crappy docs: all frontend modules should provide MUC and PM classes
 that have the following methods:
 
 PM:
@@ -23,6 +23,6 @@ isAllowedTo( string sth ):
 
 MUC:
 #TODO
-'''
+"""
 
 __all__ = ["xmpp", "console"]

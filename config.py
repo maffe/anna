@@ -4,10 +4,10 @@ import os
 import sys
 
 
-'''handle the configuration. .mysql{} is a list that holds mysql options. there is also .jabber and .misc . .admins[] is a list that holds all the jids with admin privileges (the owner_jid inclusive). these variables are set by .__init__()'''
+"""handle the configuration. .mysql{} is a list that holds mysql options. there is also .jabber and .misc . .admins[] is a list that holds all the jids with admin privileges (the owner_jid inclusive). these variables are set by .__init__()"""
 
 
-'''get the data from the configuration file located at ~/.anna/config and store it in itself. see config.example for more details. if the file doesn't exist, create it and sys.exit().'''
+"""get the data from the configuration file located at ~/.anna/config and store it in itself. see config.example for more details. if the file doesn't exist, create it and sys.exit()."""
 
 
 def create_first_conf( config_loc ):
@@ -82,7 +82,7 @@ for line in config_lines:
 
 
 class Misc:
-	'''miscellaneous (and usually unimportant) data/information. UGLY: fix this the hell out of here!'''
+	"""miscellaneous (and usually unimportant) data/information. UGLY: fix this the hell out of here!"""
 
 	# common highlighting characters
 	hlchars = (",", ":", ";")

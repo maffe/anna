@@ -1,14 +1,16 @@
 # coding: utf-8
 
-'''
-use this plugin to check if a message is meant to do something
-with factoids (change one, add one, etc).
-'''
+"""
+Use this plugin to check if a message is meant to do something
+with factoids (change one, add one, etc). NOT for fetching
+them.
+"""
 
 import types
 
 import plugins.factoids_internal as Factoids
 from user_identification import isAllowedTo as uidIsAllowedTo
+import stringfilters as filters
 
 
 def process( identity, originalMessage, originalReply ):
@@ -16,23 +18,6 @@ def process( identity, originalMessage, originalReply ):
 	message = originalMessage
 	uid = identity.getUid()
 	reply = None
-
-	#fetch factoid
-
-	if message[:8].lower() == "what is ":
-		reply = Factoids.get(filters.stripQM(message[8:]))
-	elif message[:7].lower() == "what's ":
-		reply = Factoids.get( filters.stripQM(message[7:]) )
-	#TODO: why don't we call filters.stripQM() on the line below?
-	elif message[:17].lower() == "do you know what " and message.strip( "?" )[-3:] == " is":
-		reply = Factoids.get( message[17:-3] )
-	if type(reply) == types.IntType:
-		if reply == 1:
-			reply = "Idk.. can you tell me?"
-		elif reply == 2:
-			reply = "whoops... db error :s"
-		else: #unspecified error
-			reply = "an error ocurred"
 
 
 	if reply: #if there already is a reply

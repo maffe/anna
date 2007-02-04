@@ -1,12 +1,15 @@
-# encoding: utf-8
+# vim:fileencoding=utf-8
 
-'''The console frontend. This allows the user to communicate with the
-bot interactively through a console session on the same box as the chatbot
-itself.'''
+"""
+The console frontend. This allows the user to communicate with the bot
+interactively through a console session on the same box as the chatbot itself.
+"""
 
 import sys
 
+import aihandler
 import config
+import pluginhandler
 
 __all__ = ["connection"]
 
@@ -19,20 +22,32 @@ class PM:
 		return self.nickname
 
 	def getAI( self ):
-		return self.ai
-	
+		return aihandler.getAIReferenceByUID(0)
+
 	def getNick( self ):
 		return self.nickname
-	
+
+	def getPlugins( self ):
+		#TODO: plugins are currently stored under uid 0
+		try:
+			return pluginhandler.getPlugins(0)
+		except ValueError:
+			default = pluginhandler.getDefaultPM()
+			pluginhandler.setPluginRefs(0, default)
+			return default
+
+	def getType( self ):
+		return "console"
+
 	def getUid( self ):
 		return 0
 
 	def setAI( self, aiModule ):
-		self.ai = aiModule
-	
+		return aihandler.setAID(0, aiModule.ID)
+
 	def setNick( self, nick ):
 		self.nickname = nick
-	
+
 	def isAllowedTo( self, what ):
 		return True
 
@@ -47,7 +62,7 @@ class PM:
 		sys.stdout.write( output )
 
 class MUC:
-	'''Bogus class. Simply here to meet API requirements.'''
+	"""Bogus class. Simply here to meet API requirements."""
 
 	def __init__( self, id, nick = None, mood = 0, behaviour = '' ):
 		pass
