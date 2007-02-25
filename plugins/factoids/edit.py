@@ -4,7 +4,7 @@ with factoids (change one, add one, etc).
 NOT for fetching them.
 
 """
-import plugins.factoids_internal as internals
+import plugins.factoids.internals as internals
 from user_identification import isAllowedTo as uidIsAllowedTo
 
 def process(identity, message, reply):

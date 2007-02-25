@@ -83,7 +83,7 @@ def removePlugin(uid, pluginID):
 	try:
 		_dict[uid].remove(getPlugRef(pluginID))
 	except KeyError:
-		raise ValueError #prevent raising wrong exception.
+		raise ValueError
 
 def setPluginRefs(uid, referenceList):
 	"""Like getPlugins, except that it sets it."""

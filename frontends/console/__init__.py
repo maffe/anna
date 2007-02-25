@@ -56,9 +56,10 @@ class PM:
 	def send(self, message):
 
 		botName = config.misc['bot_nickname']
-		output = message.startswith("/me ") \
-			and "* %s %s\n" % (botName, message[4:].encode("utf-8")) \
-			or "<%s> %s\n" % (botName, message.encode("utf-8"))
+		if message.startswith("/me "):
+			output = "* %s %s\n" % (botName, message[4:].encode("utf-8"))
+		else:
+			output = "<%s> %s\n" % (botName, message.encode("utf-8"))
 
 		sys.stdout.write(output)
 

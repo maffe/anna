@@ -19,12 +19,6 @@ import rooms
 #pre-compiled regular expressions
 _REX_PM_LEAVE_MUC = re.compile("((please )?leave)|(exit) ", re.IGNORECASE)
 
-#this dictionary is used to store the replacement values for messages
-#in a muc that use placeholders, like %(nick)s and %(user)s.
-#TODO: this is GODDAMNED UGLY, k? kk.
-_muc_replace_dictionary = {}
-
-
 def direct(message, identity):
 	"""A message directed specifically towards the bot."""
 
@@ -83,25 +77,26 @@ def direct(message, identity):
 			roomType = typ
 
 		if not frontendhandler.existsTyp(roomType):
-			reply = "no such type: %s" % typ
+			reply = "no such type: %s" % roomType
 
-		#see if a certain nick was specified:
-		if len(temp) > 2 and temp[-2] == "as":
-			nick = temp[-1]
-			temp = temp[:-2]
 		else:
-			nick = config.misc['bot_nickname']
+			#see if a certain nick was specified:
+			if len(temp) > 2 and temp[-2] == "as":
+				nick = temp[-1]
+				temp = temp[:-2]
+			else:
+				nick = config.misc['bot_nickname']
 
-		roomID = ' '.join(temp)
+			roomID = ' '.join(temp)
 
-		if rooms.isActive(roomID, roomType):
-			reply = "excusez moi, but je suis already in there"
+			if rooms.isActive(roomID, roomType):
+				reply = "excusez moi, but je suis already in there"
 
-		room = rooms.new(roomID, roomType)
-		room.setNick(nick)
-		room.join()
-		room.send("lo, Im a chatbot. was told to join this room by %s" % identity)
-		reply = "k"
+			room = rooms.new(roomID, roomType)
+			room.setNick(nick)
+			room.join()
+			room.send("lo, Im a chatbot. was told to join this room by %s" % identity)
+			reply = "k"
 	#end if "join such and such room"
 
 	if not reply and re.match(_REX_PM_LEAVE_MUC, message):
@@ -173,8 +168,10 @@ def room(message, sender, room):
 	"""
 	typ = room.getType()
 	nickname = room.getNick()
-	_muc_replace_dictionary['user'] = sender.getNick()
-	_muc_replace_dictionary['nick'] = room.getNick()
+	replace = {
+		'user': sender.getNick(),
+		'nick': room.getNick(),
+	}
 
 	if sender.getNick().lower() == nickname.lower():
 		return False  #prevent loops
@@ -184,10 +181,9 @@ def room(message, sender, room):
 	# Handle messages with leading nick as direct messages.
 	for elem in config.Misc.hlchars:
 		# Check if we have nickanme + one hlchars
-		prefix = nickname + elem
-		if message[:len(prefix)] == prefix:
+		if message.startswith(nickname + elem):
 			return mucHighlight(message, sender, room)
-	
+
 	# Apply plugins.
 	try:
 		plugins = room.getPlugins()
@@ -199,9 +195,10 @@ def room(message, sender, room):
 
 	if reply and room.getBehaviour() != 0:
 		if (reply.count('\n') > 2 or len(reply) > 255) and room.getBehaviour() < 3:
-			room.send("Sorry, if I would react to that it would spam the room too"
-			         + " much. Please repeat it to me in PM.")
+			room.send(''.join(("Sorry, if I would react to that it would spam the",
+			                   " room too much. Please repeat it to me in PM.")))
 		else:
+			reply = mucReplaceString(reply, replace)
 			room.send(reply)
 
 
@@ -219,7 +216,7 @@ def mucHighlight(message, sender, room):
 	#TODO: ...huh? when is this set to True then?
 	raw = False
 
-	if message == "please leave":
+	if re.search(_REX_PM_LEAVE_MUC, message) is not None:
 		room.send("... :'(")
 		room.leave()
 		return
@@ -265,35 +262,28 @@ def mucHighlight(message, sender, room):
 		#TODO: check if newlines can be inserted in another way
 		if (reply.count('\n') > 2 or len(reply) > 255) and room.getBehaviour() < 3:
 			room.send("Sorry, if I would react to that it would spam the room too"
-			         + " much. Please repeat it to me in PM.")
+			        + " much. Please repeat it to me in PM.")
 		else:
 			room.send(reply)
 
 
-def mucReplaceString(message):
-	"""this function replaces the message with elements from the dict. if
-	an error occurs (eg.: due to wrong formatting of the message) it is
+def mucReplaceString(message, replace):
+	"""This function replaces the message with elements from the dict.
+	
+	If an error occurs (eg.: due to wrong formatting of the message) it is
 	catched and an appropriate message is returned.
 
-	this is defined in a seperate function because the same thing (this)
-	is done twice; once in room() and once in mucHighlight().
-
-	because mucHighLight() doesn't know the name of the other person (and
-	because of flexibility issues) the replacedictionary is"""
-
+	"""
 	try:
-		return message % _muc_replace_dictionary
+		return message % replace
 
 	except KeyError, e:
-		return """I was told to say "%s" now but I don't know what to""" % message + \
-		       """replace %%(%s)s with""" % e[0]
+		return ''.join(('I was told to say "%s" now but I don\'t know what to',
+		                ' replace %%(%s)s with.')) % (message, e[0])
 
 	except StandardError, e:
-		return 'I was taught to say "%s" now, but there seems to be' % message + \
-		       'something wrong with that..'
-
-
-
+		return ''.join(('I was taught to say "%s" now, but there seems to be'
+		                ' something wrong with that..')) % message
 
 
 def handlePlugins(message, uid):
@@ -342,8 +332,9 @@ def invitedToMuc(room, situation, by = None, reason = None):
 		  the inviter
 	technically speaking, the by and reason attributes are valid as long as
 	they have a .__str__() method. of course, unicode should be used throughout
-	the entire bot, but it's not necessary."""
-	
+	the entire bot, but it's not necessary.
+
+	"""
 	#this dictionary holds all the messages that could be sent. it's not very
 	#nice because you construct them all even though one is going to be used,
 	#but since this is called not very often I thought it would be nice,
@@ -351,8 +342,8 @@ def invitedToMuc(room, situation, by = None, reason = None):
 	#are the situation codes, but that could very well be changed.
 	messages = {}
 	if reason:
-		messages[0] = "I was invited to this room, being told '%s'," % reason \
-		            + "but I'm already in here..."
+		messages[0] = ''.join(("I was invited to this room, being told '%s',",
+		                      " but I'm already in here...")) % reason
 	else:
 		messages[0] = "I was invited to this room again but I'm already in here..."
 	#below we also mention who invited to show the admins of the muc.

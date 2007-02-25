@@ -303,7 +303,7 @@ class MUCParticipant:
 	is, etcetera.
 
 	"""
-	def __init__(self, room, nick, role = '', status = 'available', jid = None):
+	def __init__(self, room, nick, jid = None):
 		"""Create the values that will be needed later on.
 		
 		The room argument must be an instance of a MUC room in which this person
@@ -311,8 +311,6 @@ class MUCParticipant:
 
 		"""
 		self.nick = nick
-		self.status = status
-		self.role = role
 		self.room = room
 		try:
 			self.jid = xmpp.JID(jid)
@@ -346,18 +344,11 @@ class MUCParticipant:
 		plugins loaded for the room to the default plugins for PMs.
 		
 		"""
-		return itertools.chain(
-			self.room.getPlugins(),
-			pluginhandler.getDefaultPM()
-		)
-
-	def getRole(self):
-		"""Return participant's role."""
-		return self.role
-
-	def getStatus(self):
-		"""Return participant's status."""
-		return self.status
+		default = pluginhandler.getDefaultPM()
+		try:
+			return itertools.chain(self.room.getPlugins(), default)
+		except ValueError:
+			return default
 
 	def isActive(self):
 		"""Check if a participant is active.
@@ -375,12 +366,3 @@ class MUCParticipant:
 
 	def setNick(self, nick):
 		self.nick = nick
-
-	def setRole(self, role):
-		"""Set the role this participant has in this room."""
-		self.role = role
-
-	def setStatus(self, status):
-		"""Set the status of a certain dude-participant (there are no women on the
-		internet, and most certainly not on jabber)."""
-		self.status = status

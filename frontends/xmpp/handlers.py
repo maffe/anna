@@ -156,11 +156,11 @@ def presence(conn, presence):
 
 		nick  = jid.getResource()
 		item  = x.T.item
-		role  = item.getAttr("role")
-		jid   = item.getAttr("jid")
+		#role  = item.getAttr("role")
+		#jid   = item.getAttr("jid")
 
 		if presencetype != "unavailable":
-			participant = xmpp_frontend.MUCParticipant(nick, presence, role, jid)
+			participant = xmpp_frontend.MUCParticipant(nick, presence)#, role, jid)
 			room.addParticipant(participant)
 			return
 
