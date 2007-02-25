@@ -7,7 +7,7 @@ import xmpp
 import config
 
 
-def isAdmin( jid, owneronly = False ):
+def isAdmin(jid, owneronly = False):
 	"""check if a jid has admin rights.
 
 takes:
@@ -20,17 +20,15 @@ returns:
 
 
 	# create an xmpppy JID instance (more flexible)
-	jid = xmpp.JID( jid ) # note that if jid already was an xmpp.JID(), this is practically equal to pass
+	jid = xmpp.JID(jid) # note that if jid already was an xmpp.JID(), this is practically equal to pass
 	##check if it's the Pwner himself
-	if jid.bareMatch( config.misc['owner_jid'] ):
+	if jid.bareMatch(config.misc['owner_jid']):
 		return True
 	# or one of his bitches, if appropriate
 	elif not owneronly and jid.getStripped() in config.admins:
 		return True
 	else:
 		return False
-
-
 
 def stop():
 	"""kill the bot."""

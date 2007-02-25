@@ -115,15 +115,18 @@ def getPermissions(uid):
 	TODO: currently, this just returns 'all' if the uid matches the jid of an
 	admin, hardcoded here. obviously, we need a real system for this."""
 	if int(uid) == 6:
-		return ( 'all', )
+		return ('all',)
 	else:
 		return ()
 
 
-def isAllowedTo( uid, whatdoeshewanttodothen ):
-	"""check if uid (int) is allowed to do whatdoeshewanttodothen (str).
-	returns True (bool) if allowed, False otherwise."""
-	permissions = getPermissions( uid )
+def isAllowedTo(uid, whatdoeshewanttodothen):
+	"""Check if uid (int) is allowed to do whatdoeshewanttodothen (str).
+
+	Return True (bool) if allowed, False otherwise.
+	
+	"""
+	permissions = getPermissions(uid)
 	if 'all' in permissions:
 		return True
 	else:

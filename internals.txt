@@ -1,5 +1,9 @@
 This file tries to explain the way the bot works internally.
 
+NOTE: This file was written when the chatbot was running threads. It is not
+yet clear how the multi-frontend-system will be realized, but at the moment
+there is no such functionality.
+
 Short index:
   1) anna.py is started and starts up different front-ends in the background
   2) a message arrives at the frontend somehow

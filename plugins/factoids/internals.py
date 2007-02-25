@@ -1,5 +1,3 @@
-# vim:fileencoding=utf-8
-
 """
 internals.py
 
@@ -12,11 +10,11 @@ protect()
 unProtect()
 isProtected()
 """
+#TODO: needs cleaning
 
 import mysql
 
-
-def add( object, definition, uid ):
+def add(object, definition, uid):
 	"""check if a factoid exists, and if not, add it to the database.
 
 	takes:
@@ -36,19 +34,15 @@ def add( object, definition, uid ):
 	# do the db thing
 	cursor = mysql.db_w.cursor()
 	try:
-		cursor.execute( "insert into `factoids`(`object`,`definition`,`uid`)" \
-			+ " values(%s,%s,%s);", (object, definition, uid) )
+		cursor.execute("insert into `factoids`(`object`,`definition`,`uid`)" \
+			+ " values(%s,%s,%s);", (object, definition, uid))
 	except cursor.ProgrammingError, e:
 		print "\n\n  >> DATABASE ERROR: QUERY FAILED <<\n\n  >> %s\n\n" % e
 		return 2
 	cursor.close()
 	return 0
 
-
-
-
-
-def delete( object, isadmin = False, silent = False ):
+def delete(object, isadmin = False, silent = False):
 	"""delete a factoid.
 
 	takes:
@@ -71,7 +65,7 @@ def delete( object, isadmin = False, silent = False ):
 
 	cursor=mysql.db_w.cursor()
 	try:
-		cursor.execute( "delete from `factoids` where `object` = %s limit 1;" , (object,) )
+		cursor.execute("delete from `factoids` where `object` = %s limit 1;" , (object,))
 	except cursor.ProgrammingError, e:
 		print "\n\n  >> DATABASE ERROR: QUERY FAILED <<\n\n  >> %s\n\n" % e
 		return 2
@@ -79,7 +73,7 @@ def delete( object, isadmin = False, silent = False ):
 	return 0
 
 
-def exists( object ):
+def exists(object):
 	"""return True (bool) if an entry exists for object (unicode) in the
 	factoids table, False if not. return 0 (int) if the query failed. it returns
 	0 for all errors instead of a specific integer for each seperate error
@@ -89,7 +83,7 @@ def exists( object ):
 	cursor = mysql.db_r.cursor()
 	try:
 		n = cursor.execute("select `id` from `factoids`" \
-			+ "where `object` = %s limit 1;", (object, ) )
+			+ "where `object` = %s limit 1;", (object,))
 	except cursor.ProgrammingError:
 		return 0
 	cursor.close()
@@ -98,23 +92,24 @@ def exists( object ):
 	else:
 		return False
 
+def get(object):
+	"""Check the database to see if there's a definition of given object.
 
-
-def get( object ):
-	"""check the database to see if there's a definition of object (unicode)
-	and return that definition. also checks if the last character is a question
+	Returns that definition. Also checks if the last character is a question
 	mark.
 
-	on failure: returns an integer with the error code:
-		1: object doesn't exist
-		2: database query error"""
+	On failure, return an integer with the error code:
+	- 1: object doesn't exist
+	- 2: database query error
+	
+	"""
 
 	#create a cursor from existing database connection
 	cursor = mysql.db_r.cursor()
 	#execute
 	try:
-		cursor.execute( "select `definition`,`count` from `factoids`" \
-			+ "where `object` = %s limit 1;", (object, ) )
+		cursor.execute("select `definition`,`count` from `factoids`" \
+			+ "where `object` = %s limit 1;", (object,))
 	except cursor.ProgrammingError:
 		return 2
 
@@ -130,40 +125,36 @@ def get( object ):
 	else:
 		cursor = mysql.db_w.cursor()
 		try:
-			cursor.execute( "update `factoids` set `count`=%s where `object` = %s" \
-				+ " and `definition`=%s limit 1;", (count, object, result[0]) )
+			cursor.execute("update `factoids` set `count`=%s where `object` = %s" \
+				+ " and `definition`=%s limit 1;", (count, object, result[0]))
 		except cursor.ProgrammingError:
 			return 2
 		cursor.close()
 		# and return! fetchone() returns a tuple with an item for each column; we want the first one.
 		return result[0]
 
-
-
-
-
-def protect(  object, protect = True, silent = False ):
-	"""set a factoid to be (un)protected. usually you'll want only admins to be
-	able to do this.
-
-	# example; we want to protect "chuck norris".
-
+def protect( object, protect = True, silent = False):
+	"""Set a factoid to be (un)protected.
+	
+	Usually you'll want only admins to be able to do this.
+	example; we want to protect "chuck norris".
 	takes:
-	- object(unicode): the object of the factoid # in our example: "chuck norris"
-	- protect(bool): protect if True, unprotect if False # in our example: True
-
+	- object(unicode): the object of the factoid - in our example: "chuck norris"
+	- protect(bool): protect if True, unprotect if False - in our example: True
 	returns an integer:
 	0: success
 	1: unknown object
 	2: db error: query failed
-	3: it's already protected or unprotected"""
+	3: it's already protected or unprotected
+	
+	"""
 
 	#check if factoid exists:
-	if not exists( object ):
+	if not exists(object):
 		return 1
 
 	# check if want to protect/unprotect and what the current state is
-	isprotected = isProtected( object )
+	isprotected = isProtected(object)
 	if protect:
 		if isprotected == 1:
 			return 3
@@ -175,11 +166,10 @@ def protect(  object, protect = True, silent = False ):
 		else:
 			return 3
 
-
 	cursor = mysql.db_w.cursor()
 	try:
-		cursor.execute( "update `factoids` set `protected` = %s where `object` = %s limit 1;",
-			(protect, object) )
+		cursor.execute("update `factoids` set `protected` = %s where `object` = %s limit 1;",
+			(protect, object))
 	except cursor.ProgrammingError, e:
 		print "\n\n  >> DATABASE ERROR: QUERY FAILED <<\n\n  >> %s\n\n" % e
 		return 2
@@ -187,17 +177,11 @@ def protect(  object, protect = True, silent = False ):
 
 	return 0
 
-
-
-def unProtect( object ):
+def unProtect(object):
 	"""inverted alias for protect()"""
-	return protect( object, protect = False )
+	return protect(object, protect = False)
 
-
-
-
-
-def isProtected( object ):
+def isProtected(object):
 	"""check if a factoid is protected (meaning only admins can change it).
 
 	takes:
@@ -211,8 +195,8 @@ def isProtected( object ):
 
 	cursor = mysql.db_r.cursor()
 	try:
-		if not cursor.execute( "select `protected` from `factoids` where `object` = %s limit 1;",
-			(object,) ):
+		if not cursor.execute("select `protected` from `factoids` where `object` = %s limit 1;",
+			(object,)):
 			return 3
 	except cursor.ProgrammingError, e:
 		print "\n\n  >> DATABASE ERROR: QUERY FAILED <<\n\n  >> %s\n\n" % e
@@ -220,4 +204,4 @@ def isProtected( object ):
 
 	result = cursor.fetchone()
 	cursor.close()
-	return int( result[0] )
+	return int(result[0])
