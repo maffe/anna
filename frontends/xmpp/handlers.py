@@ -16,21 +16,19 @@ def pm(conn, mess):
 
 	message = mess.getBody()
 	jid     = mess.getFrom()
-	#ignore empty and overloaded messages
+	# Ignore empty and overloaded messages.
 	if not message or len(message) > 255:
 		return False
 
-	#create a Private Message instance
+	# Create a Private Message instance.
 	pm = xmpp_frontend.PM(jid, conn)
 
-	# prepare some variables
-
-	#check if this is a direct pm or a pm through a muc room
+	# Check if this is a direct pm or a pm through a muc room.
 	if rooms.isActive(jid, 'xmpp'):
-		counterpart = jid.getResource() #the name of the person we're talking with
+		counterpart = jid.getResource() # The name of the person we're talking with
 	else:
-		# if the room is either known but not active, or not known at all, this is
-		#to be assumed to be a direct PM:
+		# If the room is either known but not active, or not known at all, this is
+		# to be assumed to be a direct PM:
 		counterpart = jid.getNode()
 
 	counterpart = xmpp_frontend.PM(jid, nick = counterpart)
@@ -41,9 +39,10 @@ def pm(conn, mess):
 		return 'k.'
 
 	else:
-		#To get our AIModule we first check if this uid already has a certain ai module in use.
+		# To get our AIModule we first check if this uid already has a certain ai
+		# module in use.
 		aimodule = aihandler.getAIReferenceByUID(counterpart.getUid())
-		#If there was an error aimodule is now an integer.
+		# If there was an error aimodule is now an integer.
 		if isinstance(aimodule, int):
 			#In that case we just force the annai ai module.
 			aimodule = aihandler.getAIReferenceByAID('annai')
@@ -117,8 +116,8 @@ def joinmuc(conn, mess):
 		room = rooms.new(jid, 'xmpp')
 		room.join()
 
-	#TODO: this requires a more elegant fall-back (no hard-coded "annai").
-	#Load the aimodule the same way as in direct()
+	# TODO: this requires a more elegant fall-back (no hard-coded "annai").
+	# Load the aimodule the same way as in direct()
 	aimodule = aihandler.getAIReferenceByUID(room.getUid())
 	if isinstance(aimodule, int):
 		aimodule = aihandler.getAIReferenceByAID('annai')

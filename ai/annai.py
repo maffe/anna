@@ -16,8 +16,8 @@ import aihandler
 import frontendhandler
 import rooms
 
-#pre-compiled regular expressions
-_REX_PM_LEAVE_MUC = re.compile("((please )?leave)|(exit) ", re.IGNORECASE)
+# Pre-compiled regular expressions.
+_REX_PM_LEAVE_MUC = re.compile("((please )?leave)|(exit)", re.IGNORECASE)
 
 def direct(message, identity):
 	"""A message directed specifically towards the bot."""
@@ -26,6 +26,9 @@ def direct(message, identity):
 	reply = None
 	uid = identity.getUid()
 	message = filters.xstrip(message)
+
+	# Replace some stuff in the reply:
+	replacedict = {'user': identity.getNick()}
 
 	if identity.isAllowedTo("stop") and message == "stop":
 		identity.send("k")
@@ -50,8 +53,6 @@ def direct(message, identity):
 		reply = stats.rooms()
 
 	if reply:
-		#replace some stuff in the reply:
-		replacedict = {'user': identity.getNick()}
 		try:
 			reply = reply % replacedict
 		except KeyError, e:
@@ -101,14 +102,14 @@ def direct(message, identity):
 
 	if not reply and re.match(_REX_PM_LEAVE_MUC, message):
 		temp = re.sub(_REX_PM_LEAVE_MUC, '', message, 1).split()
-		#match either "forcefully" or "forcefully!"
+		# Match either "forcefully" or "forcefully!"
 		if temp[-1].strip('!') == "forcefully":
 			force = True
 			temp.pop()
 		else:
 			force = False
 
-		#determine the type
+		# Determine the type.
 		if len(temp) > 3 and ' '.join(temp[-3:-1]) == "of type":
 			roomType = temp[-1]
 			temp = temp[:-3]
@@ -138,9 +139,9 @@ def direct(message, identity):
 			reply = "k."
 	
 	if not reply:
-		#handlePlugins() does not actually apply plugins; just checks commands to
-		#moderate them
-		reply = handlePlugins(message, uid)
+		# handlePlugins() Does not actually apply plugins; just checks commands to
+		# moderate them.
+		reply = handlePlugins(message, identity)
 	
 	try:
 		plugins = identity.getPlugins()
@@ -180,8 +181,8 @@ def room(message, sender, room):
 
 	# Handle messages with leading nick as direct messages.
 	for elem in config.Misc.hlchars:
-		# Check if we have nickanme + one hlchars
-		if message.startswith(nickname + elem):
+		# Check if we have nickanme + one hlchar.
+		if message.startswith(''.join((nickname, elem))):
 			return mucHighlight(message, sender, room)
 
 	# Apply plugins.
@@ -212,9 +213,11 @@ def mucHighlight(message, sender, room):
 	hlchar = message[len(nick)]
 	# Strip the leading nickname and hlcharacter off.
 	message = message[(len(nick) + 1):].strip()
-	# Set to True if the nickname shouldn't be prepended to the reply.
-	#TODO: ...huh? when is this set to True then?
-	raw = False
+	# Replace dictionary.
+	replace = {
+		'user': sender.getNick(),
+		'nick': room.getNick(),
+	}
 
 	if re.search(_REX_PM_LEAVE_MUC, message) is not None:
 		room.send("... :'(")
@@ -244,27 +247,26 @@ def mucHighlight(message, sender, room):
 		reply = getBehaviour(room.getBehaviour())
 
 	if not reply:
-		reply = handlePlugins(message, uid)
+		reply = handlePlugins(message, room)
 
 	for plugin in sender.getPlugins():
 		message, reply = plugin.process(room, message, reply)
 
 	if reply and room.getBehaviour() != 0:
 
-		if not raw:
-			#pick a random highlighting char:
-			#TODO: UGLY UGLY UGLY UGLY UGLY UGLY UGLY!!!!!
-			n = randint(0, len(config.Misc.hlchars) - 1)
-			hlchar = config.Misc.hlchars[n]
-			del n
-			reply = "%s%s %s" % (sender.getNick(), hlchar, reply)
+		#pick a random highlighting char:
+		#TODO: UGLY UGLY UGLY UGLY UGLY UGLY UGLY!!!!!
+		n = randint(0, len(config.Misc.hlchars) - 1)
+		hlchar = config.Misc.hlchars[n]
+		del n
+		reply = "%s%s %s" % (sender.getNick(), hlchar, reply)
 
 		#TODO: check if newlines can be inserted in another way
 		if (reply.count('\n') > 2 or len(reply) > 255) and room.getBehaviour() < 3:
 			room.send("Sorry, if I would react to that it would spam the room too"
-			        + " much. Please repeat it to me in PM.")
+			          " much. Please repeat it to me in PM.")
 		else:
-			room.send(reply)
+			room.send(mucReplaceString(reply, replace))
 
 
 def mucReplaceString(message, replace):
@@ -286,9 +288,12 @@ def mucReplaceString(message, replace):
 		                ' something wrong with that..')) % message
 
 
-def handlePlugins(message, uid):
+def handlePlugins(message, identity):
 	"""Checks if the message wants to modify plugin settings and applies
-	them to given uid."""
+	them to given identity."""
+
+	uid = identity.getUid()
+
 	if message.startswith("load plugin "):
 		try:
 			pluginhandler.addPlugin(uid, message[12:])
@@ -319,8 +324,9 @@ def handlePlugins(message, uid):
 
 
 def invitedToMuc(room, situation, by = None, reason = None):
-	"""handler to call if invited to a muc room.
-	takes:
+	"""Handler to call if invited to a muc room.
+
+	Takes:
 		- room: the instance of the (unjoined room)
 		- situation: the situation we are in and the reason for the invitation.
 		  situations:
@@ -330,8 +336,8 @@ def invitedToMuc(room, situation, by = None, reason = None):
 		- by: a unicode containing the name of the person that invited the bot
 		- reason: unicode containing the reason for the invite as supplied by
 		  the inviter
-	technically speaking, the by and reason attributes are valid as long as
-	they have a .__str__() method. of course, unicode should be used throughout
+	Technically speaking, the by and reason attributes are valid as long as
+	they have a .__str__() method. Of course, unicode should be used throughout
 	the entire bot, but it's not necessary.
 
 	"""

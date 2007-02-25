@@ -69,14 +69,14 @@ raw = {
 	"^/me snaffles (.*?) off fishbot\.$" : ":(",
 }
 
-#pre-compile all regex
+# Pre-compile all regular expressions.
 compiled = []
 # compiled: [ (compiled_rex_1, plaintext_answer_1), (compiled_rex_2, plaintext_answer_2) ]
 
 for of, to in raw.items():
-	of, to = of.decode( 'utf-8' ), to.decode( 'utf-8' )
-	regex = re.compile(of, re.IGNORECASE + re.UNICODE)
-	compiled.append( (regex, to) )
+	of, to = of.decode('utf-8'), to.decode('utf-8')
+	regex = re.compile(of, re.IGNORECASE | re.UNICODE)
+	compiled.append((regex, to))
 
 
 def direct( message, identity ):
@@ -84,63 +84,59 @@ def direct( message, identity ):
 	if message[:12] == "load module " and message[12:]:
 		#prevent trying to load an empty module
 		result = aihandler.setAID( identity.getUid(), message[12:] ) #fixme: security?
-		identity.send( result and "no such module" or "success!" )
+		identity.send(result and "no such module" or "success!")
 
 	else:
-		identity.send( "Sorry, PMs are not (yet) supported." )
+		identity.send("Sorry, PMs are not (yet) supported.")
 
 
-def room( message, sender, room ):
+def room(message, sender, room):
 
-	nick = sender
-	conference = str( room )
-	text = message
-
-	if nick == room.getNick():
+	if sender == room.getNick():
 		return
 	
-	if text == "fishbot, part":
+	if message == "fishbot, part":
 		room.leave()
 		return
 
-	elif text == "fishbot, where are you?":
-		room.send( stats.rooms() )
+	elif message == "fishbot, where are you?":
+		room.send(stats.rooms())
 		return
 
-	elif text == "fishbot, uptime":
+	elif message == "fishbot, uptime":
 		diff = stats.uptimeSecs()
 		msg = 'Uptime: %d seconds. gnarf!' % diff
-		room.send( msg )
+		room.send(msg)
 		return
 
-	if text[:12] == "load module " and text[12:]:
-		#prevent trying to load an empty module
-		result = aihandler.setAID( room.getUid(), text[12:] ) #fixme: security?
-		room.send( result and "no such module" or "success!" )
+	if message[:12] == "load module " and message[12:]:
+		# Prevent trying to load an empty module.
+		result = aihandler.setAID(room.getUid(), message[12:])
+		room.send(result and "no such module" or "success!")
 		return
 
-	#default:
+	# Default:
 	for regex, to in compiled:
 
-		if regex.match( text ):
-			msg = regex.sub( text, to )
-			if to.rfind( r'\1' ) != -1:
-				var = regex.search(text)
-				msg = msg.replace( r'\1', var.group(1) )
+		if regex.match(message):
+			msg = regex.sub(message, to)
+			if to.rfind(r'\1') != -1:
+				var = regex.search(message)
+				msg = msg.replace(r'\1', var.group(1))
 			if to.rfind(r'\2') != -1:
-				msg = msg.replace( r'\2', conference )
+				msg = msg.replace(r'\2', str(room))
 			if to.rfind('%s') != -1:
-				sendmsg = msg % nick
+				sendmsg = msg % sender
 			else:
 				sendmsg = msg
 
-			room.send( sendmsg )
+			room.send(sendmsg)
 			return
 
-def invitedToMuc( room, situation, by = None, reason = None ):
+def invitedToMuc(room, situation, by = None, reason = None):
 	
 	if situation != 0:
 		room.join()
 
 	msg = '/me m00s contentedly at %s.' % by
-	room.send( msg )
+	room.send(msg)

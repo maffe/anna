@@ -1,33 +1,35 @@
-# -- coding: utf-8 --
+"""Your average echo module.
 
-"""your average echo module. functional but not very useful."""
+Functional but not very useful: replies to all incoming messages by echoing
+the message. Useful for testing.
 
+"""
 import aihandler
 
-def direct(message,identity,typ):
-	"""echo the incoming message"""
+def direct(message, identity, typ):
+	"""Echo the incoming message."""
 
-	if message[:12]=="load module " and message[12:]: #prevent trying to load an empty module
-		result=aihandler.setAID(identity.getUid(),message[12:]) #fixme: security?
-		if result==0:
+	if message.startswith("load module ") and message[12:]:
+		result = aihandler.setAID(identity.getUid(),message[12:])
+		if result == 0:
 			message="success!"
-		elif result==1:
+		elif result == 1:
 			message="no such module"
 
 
 	identity.send(message)
 
-def room(message,sender,typ,room):
-	"""echo the incoming group message back to the room"""
+def room(message, sender, room):
+	"""Echo the incoming group message back to the room."""
 
-	if sender.lower()== room.getNick().lower():
-		return False  #prevent loops
+	if sender.getNick().lower() == room.getNick().lower():
+		return False
 
-	if message[:12]=="load module " and message[12:]: #prevent trying to load an empty module
-		result=aihandler.setAID(room.getUid(),message[12:]) #fixme: security?
-		if result==0:
-			message="success!"
-		elif result==1:
-			message="no such module"
+	if message.startswith("load module ") and message[12:]:
+		result = aihandler.setAID(room.getUid(), message[12:])
+		if result == 0:
+			message = "success!"
+		elif result == 1:
+			message = "no such module"
 
 	room.send(message)
