@@ -33,11 +33,11 @@ def connect():
 			sys.stdout.write("<%s> " % identity)
 			message = sys.stdin.readline()
 			if not message: #EOF
-				print #Print a newline to prevent outputting on the input line
+				print # Print a newline to prevent outputting on the input line.
 				admin.stop()
 			ai = identity.getAI()
 			ai.direct(message[:-1], identity)
-			#Leave out the appending newline
+			# Leave out the appending newline.
 	except KeyboardInterrupt:
 		print
 		admin.stop()

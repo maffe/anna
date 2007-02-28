@@ -57,15 +57,15 @@ def direct(message, identity):
 			reply = reply % replacedict
 		except KeyError, e:
 			if e[0] == "nick":
-				reply = 'I was told to say "%s" now but since this is a' % reply \
-				      + ' private conversation it seems awkward to replace' \
-							+ ' %(nick)s by something...'
+				reply = ''.join(('I was told to say "%s" now but since this is a',
+				        ' private conversation it seems awkward to replace %%(nick)s',
+			          ' by something...')) % reply
 			else:
-				reply = 'I was told to say "%s" now but I' % reply \
-				      + " don't know what to replace %%(%s)s with" % e[0]
+				reply = ''.join(('I was told to say "%s" now but I do not know what',
+				         " to replace %%(%s)s with")) % (reply, e[0])
 		except StandardError, e:
-			reply = 'I was taught to say "%s" now, but there seems' % reply \
-			      + ' to be something wrong with that..'
+			reply = ''.join(('I was taught to say "%s" now, but there seems',
+			        ' to be something wrong with that..')) % reply
 
 	if not reply and message[:5] == "join ":
 		temp = message[5:].split()
@@ -96,7 +96,7 @@ def direct(message, identity):
 			room = rooms.new(roomID, roomType)
 			room.setNick(nick)
 			room.join()
-			room.send("lo, Im a chatbot. was told to join this room by %s" % identity)
+			room.send("Lo, Im a chatbot. I was told to join this room.")
 			reply = "k"
 	#end if "join such and such room"
 
@@ -354,7 +354,7 @@ def invitedToMuc(room, situation, by = None, reason = None):
 		messages[0] = "I was invited to this room again but I'm already in here..."
 	#below we also mention who invited to show the admins of the muc.
 	messages[1] = "Hey all. Thanks for inviting me again, %s." % by
-	messages[2] = "Lo, I'm a chatbot. I was invited here by %s." % by
+	messages[2] = "Lo, I'm a chatbot. I was invited here by somebody."
 
 	if situation != 0:
 		room.join()
@@ -362,24 +362,32 @@ def invitedToMuc(room, situation, by = None, reason = None):
 	room.send(messages[situation])
 
 
-# a directory representing the different behaviour-levels and their textual representations
+# The different behaviour-levels and their textual representations:
+# 1 With this behaviour you should typically not say anything.
+# 2 Only talk when talked to.
+# 3 React to everything you can react to, even if not addressed.
+# 4 Say random things at random moments, be annoying.
+
 behaviour = {
-0:'silent',# with this behaviour you should typically not say anything
-1:'shy'   ,# only talk when talked to
-2:'normal',# react to everything you can react to, even if not addressed
-3:'loud'   # say random things at random moments, be annoying
+	0: 'silent',
+	1: 'shy',
+	2: 'normal',
+	3: 'loudly'
 }
 
 def getBehaviour(id):
 	return behaviour[id]
 
 def getBehaviourID(text):
-	"""get the numerical ID of the specified behaviour"""
+	"""Get the numerical ID of the specified behaviour."""
 	for elem in behaviour.iteritems():
 		if elem[1] == text:
 			return elem[0]
 	raise ValueError, text
 
 def isBehaviour(arg):
-	"""returns True if supplied behaviour (textual OR numerical) is valid."""
-	return type(arg) == types.IntType and (arg in behaviour) or (arg in behaviour.values())
+	"""Returns True if supplied behaviour (textual OR numerical) is valid."""
+	if isinstance(arg, int):
+		return arg in behaviour
+	else:
+		return arg in behaviour.values()

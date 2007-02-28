@@ -202,8 +202,11 @@ def subscribtion(conn, presence):
 
 def version_request(conn, iq):
 	"""Respond to a version info request.
+
 	TODO: It would be nice to return the revision number in the version
-	tag instead of just "svn"."""
+	tag instead of just "svn".
+	
+	"""
 	reply = iq.buildReply('result')
 	#add <name/> and <version/> in accordance with JEP-0092
 	reply.T.query.addChild(name = 'name', payload = ['Anna'])

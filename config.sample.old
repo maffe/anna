@@ -1,24 +1,19 @@
-[jabber]
-
 # Info about the bot's jabber account
 JID = anna@example.net
-password = secret
-
-[mysql]
+jabber_password=
 
 # Info about mysql connections (_r is read user and _w write user)
-host   = localhost
-db     = chatbot
-port   = 3306
-socket = /var/lib/mysql.sock
-user_w = chatbot_w
-user_r = chatbot_r
-pass_w =
-pass_r =
+mysql_host   = localhost
+mysql_db     = chatbot
+mysql_port   = 3306
+mysql_socket = /var/lib/mysql.sock
+mysql_user_w = chatbot_w
+mysql_user_r = chatbot_r
+mysql_pass_w =
+mysql_pass_r =
 # Note: If you set "localhost" as the host, it will use the socket automatically.
 #       If you don't want this, use 127.0.0.1 instead.
 
-[misc]
 
 # The nickname the bot will use to join groupchats
 bot_nickname=anna
