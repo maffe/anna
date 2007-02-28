@@ -84,7 +84,10 @@ def parseConfig(configLoc):
 	p = ConfigParser.SafeConfigParser()
 	p.read(configLoc)
 	for (name, value) in p.items("jabber"):
-		jabber[name] = value
+		if name == "jid":
+			(jabber['user'], jabber['server']) = value.split('@')
+		else:
+			jabber[name] = value
 	for (name, value) in p.items("mysql"):
 		mysql[name] = value
 	for (name, value) in p.items("misc"):
