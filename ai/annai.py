@@ -1,9 +1,7 @@
 """The 'official' AI module for Anna (english)."""
 
-from random import randint
+import random
 import re
-import types
-import sys
 
 #TODO: this importing is all quite a mess..
 import admin
@@ -11,7 +9,6 @@ import stringfilters as filters
 import stats
 import config
 import pluginhandler
-from user_identification import isAllowedTo as uidIsAllowedTo
 import aihandler
 import frontendhandler
 import rooms
@@ -58,14 +55,14 @@ def direct(message, identity):
 		except KeyError, e:
 			if e[0] == "nick":
 				reply = ''.join(('I was told to say "%s" now but since this is a',
-				        ' private conversation it seems awkward to replace %%(nick)s',
-			          ' by something...')) % reply
+				        " private conversation it seems awkward to replace %%(nick)s",
+			          " by something...")) % reply
 			else:
 				reply = ''.join(('I was told to say "%s" now but I do not know what',
 				         " to replace %%(%s)s with")) % (reply, e[0])
 		except StandardError, e:
 			reply = ''.join(('I was taught to say "%s" now, but there seems',
-			        ' to be something wrong with that..')) % reply
+			        " to be something wrong with that..")) % reply
 
 	if not reply and message[:5] == "join ":
 		temp = message[5:].split()
@@ -86,7 +83,7 @@ def direct(message, identity):
 				nick = temp[-1]
 				temp = temp[:-2]
 			else:
-				nick = config.misc['bot_nickname']
+				nick = config.misc["bot_nickname"]
 
 			roomID = ' '.join(temp)
 
@@ -129,17 +126,18 @@ def direct(message, identity):
 				rooms.remove(roomID, roomType)
 				reply = "k."
 			else:
-				reply = 'Meh, I wasn\'t even in there. say "leave %s of type %s' % (roomID, typ) + \
-				        ' forcefully" if you want me to try and leave that anyway.'
+				reply = ''.join(('Meh, I wasn\'t even in there. say "leave %s of type',
+					' %s forcefully" if you want me to try and leave that',
+					' anyway.')) % (roomID, typ)
 		else:
 			room = rooms.get(roomID, roomType)
 			room.send("Sorry guys, %s told me to leave. Bye." % identity)
-			#rooms.remove() calls the .leave method
+			# Rooms.remove() calls the .leave method.
 			rooms.remove(roomID, roomType)
 			reply = "k."
 	
 	if not reply:
-		# handlePlugins() Does not actually apply plugins; just checks commands to
+		# HandlePlugins() Does not actually apply plugins; just checks commands to
 		# moderate them.
 		reply = handlePlugins(message, identity)
 	
@@ -256,7 +254,7 @@ def mucHighlight(message, sender, room):
 
 		#pick a random highlighting char:
 		#TODO: UGLY UGLY UGLY UGLY UGLY UGLY UGLY!!!!!
-		n = randint(0, len(config.Misc.hlchars) - 1)
+		n = random.randint(0, len(config.Misc.hlchars) - 1)
 		hlchar = config.Misc.hlchars[n]
 		del n
 		reply = "%s%s %s" % (sender.getNick(), hlchar, reply)

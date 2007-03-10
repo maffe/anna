@@ -10,11 +10,11 @@ from plugins.reactions import edit as reactions_edit
 __all__ = [
 	"factoids_edit",
 	"factoids_fetch",
+#	"gajimtrac",
 	"reactions_direct",
 	"reactions_global",
 	"reactions_edit",
-#	"gajimtrac",
-#	"reactions",
+	"spamblock",
 	"test",
 #	"thenazigame",
 ]
@@ -28,9 +28,11 @@ default_PM = [
 	"reactions_direct",
 	"reactions_global",
 	"reactions_edit",
+	"spamblock",
 ]
 
 default_MUC = [
 	"factoids_fetch",
 	"reactions_global",
+	"spamblock",
 ]
