@@ -10,7 +10,7 @@ import time
 # The command used to address this plugin.
 PREFIX = "!spam "
 # Default maximum number of outgoing messages per second per UID.
-DEFAULT = 60
+DEFAULT = 20
 # This dictionary holds the rate limiting (messages per UID per minute).  The
 # data is stored like this: {uid: [n, m, (year, month, day, hour, minute)]}.
 # n Stands for the number of messages in this minute, m for the limit. A limit
@@ -36,6 +36,10 @@ def process(identity, message, reply):
 			except KeyError:
 				ratelimiting[uid] = [1, limit, now]
 			return (message, limit == 0 and "limit removed" or "k.")
+
+	# This plugin is only concerned with OUTGOING messages.
+	if reply is None:
+		return (message, reply)
 
 	# Check the number of messages since this minute began:
 	try:

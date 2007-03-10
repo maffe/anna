@@ -10,7 +10,7 @@ from plugins.reactions import edit as reactions_edit
 __all__ = [
 	"factoids_edit",
 	"factoids_fetch",
-#	"gajimtrac",
+	"gajimtrac",
 	"reactions_direct",
 	"reactions_global",
 	"reactions_edit",
