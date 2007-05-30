@@ -100,7 +100,7 @@ def direct(message, identity):
 	if not reply and re.match(_REX_PM_LEAVE_MUC, message):
 		temp = re.sub(_REX_PM_LEAVE_MUC, '', message, 1).split()
 		# Match either "forcefully" or "forcefully!"
-		if temp[-1].strip('!') == "forcefully":
+		if temp and temp[-1].strip('!') == "forcefully":
 			force = True
 			temp.pop()
 		else:
