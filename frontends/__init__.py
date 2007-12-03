@@ -1,28 +1,23 @@
-"""crappy docs: all frontend modules should provide MUC and PM classes
-that have the following methods:
+"""Frontends are used to interact with the bot.
 
-PM:
-__str__():
-	return: string - textual representation of this person
-	desc:
-send( message ):
-	return: unspecified
-	desc: send a message to the chat-pal
-getAI():
-	return: AI - instance of the AI module used for this convo
-	desc:
-getUid():
-	return: int - uid
-	desc:
-setAI( AI ):
-	return: unspecified
-	desc: set the AI module used for this convo to the given one
-isAllowedTo( string sth ):
-	return: bool
-	desc: checks if this person is allowed to do the specified thing
+More information on frontends (including the API) can be found on the wiki:
+<http://0brg.net/anna/wiki/Frontends>
 
-MUC:
-#TODO
 """
-
 __all__ = ["xmpp", "console"]
+
+class BaseIndividual(object):
+    """Parent-class for classes that represent individuals in dialogues."""
+    pass
+
+class BaseGroup(object):
+    """Parent-class for classes representing a group having a conversation."""
+    pass
+
+class BaseGroupMember(BaseIndividual):
+    """Parent-class for classes representing a member of a Group chat."""
+    pass
+
+class BaseConnection(object):
+    """Connection with the medium in question."""
+    pass

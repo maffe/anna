@@ -1,178 +1,107 @@
-"""Handle the configuration.
-
-.mysql{} is a list that holds mysql options.  There is also .jabber and .misc .
-.admins[] is a list that holds all the jids with admin privileges (the
-owner_jid inclusive).  These variables are set by .__init__()
-
-"""
 """Get the data from the configuration file located at ~/.anna/config.
 
-See config.example for more details.  If the file doesn't exist, create it and
-sys.exit().
+See config.example for more details.  If the file doesn't exist, create
+it and sys.exit().  When this module is imported the configuration is
+loaded and stored once so other modules can use the configuration
+without having to open the file every time.  The get_conf_copy function
+can be used to this end.
 
 """
 import os
 import sys
 import ConfigParser
 
-# These values will hold the information read from the config file.
-mysql = {}
-# Example: self.mysql{'host': 'localhost'}
-jabber = {}
-# Example: self.jabber{'username': 'anna'}
-misc = {}
-# Example: self.misc{'owner_jid': 'zbrovski@kl.kq'}
-admins = []
-# Example: ['fraulein@sehrschon.de','zbrovski@kl.kq']. Always contains the
-# owner_jid, even if left out in the conf file.
+class AnnaConfig(object):
+    """Used to communicate configuration values with other modules.
 
-def main():
-	"""Take all needed actions to complete the configuration."""
-	configLoc = getConfigLoc()
-	# Determine whether this is old or new style config by checking if the file
-	# is malformed. This is not very good (if it /is/ new-style but simply
-	# wrong) this will produce odd results. Backwards compatibility will
-	# disappear after a while.
-	p = ConfigParser.SafeConfigParser()
-	try:
-		p.read(configLoc)
-		parseConfig(configLoc)
-	except ConfigParser.MissingSectionHeaderError:
-		parseConfigOld(configLoc)
-		migrateConf(configLoc)
+    get_conf_copy() updates this instance's __dict__ attribute and
+    creates a new key for every configuartion section. For example:
 
-def createFirstConf(configLoc):
-	"""Create a config file at the specified location."""
-	f = open(configLoc, 'w')
+    >>> c = config.get_conf_copy()
+    >>> "jabber" in dir(c)
+    True
+    >>> print c.jabber
+    {'password': 'secret', 'user': 'anna', 'server': 'example.net'}
 
-	#find out where the sample configuration file is
-	currentDir       = os.path.abspath('.')
-	scriptName       = sys.argv[0]
-	scriptLoc        = os.path.abspath('/'.join((currentDir, scriptName)))
-	scriptDir        = os.path.dirname(scriptLoc)
-	configSampleLoc  = '/'.join((scriptDir, 'config.sample'))
+    """
+    pass
 
-	#copy the sample configuration to the config file
-	configSample = open(configSampleSoc)
-	configSampleStr = configSample.read()
-	f.write(configSampleStr)
-	f.close()
+class AnnaConfigParser(object):
+    """Used to parse the real configuration file.
 
-def getConfigLoc():
-	"""Get the location of the configuration file.
+    Parsing is done on instantiation and results are stored in the self.vals
+    dictionary (which contains a key/value dictionary for each section).
 
-	If the file does not exist, create it and give the user instructions on what
-	to do next.  Returns a string.
+    """
+    def __init__(self):
+        """Take all needed actions to complete the configuration.
+        
+        If the file is malformed a ConfigParser.Error exception is raised.
+        
+        """
+        self.parse_conf(self.get_conf_loc())
 
-	"""
-	configDirectory = os.path.expanduser("~/.anna")
-	if not os.path.isdir(configDirectory):
-		print >> sys.stderr, "Creating personal directory: %s" % configDirectory
-		os.mkdir(configDirectory, 0700)
-	configLoc = '/'.join((configDirectory, "config"))
-	if not os.path.isfile(configLoc):
-		createFirstConf(configLoc)
-		sys.exit("Edit %s and run this script again." % configLoc)
-	return configLoc
+    def create_first_conf(self, conf_loc):
+        """Create a config file at the specified location."""
+        #find out where the sample configuration file is (TODO: hack hack hack)
+        script_dir = os.path.abspath(os.path.join(os.curdir))
+        conf_sample = os.path.join(script_dir, 'config.sample')
 
-def parseConfig(configLoc):
-	"""Parse the configuration file and set the appropriate values.
+        #copy the sample configuration to the config file
+        f_sample = open(conf_sample)
+        f = open(conf_loc, 'w')
+        f.write(f_sample.read())
+        f.close()
 
-	Works with new configuration files (post r136).
+    def get_conf_loc(self):
+        """Get the location of the configuration file.
 
-	"""
-	p = ConfigParser.SafeConfigParser()
-	p.read(configLoc)
-	for (name, value) in p.items("jabber"):
-		if name == "jid":
-			(jabber['user'], jabber['server']) = value.split('@')
-		else:
-			jabber[name] = value
-	for (name, value) in p.items("mysql"):
-		mysql[name] = value
-	for (name, value) in p.items("misc"):
-		if name == "admin_jids":
-			for elem in value.split():
-				admins.append(elem)
-		elif name == "owner_jid":
-			admins.append(value)
-			misc[name] = value
-		else:
-			misc[name] = value
+        If the file does not exist, create it and give the user instructions on
+        what to do next. Returns a string. Basically this just expands
+        ~/.anna/config.
 
-# Functions for backwards compatibility:
+        """
+        conf_dir = os.path.expanduser("~/.anna")
+        if not os.path.isdir(conf_dir):
+            print >> sys.stderr, "Creating personal directory: %s" % conf_dir
+            os.mkdir(conf_dir, 0700)
+        conf_loc = os.path.join(conf_dir, "config")
+        if not os.path.isfile(conf_loc):
+            self.create_first_conf(conf_loc)
+            sys.exit("Edit %s and run this script again." % conf_loc)
+        else:
+            return conf_loc
 
-def migrateConf(loc):
-	"""Migrate the configuration from file at given location to a new syntax.
+    def parse_conf(self, conf_loc):
+        """Parse the configuration file and set the appropriate values.
 
-	This function will rename the old file (append ".old" to it) and create a
-	new version saved under its previous name.
+        Works with new configuration files (post r136).
 
-	"""
-	p = ConfigParser.SafeConfigParser()
-	os.rename(loc, "%s.old" % loc)
+        """
+        vals = dict(jabber={}, misc={}, mysql={})
+        p = ConfigParser.SafeConfigParser()
+        p.read(conf_loc)
+        for (name, value) in p.items("jabber"):
+            if name == "jid":
+                user, node = value.split('@', 1)
+                vals["jabber"]["user"] = user
+                vals["jabber"]["server"] = node
+            else:
+                vals["jabber"][name] = value
+        for (name, value) in p.items("mysql"):
+            vals["mysql"][name] = value
+        for (name, value) in p.items("misc"):
+            if name == "highlight":
+                vals["misc"][name] = list(value)
+            else:
+                vals["misc"][name] = value
+        self.vals = vals
 
-	p.add_section("jabber")
-	for (option, value) in jabber.iteritems():
-		p.set("jabber", option, value)
-	p.add_section("mysql")
-	for (option, value) in mysql.iteritems():
-		p.set("mysql", option, value)
-	p.add_section("misc")
-	for (option, value) in misc.iteritems():
-		p.set("misc", option, value)
-	
-	f = open(loc, 'w')
-	p.write(f)
-	f.close()
-	print >> sys.stderr, "NOTICE: Updated config file %s." % loc
+# Load and cache the configuration.
+c = AnnaConfigParser()
 
-def parseConfigOld(configLoc):
-	"""Old and deprecated way to parse the configuration file.
-
-	Only works on old-style conf files (that is; pre-r136 config.sample files).
-
-	"""
-	f = open(configLoc)
-	config_lines = f.readlines()
-
-	for line in config_lines:
-		line = line.strip()
-		try:
-			if line[0] != '#':
-				# key = val , whitespaces stripped, splitted at first '='
-				try:
-					(key, value) = [elem.strip() for elem in line.split('=', 1)]
-				except ValueError:
-					sys.exit('\nThis line needs at least one "="-sign:\n\n>>> "%s"\n' % line)
-				except StandardError:
-					sys.exit('\nIt seems there was a problem with the configuration file on this line:\n\n>>>   "%s"\n' % line )
-	
-				if key[:6].lower() == 'mysql_':
-					mysql[key[6:]] = value
-				elif key.lower() == "jid" or key.lower() == "jabber_jid":
-					(jabber['user'], jabber['server']) = value.split('@')
-				elif key[:7].lower()== 'jabber_':
-					jabber[key[7:]] = value
-				elif key.lower() == 'admin_jids':
-					for elem in value.split(' '):
-						if elem: #prevent empty elements that occur when splitting for ex: 'a    b'
-							admins.append(elem)
-				elif key.lower() == 'owner_jid':
-					admins.append(value)
-					misc[key] = value
-				else:
-					misc[key] = value
-	
-		except IndexError:
-			pass
-	
-	f.close()
-
-class Misc:
-	"""Miscellaneous (and usually unimportant) data/information."""
-	# TODO: this is some ancient code, from back in the days... ToRemove.
-	# common highlighting characters
-	hlchars = (",", ":", ";")
-
-main()
+def get_conf_copy():
+    """Get a cached copy of the configuration."""
+    n = AnnaConfig()
+    n.__dict__.update(c.vals)
+    return n

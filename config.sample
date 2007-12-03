@@ -15,16 +15,15 @@ user_w = chatbot_w
 user_r = chatbot_r
 pass_w =
 pass_r =
-# Note: If you set "localhost" as the host, it will use the socket automatically.
-#       If you don't want this, use 127.0.0.1 instead.
+# Note: If you set "localhost" as the host, it will use the socket
+# automatically.  If you don't want this, use 127.0.0.1 instead.
 
 [misc]
 
 # The nickname the bot will use to join groupchats
 bot_nickname=anna
 
-# JID of the master of the bot
-owner_jid=
-
-# space-seperated list of JIDs with admin permissions
-admin_jids=
+# Characters used to determine incoming highlights as well as construct
+# outgoing messages in groupchats. Every character is evaluated
+# seperately.
+highlight = :;,
