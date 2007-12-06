@@ -1,8 +1,10 @@
 """Sends all incoming messages back, useful for testing."""
 
+import ai
+import aihandler
 import frontends
 
-class OneOnOne(BaseOneOnOne):
+class OneOnOne(ai.BaseOneOnOne):
     def __init__(self, identity):
         if not isinstance(identity, frontends.BaseIndividual):
             raise TypeError, "You can only use a OneOnOne AI for Individuals."
@@ -20,7 +22,7 @@ class OneOnOne(BaseOneOnOne):
                 self.idnty.send("Failed to load module %s: %s" % (ai_str, e))
         self.idnty.send(message)
 
-class ManyOnMany(BaseManyOnMany):
+class ManyOnMany(ai.BaseManyOnMany):
     def __init__(self, room):
         if not isinstance(room, frontends.BaseGroup):
             raise TypeError, "You can only use a ManyOnMany AI for Groups."

@@ -98,7 +98,7 @@ network to join a muc on: irc? xmpp?
 from _baseclasses import *
 
 __all__=[
-    'all_echo',
-    'annai',
-    'fishbot',
+    'echo',
+#    'annai',
+#    'fishbot',
 ]

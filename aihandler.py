@@ -1,84 +1,63 @@
-"""A front-end to the ai modules.
+"""Fetch ai classes by supplying the name as a string.
 
-Use this instead of accessing them directly.
+When this module is imported it imports all AI modules and keeps a
+reference to them. Updating this list of references at runtime is
+possible. Fetching references using this module read-only operation and
+is threadsafe. Updating the list is not.
+
+The names are case-insensitive so two AI modules that only differ in case are
+not allowed.
+
+TODO: acquire a GIL on update?
 
 """
-from types import *
+
+import imp
+import sys
 
 import ai
 
-#this dictionary will hold which UID is connected to which AID identity
-#like this: { 7: 'chat-english' , 23 : 'chat-english' , 57: 'chat-german' }
-index = {}
+# Pre-fetch a reference to all classes. Lowercase keynames.
+_refs = {}
 
-#these functions will be used to access the data stored in the above
-#dictionary. note that it is important to use these functions and not access
-#the data directly since it is likely that the storage-method will change
-#over time.
+def get_oneonone(name):
+    """Get the OneOnOne class of given AI module."""
+    try:
+        return _refs[name.lower()].OneOnOne
+    except KeyError:
+        raise ValueError, 'No such AI module: "%s".' % name
 
-#here, we preload all the ai modules in a big pool for quick access later on.
-_aipool={}
+def get_manyonmany(name):
+    """Get the ManyOnMany class of given AI module."""
+    try:
+        return _refs[name.lower()].ManyOnMany
+    except KeyError:
+        raise ValueError, 'No such AI module: "%s".' % name
 
-def getAID(uid):
-	"""Get the ai identity (AID) that was assigned to this UID.
-	
-	If no AI was assigned to this uid, 1 (int) is returned.
-	
-	"""
-	try:
-		return index[uid]
-	except KeyError:
-		return 1
+def update_refs():
+    """Update the list of references with all modules in the AI module."""
+    global _refs
+    imp.acquire_lock()
+    _refs = {}
+    reload(ai)
+    for name in ai.__all__:
+        assert(name.lower() not in _refs)
+        mod = imp.load_module(name, *imp.find_module(name, ["ai"]))
+        _refs[name.lower()] = mod
+        if __debug__:
+            if not ("ManyOnMany" in dir(mod) and "OneOnOne" in dir(mod)):
+                print >> sys.stderr, "AI module %s does not comply" % name, \
+                            "with the API."
+                print >> sys.stderr, "DEBUG:", repr(dir(mod))
+    imp.release_lock()
 
-def setAID(uid, aid):
-	"""Set the AID for this UID.
-	
-	Returns an integer. 0 on success, 1 if there is no such aid.
-	
-	"""
-	if not _aipool.has_key(aid):
-		return 1
-	index[uid] = aid
-	return 0
+def main():
+    global _refs
+    print "List of imported AI modules:"
+    for name in _refs:
+        print " -", name
 
+update_refs()
 
-#now we handle the AI modules
-
-getAll = _aipool.itervalues
-"""Return an iterator holding references to all available ai modules."""
-
-def getAIReferenceByAID(aid):
-	"""Return a reference to the actual AI module that belongs to a given AID.
-	
-	If there is no such AID, 1 (int) is returned.
-	
-	"""
-	try:
-		return _aipool[aid]
-	except KeyError:
-		return 1
-
-def getAIReferenceByUID(uid):
-	"""This function returns a reference to the actual AI module given a UID.
-
-	If the uid doesn't exist 1 (int) is returned. If the AID assigned to the
-	UID is false, 2 (int) is returned.
-	
-	"""
-	aid = getAID(uid)
-	if isinstance(aid, IntType):
-		return 1
-	aireference = getAIReferenceByAID(aid)
-	if isinstance(aireference, IntType):
-		return 2
-	return aireference
-
-
-for elem in ai.__all__:
-	#here all ai modules are imported as _ai_<modulename> . then, a reference
-	#to all these modules is copied to the aipool dictionary.
-	code = 'from ai import %s as _ai_%s;_aipool["%s"] = _ai_%s' % \
-	       (elem, elem, elem, elem)
-	mod = compile(code, __name__, 'exec')
-	eval(mod)
-	_aipool[elem].ID = elem
+#if __name__ == "__main__":
+#    main()
