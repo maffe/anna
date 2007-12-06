@@ -11,7 +11,6 @@ not allowed.
 TODO: acquire a GIL on update?
 
 """
-
 import imp
 import sys
 
@@ -20,17 +19,21 @@ import ai
 # Pre-fetch a reference to all classes. Lowercase keynames.
 _refs = {}
 
-def get_oneonone(name):
-    """Get the OneOnOne class of given AI module."""
-    try:
-        return _refs[name.lower()].OneOnOne
-    except KeyError:
-        raise ValueError, 'No such AI module: "%s".' % name
+def get_names():
+    """Return an iterator with the names of all available AI modules."""
+    return _refs.iterkeys()
 
 def get_manyonmany(name):
     """Get the ManyOnMany class of given AI module."""
     try:
         return _refs[name.lower()].ManyOnMany
+    except KeyError:
+        raise ValueError, 'No such AI module: "%s".' % name
+
+def get_oneonone(name):
+    """Get the OneOnOne class of given AI module."""
+    try:
+        return _refs[name.lower()].OneOnOne
     except KeyError:
         raise ValueError, 'No such AI module: "%s".' % name
 
@@ -51,13 +54,4 @@ def update_refs():
                 print >> sys.stderr, "DEBUG:", repr(dir(mod))
     imp.release_lock()
 
-def main():
-    global _refs
-    print "List of imported AI modules:"
-    for name in _refs:
-        print " -", name
-
 update_refs()
-
-#if __name__ == "__main__":
-#    main()

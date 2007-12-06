@@ -20,8 +20,10 @@ pass_r =
 
 [misc]
 
+default_ai = echo
+
 # The nickname the bot will use to join groupchats
-bot_nickname=anna
+bot_nickname = anna
 
 # Characters used to determine incoming highlights as well as construct
 # outgoing messages in groupchats. Every character is evaluated
