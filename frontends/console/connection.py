@@ -48,7 +48,12 @@ class Connection(BaseConnection):
             print 'Module "%s" successfully loaded.' % choice
 
     def connect(self):
-        """Take over the stdin and do nifty stuff... etc."""
+        """Take over the stdin and do nifty stuff... etc.
+        
+        This method is called as a seperate thread from the main script so it
+        must be thread-safe.
+        
+        """
         print USAGE
         self.get_ai()
         id = self.identity

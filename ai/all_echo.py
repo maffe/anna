@@ -1,35 +1,41 @@
-"""Your average echo module.
+"""Sends all incoming messages back, useful for testing."""
 
-Functional but not very useful: replies to all incoming messages by echoing
-the message. Useful for testing.
+import frontends
 
-"""
-import aihandler
+class OneOnOne(BaseOneOnOne):
+    def __init__(self, identity):
+        if not isinstance(identity, frontends.BaseIndividual):
+            raise TypeError, "You can only use a OneOnOne AI for Individuals."
+        self.idnty = identity
 
-def direct(message, identity, typ):
-	"""Echo the incoming message."""
+    def handle(self, message):
+        if message.startswith("load module "):
+            ai_str = message[12:]
+            try:
+                ai_class = aihandler.get_oneonone(ai_str)
+                new_ai = ai_class(self.idnty)
+                self.idnty.set_AI(new_ai)
+                return
+            except ValueError, e:
+                self.idnty.send("Failed to load module %s: %s" % (ai_str, e))
+        self.idnty.send(message)
 
-	if message.startswith("load module ") and message[12:]:
-		result = aihandler.setAID(identity.getUid(),message[12:])
-		if result == 0:
-			message="success!"
-		elif result == 1:
-			message="no such module"
+class ManyOnMany(BaseManyOnMany):
+    def __init__(self, room):
+        if not isinstance(room, frontends.BaseGroup):
+            raise TypeError, "You can only use a ManyOnMany AI for Groups."
+        self.room = room
 
-
-	identity.send(message)
-
-def room(message, sender, room):
-	"""Echo the incoming group message back to the room."""
-
-	if sender.getNick().lower() == room.getNick().lower():
-		return False
-
-	if message.startswith("load module ") and message[12:]:
-		result = aihandler.setAID(room.getUid(), message[12:])
-		if result == 0:
-			message = "success!"
-		elif result == 1:
-			message = "no such module"
-
-	room.send(message)
+    def handle(self, message, sender):
+        if sender.get_nick().lower() == self.room.get_mynick().lower():
+            return
+        if message.startswith("load module "):
+            ai_str = message[12:]
+            try:
+                ai_class = aihandler.get_manyonmany(ai_str)
+                new_ai = ai_class(self.room)
+                self.idnty.set_AI(new_ai)
+                return
+            except ValueError, e:
+                self.room.send("Failed to load module %s: %s" % (ai_str, e))
+        self.room.send(message)
