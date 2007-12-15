@@ -49,9 +49,8 @@ def update_refs():
         _refs[name.lower()] = mod
         if __debug__:
             if not ("ManyOnMany" in dir(mod) and "OneOnOne" in dir(mod)):
-                print >> sys.stderr, "AI module %s does not comply" % name, \
-                            "with the API."
-                print >> sys.stderr, "DEBUG:", repr(dir(mod))
+                print >> sys.stderr, "AI module", name, "does not comply",
+                print >> sys.stderr, "with the API.\nDEBUG:", repr(dir(mod))
     imp.release_lock()
 
 update_refs()

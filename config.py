@@ -78,7 +78,7 @@ class AnnaConfigParser(object):
         Works with new configuration files (post r136).
 
         """
-        vals = dict(jabber={}, misc={}, mysql={})
+        vals = dict(jabber={}, misc={})
         p = ConfigParser.SafeConfigParser()
         p.read(conf_loc)
         for (name, value) in p.items("jabber"):
@@ -88,8 +88,6 @@ class AnnaConfigParser(object):
                 vals["jabber"]["server"] = node
             else:
                 vals["jabber"][name] = value
-        for (name, value) in p.items("mysql"):
-            vals["mysql"][name] = value
         for (name, value) in p.items("misc"):
             if name == "highlight":
                 vals["misc"][name] = list(value)

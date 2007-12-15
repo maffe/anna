@@ -20,6 +20,7 @@ class OneOnOne(ai.BaseOneOnOne):
                 return
             except ValueError, e:
                 self.idnty.send("Failed to load module %s: %s" % (ai_str, e))
+                return
         self.idnty.send(message)
 
 class ManyOnMany(ai.BaseManyOnMany):
@@ -40,4 +41,5 @@ class ManyOnMany(ai.BaseManyOnMany):
                 return
             except ValueError, e:
                 self.room.send("Failed to load module %s: %s" % (ai_str, e))
+                return
         self.room.send(message)

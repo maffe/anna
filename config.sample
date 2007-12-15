@@ -3,6 +3,7 @@
 # Info about the bot's jabber account
 JID = anna@example.net
 password = secret
+resource = anna
 
 [mysql]
 

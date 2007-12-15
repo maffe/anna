@@ -27,12 +27,7 @@ class Connection(BaseConnection):
         self.idnty = Individual(username)
 
     def get_ai(self):
-        """Ask the user what AI module to use and return its reference.
-        
-        If the supplied value is not a correct AID (AI identifier) the default
-        module is returned.  There is only one chance; no "please try again".
-        
-        """
+        """Ask the user what AI module to use and return its reference."""
         def_ai = config.get_conf_copy().misc["default_ai"]
         while 1:
             print "Please choose which ai you want to load from the following list:"
@@ -43,9 +38,12 @@ class Connection(BaseConnection):
                 else:
                     print
             # This can raise an EOFError.
-            choice = raw_input(">>> ").strip()
+            choice = raw_input(">>> ").decode(sys.stdin.encoding).strip()
             if choice == "":
                 choice = def_ai
+            elif choice.endswith(" (default)"):
+                # If the user thought " (default)" was part of the name, strip.
+                choice = choice[:-len(" (default)")]
             try:
                 self.idnty.set_AI(aihandler.get_oneonone(choice)(self.idnty))
                 break
