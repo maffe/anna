@@ -30,8 +30,8 @@ class ManyOnMany(ai.BaseManyOnMany):
         self.room = room
 
     def handle(self, message, sender):
-        if sender.get_nick().lower() == self.room.get_mynick().lower():
-            return
+        if sender.nick.lower() == self.room.get_mynick().lower():
+            print >> sys.stderr, "WARNING: interpreting messages from myself."
         if message.startswith("load module "):
             ai_str = message[12:]
             try:
@@ -42,4 +42,7 @@ class ManyOnMany(ai.BaseManyOnMany):
             except ValueError, e:
                 self.room.send("Failed to load module %s: %s" % (ai_str, e))
                 return
+        elif message in ("!leave", "leave", "!stop", "stop", "!quit", "quit"):
+            self.room.leave()
+            return
         self.room.send(message)

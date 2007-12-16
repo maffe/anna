@@ -19,6 +19,13 @@ import ai
 # Pre-fetch a reference to all classes. Lowercase keynames.
 _refs = {}
 
+class NoSuchAIError(Exception):
+    def __init__(self, name):
+        self.name = name
+
+    def __str__(self):
+        return 'No such AI module: "%s".' % self.name
+
 def get_names():
     """Return an iterator with the names of all available AI modules."""
     return _refs.iterkeys()
@@ -28,14 +35,14 @@ def get_manyonmany(name):
     try:
         return _refs[name.lower()].ManyOnMany
     except KeyError:
-        raise ValueError, 'No such AI module: "%s".' % name
+        raise NoSuchAIError, name
 
 def get_oneonone(name):
     """Get the OneOnOne class of given AI module."""
     try:
         return _refs[name.lower()].OneOnOne
     except KeyError:
-        raise ValueError, 'No such AI module: "%s".' % name
+        raise NoSuchAIError, name
 
 def update_refs():
     """Update the list of references with all modules in the AI module."""
