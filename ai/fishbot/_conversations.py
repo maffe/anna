@@ -1,14 +1,9 @@
-#!/usr/bin/env python
-# -*- coding: utf-8  -*-
-#
-# original by d0k – http://mooltied.de/drz/
 # Licensed under GPLv2 or higher
 #
-# modified by bb
+# modified by bb, original author unknown to me
 
-import sys, re
-
-import stats, aihandler
+import re
+import sys
 
 raw = {
 	"^some people are being fangoriously devoured by a gelatinous monster$" : "Hillary’s legs are being digested.",

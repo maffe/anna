@@ -8,20 +8,20 @@ class OneOnOne(ai.BaseOneOnOne):
     def __init__(self, identity):
         if not isinstance(identity, frontends.BaseIndividual):
             raise TypeError, "You can only use a OneOnOne AI for Individuals."
-        self.idnty = identity
+        self.ident = identity
 
     def handle(self, message):
         if message.startswith("load module "):
             ai_str = message[12:]
             try:
                 ai_class = aihandler.get_oneonone(ai_str)
-                new_ai = ai_class(self.idnty)
-                self.idnty.set_AI(new_ai)
+                new_ai = ai_class(self.ident)
+                self.ident.set_AI(new_ai)
                 return
             except ValueError, e:
-                self.idnty.send("Failed to load module %s: %s" % (ai_str, e))
+                self.ident.send("Failed to load module %s: %s" % (ai_str, e))
                 return
-        self.idnty.send(message)
+        self.ident.send(message)
 
 class ManyOnMany(ai.BaseManyOnMany):
     def __init__(self, room):
@@ -37,7 +37,7 @@ class ManyOnMany(ai.BaseManyOnMany):
             try:
                 ai_class = aihandler.get_manyonmany(ai_str)
                 new_ai = ai_class(self.room)
-                self.idnty.set_AI(new_ai)
+                self.room.set_AI(new_ai)
                 return
             except ValueError, e:
                 self.room.send("Failed to load module %s: %s" % (ai_str, e))
