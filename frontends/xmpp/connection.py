@@ -35,10 +35,9 @@ class Connection(px.jab.Client, BaseConnection):
 
     def _create_AI_list(self):
         """Creates a textual representation of the available AIs."""
-        def_ai = self.conf.misc["default_ai"]
         ais = []
         for name in aihandler.get_names():
-            if name.lower() == def_ai.lower():
+            if name.lower() == self.conf.misc["default_ai"].lower():
                 ais.append("%s (default)" % name)
             else:
                 ais.append(name)
@@ -57,7 +56,7 @@ class Connection(px.jab.Client, BaseConnection):
         if __debug__:
             marsh = message.serialize().decode("utf-8") # unicode object.
             marsh = marsh.encode(sys.stdout.encoding, "replace") # byte string.
-            print >> sys.stderr, "DEBUG: sending '%s'" % marsh
+            print >> sys.stderr, "DEBUG: xmpp: sending '%s'" % marsh
 
     def choose_AI(self, party, message, is_room):
         """Handles conversations with this party when no AI is assigned yet.
@@ -77,7 +76,7 @@ class Connection(px.jab.Client, BaseConnection):
         # sent must be his choice. Parse it as such.
         if party in self._aichoosers:
             if text == "":
-                choice = def_ai
+                choice = self.conf.misc["default_ai"]
             elif text.endswith(" (default)"):
                 # If the user thought " (default)" was part of the name, strip.
                 choice = text[:-len(" (default)")]
@@ -85,9 +84,9 @@ class Connection(px.jab.Client, BaseConnection):
                 choice = text
             try:
                 if is_room:
-                    ai_class = aihandler.get_manyonmany(text)
+                    ai_class = aihandler.get_manyonmany(choice)
                 else:
-                    ai_class = aihandler.get_oneonone(text)
+                    ai_class = aihandler.get_oneonone(choice)
             except aihandler.NoSuchAIError, e:
                 msg = u"\n\n".join((unicode(e), self._create_AI_list()))
             else:
@@ -112,8 +111,12 @@ class Connection(px.jab.Client, BaseConnection):
         # which should not be overwritten in our case. So we have to call it
         # explicitly to initiate this instance.
         px.jab.Client.connect(self)
-        print "XMPP frontend started."
         self.loop()
+
+    def disconnected(self):
+        """Try to reconnect to the xmpp network when disconnected."""
+        print >> sys.stderr, "DEBUG: xmpp: disconnected, trying to reconnect"
+        self.connect()
 
     def exit(self):
         """Disconnect and exit.""" 
@@ -217,6 +220,8 @@ class Connection(px.jab.Client, BaseConnection):
         #                            handler=self.handle_version)
         self.rooms = px.jab.muc.MucRoomManager(self.stream)
         self.rooms.set_handlers(priority=40)
+        msg = u"XMPP: logged in as %s" % unicode(self.jid)
+        print msg.encode(sys.stdout.encoding)
 
     def state_change(*args):
         """Debug handler overwriting parent method."""
@@ -243,6 +248,7 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
         self.room = room
 
     def message_received(self, sender, message):
+        """Pass incoming message to appropriate AI module."""
         try:
             room_jid = px.JID(message.get_from()).bare()
         except JIDError:
@@ -252,7 +258,7 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
             return True
         text = message.get_body()
         if __debug__:
-            msg = u"DEBUG: groupchat: %s: '%s'" % (message.get_from(), text)
+            msg = u"DEBUG: xmpp: muc: %s: '%s'" % (message.get_from(), text)
             print >> sys.stderr, msg.encode(sys.stdout.encoding, "replace")
         # Rooms always have an instance stored in the _parties dictionary.
         room = self.conn._parties[room_jid]

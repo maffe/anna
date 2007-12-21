@@ -154,7 +154,7 @@ class GroupMember(Individual, px.jab.muc.MucRoomUser, BaseGroupMember):
         return not self.same_as(y)
 
     def __str__(self):
-        return "xmpp:%s" % self.room_jid
+        return "xmpp:%s" % str(self.room_jid)
 
     def __unicode__(self):
         return u"xmpp:%s" % unicode(self.room_jid)
