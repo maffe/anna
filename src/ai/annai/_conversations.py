@@ -78,7 +78,7 @@ class OneOnOne(ai.BaseOneOnOne):
 
         if message.startswith("unload plugin "):
             try:
-                self.plugins.remove(message[len("unload plugin "):].strip())
+                self.plugins.remove(message[len("unload plugin "):])
                 return u"k."
             except ValueError:
                 return u"plugin not found."

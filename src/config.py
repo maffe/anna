@@ -43,11 +43,11 @@ class AnnaConfigParser(object):
 
     def create_first_conf(self, conf_loc):
         """Create a config file at the specified location."""
-        #find out where the sample configuration file is (TODO: hack hack hack)
-        script_dir = os.path.abspath(os.path.join(os.curdir))
+        # find out where the sample configuration file is (TODO: hack hack)
+        script_dir = os.path.abspath(os.path.join(os.path.pardir))
         conf_sample = os.path.join(script_dir, 'config.sample')
 
-        #copy the sample configuration to the config file
+        # copy the sample configuration to the config file
         f_sample = open(conf_sample)
         f = open(conf_loc, 'w')
         f.write(f_sample.read())
