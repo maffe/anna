@@ -1,5 +1,5 @@
-most up-to-date information can always be found on the wiki:
-http://0brg.xs4all.nl/anna/wiki/Install
+Up-to-date information can always be found on the wiki:
+http://0brg.net/anna/wiki/Install
 
 To install and run the chatbot, you will have to install a few
 software-packages as well as download some data. This guide should
@@ -31,7 +31,7 @@ this account will need to meet all requirments for BOTH accounts!)
 Currently the source-code is only available through subversion. To
 download the latest trunk, execute the following command:
 
-  $ svn co svn://0brg.xs4all.nl/anna/trunk
+  $ svn co svn://0brg.net/anna/trunk
 
 If you don't have a subversion client you can get the official client
 from [http://subversion.tigris.org/], or search the web for another one.
@@ -90,6 +90,6 @@ pretty large. If you don't want that, try this:
    ## 5) MISCELLANEOUS ##
 
 Want to complain? Contribute? Dance? join us in:
-bot@conference.jabber.xs4all.nl
+bob@conference.jabber.xs4all.nl
 
 Good luck =]

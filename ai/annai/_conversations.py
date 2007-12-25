@@ -1,231 +1,213 @@
-"""The 'official' AI module for Anna (english)."""
+"""The conversation classes for the annai AI module."""
 
 import random
 import re
 
 import ai
+import aihandler
 import config
-
-# Pre-compiled regular expressions.
-_REX_PM_LEAVE_MUC = re.compile("((please )?leave)|(exit)", re.IGNORECASE)
+import frontends
 
 class OneOnOne(ai.BaseOneOnOne):
     def __init__(self, identity):
-        self.ident = identity
+        if __debug__:
+            if not isinstance(identity, frontends.BaseIndividual):
+                raise TypeError, "Identity must be an Individual."
         self.conf = config.get_conf_copy()
+        self.ident = identity
+        self.plugins = []
 
     def handle(self, message):
-        """Call all plugins and send back an answer if appropriate."""
-        reply = self.general_reply(message)
-        try:
-            plugins = self.ident.get_plugins()
-        except ValueError:
-            plugins = pluginhandler.get_default_PM()
-            self.ident.set_plugins(plugins)
-        for plugin in plugins:
-            message, reply = plugin.process(self.ident, message, reply)
+        """Call all plugins and send back an answer if appropriate.
 
-        if reply is not None:
-            self.ident.send(reply)
-
-    def general_reply(self, message):
-        """Tries to come up with a reply to this message without plugins.
-
-        If no reply is found None is returned. Otherwise a unicode object is
-        returned. The message argument must also be a unicode object.
+        @param message: The incoming message.
+        @type message: C{unicode}
 
         """
-        assert(isinstance(message, unicode))
-        identity = self.ident
-        reply = None
-        message = message.strip()
-
+        if __debug__:
+            if not isinstance(message, unicode):
+                raise TypeError, "Message must be a unicode object."
         # Replace some stuff in the reply:
         replacedict = dict(
                 user=self.ident.get_name(),
                 nick=self.conf.misc["bot_nickname"]
                 )
-        if message.startswith(u"load module "):
-            ai_str = message[12:]
+        reply = self.general_reply(message)
+        for plugin in self.plugins:
+            message, reply = plugin.process(self.ident, message, reply)
+
+        if reply is not None:
+            self.ident.send(custom_replace(reply, **replacedict))
+
+    def general_reply(self, message):
+        """Tries to come up with a reply to this message without plugins.
+
+        If no reply is found None is returned. Otherwise a unicode object is
+        returned.
+
+        @param message: The incoming message.
+        @type message: C{unicode}
+
+        """
+        if __debug__:
+            if not isinstance(message, unicode):
+                raise TypeError, "Message must be a unicode object."
+        identity = self.ident
+        reply = None
+        message = message.strip()
+
+        if message.startswith("load module "):
+            ai_str = message[len("load module "):]
             try:
-                ai_class = aihandler.get_oneonone(ai_str)
-                new_ai = ai_class(self.ident)
-                self.ident.set_AI(new_ai)
+                self.ident.set_AI(aihandler.get_oneonone(ai_str)(self.ident))
                 return u"Success!"
-            except ValueError, e:
-                return u"Failed to load module %s: %s" % (ai_str, e)
+            except aihandler.NoSuchAIError, e:
+                return unicode(e)
 
-        # HandlePlugins() Does not actually apply plugins; just checks commands
-        # to moderate them.
-        return self.handle_plugins(message)
+        return self.mod_plugins(message)
 
-    def handlePlugins(self, message):
-        """Checks if the message wants to modify plugin settings and applies
-        them to given identity."""
-
-        uid = identity.getUid()
-
+    def mod_plugins(self, message):
+        """Checks if the message wants to modify plugin settings."""
         if message.startswith("load plugin "):
+            plug_name = message[len("load plugin "):]
             try:
-                pluginhandler.addPlugin(uid, message[12:])
-                return "k."
-            except ValueError:
-                return "plugin not found."
-        
+                self.plugins.append(load_plugin(plug_name))
+                return u"k."
+            except NoSuchPluginError:
+                return u"plugin not found."
+
         if message.startswith("unload plugin "):
             try:
-                pluginhandler.removePlugin(uid, message[14:])
-                return "k."
+                self.plugins.remove(message[len("unload plugin "):].strip())
+                return u"k."
             except ValueError:
-                return "plugin not found."
+                return u"plugin not found."
 
         if message.lower() == "list plugins":
-            try:
-                plugins = pluginhandler.getPlugins(uid)
-                return "plugins:\n- " + "\n- ".join([plugin.ID for plugin in plugins])
-            except ValueError:
-                return "no plugins loaded"
+            if self.plugins:
+                plug_names = u"\n- ".join([unicode(p) for p in self.plugins])
+                return u"plugins:\n- %s" % plug_names
+            else:
+                return u"no plugins loaded"
 
         if message.lower() == "list available plugins":
-            #TODO: nice textual representation of this iterable element
-            return str(pluginhandler.getAllPlugins())
+            return u"TODO! bug the developpers about this."
 
-        #if it wasn't anything, return None.
+        # If it had nothing to do with moderating plugins, return None.
         return None
 
-def room(message, sender, room):
-    """Use this function to get yourself a reply that fits a mutli user
-    chat message.
+class ManyOnMany(ai.BaseManyOnMany):
+    def __init__(self, room):
+        if __debug__:
+            if not isinstance(room, frontends.BaseGroup):
+                raise TypeError, "Identity must be an Individual."
+        self.conf = config.get_conf_copy()
+        self.plugins = []
+        self.room = room
 
-    - If the message starts with the current nickname followed by a
-      highlighting character, handle it with mucHighlight().
-    - Call all loaded modules.
-    - If any of the above gave a result by setting the "message" variable,
-      send that very variable back to the room with muc.send().
-        
-    """
-    typ = room.getType()
-    nickname = room.getNick()
-    replace = {
-        'user': sender.getNick(),
-        'nick': room.getNick(),
-    }
+    def handle(self, message, sender):
+        """Process incoming groupmessage.
 
-    if sender.getNick().lower() == nickname.lower():
-        return False  #prevent loops
-    message = filters.xstrip(message)
-    reply = None
+        @TODO: Don't send > 2 newlines unless explicitly allowed to.
 
-    # Handle messages with leading nick as direct messages.
-    for elem in config.Misc.hlchars:
-        # Check if we have nickanme + one hlchar.
-        if message.startswith(''.join((nickname, elem))):
-            return mucHighlight(message, sender, room)
+        """
+        if __debug__:
+            if not isinstance(sender, frontends.BaseGroupMember):
+                raise TypeError, "Sender must be a GroupMember."
+            if not isinstance(message, unicode):
+                raise TypeError, "Message must be a unicode object."
+        message = message.strip()
+        reply = None
 
-    # Apply plugins.
-    try:
-        plugins = room.getPlugins()
-    except ValueError:
-        plugins = pluginhandler.getDefaultMUC()
-        room.setPlugins(plugins)
-    for plugin in plugins:
-        message, reply = plugin.process(room, message, reply)
+        mynick = room.get_mynick().lower()
+        if message.lower().startswith(mynick):
+            highlight = message[len(mynick):]
+            for elem in self.conf.misc["highlight"]:
+                # Check if we have nickanme + one hlchar.
+                if highlight.startswith(elem):
+                    msg = highlight[len(elem):].strip()
+                    return self.highlight(msg, sender)
 
-    if reply and room.getBehaviour() != 0:
-        if (reply.count('\n') > 2 or len(reply) > 255) and room.getBehaviour() < 3:
-            room.send(''.join(("Sorry, if I would react to that it would spam the",
-                               " room too much. Please repeat it to me in PM.")))
-        else:
-            reply = mucReplaceString(reply, replace)
+        for plugin in self.plugins:
+            message, reply = plugin.process(message, reply)
+
+        if reply is not None:
+            reply = custom_replace(reply, user=sender.nick,
+                    nick=room.get_mynick())
             room.send(reply)
-
-
-def mucHighlight(message, sender, room):
-    """This is for when highlighted in a groupchat."""
-
-    reply = None
-    uid = room.getUid()
-    nick = room.getNick()
-    #TODO: we just 'assume' the highlight character to be of length 1 here
-    hlchar = message[len(nick)]
-    # Strip the leading nickname and hlcharacter off.
-    message = message[(len(nick) + 1):].strip()
-    # Replace dictionary.
-    replace = {
-        'user': sender.getNick(),
-        'nick': room.getNick(),
-    }
-
-    if re.search(_REX_PM_LEAVE_MUC, message) is not None:
-        room.send("... :'(")
-        room.leave()
         return
 
-    elif message[:4] == "act ":
-        try:
-            room.setBehaviour(getBehaviourID(message[4:]))
-            reply = "k."
-        except ValueError:
-            reply = "behaviour not found"
+    def highlight(self, message, sender):
+        """This is for when highlighted in a groupchat.
 
-    elif message[:24] == "change your nickname to ":
-        room.changeNick(message[24:])
+        @param message: The received message (without highlight-prefix).
+        @type message: C{unicode}
+        @param sender: The group member that sent the message.
+        @type sender: L{frontends.BaseGroupMember}
 
-    elif message[:12] == "load module " and message[12:]:
-    #the "and message[12:]" prevents trying to load an empty module
-        result = aihandler.setAID(uid, message[12:]) #TODO: security?
-        if result == 0:
-            reply = "success!"
-        elif result == 1:
-            reply = "no such module"
-    elif message == "what's your behaviour?":
-        #TODO: this wil crash the bot if room.getBehaviour() returns a false value.
-        #bug or feature?
-        reply = getBehaviour(room.getBehaviour())
+        """
+        if __debug__:
+            if not isinstance(message, unicode):
+                raise TypeError, "Message must be unicode."
+            if not isinstance(sender, frontends.BaseGroupMember):
+                raise TypeError, "Sender must be a GroupMember."
+        reply = None
+        uid = room.getUid()
+        nick = room.getNick()
+        # Replace dictionary.
+        replace = dict(
+                user=sender.nick,
+                nick=self.room.get_mynick(),
+                )
 
-    if not reply:
-        reply = handlePlugins(message, room)
+        leave_rex = re.compile(u"((please )?leave)|(exit)",
+                                        re.IGNORECASE | re.UNICODE)
+        if leave_rex.search(message) is not None:
+            self.room.send(u"... :'(")
+            self.room.leave()
+            return
 
-    for plugin in sender.getPlugins():
-        message, reply = plugin.process(room, message, reply)
+        elif message.startswith("change your nickname to "):
+            room.set_mynick(message[len("change your nickname to "):])
 
-    if reply and room.getBehaviour() != 0:
+        elif message.startswith("load module "):
+            ai_name = message[len("load module "):]
+            try:
+                self.room.set_AI(aihandler.get_manyonmany(ai_name)(self.room))
+                reply = u"success!"
+            except aihandler.NoSuchAIError, e:
+                reply = unicode(e)
 
-        #pick a random highlighting char:
-        #TODO: UGLY UGLY UGLY UGLY UGLY UGLY UGLY!!!!!
-        n = random.randint(0, len(config.Misc.hlchars) - 1)
-        hlchar = config.Misc.hlchars[n]
-        del n
-        reply = "%s%s %s" % (sender.getNick(), hlchar, reply)
+        #if not reply:
+        #    reply = handlePlugins(message, room)
 
-        #TODO: check if newlines can be inserted in another way
-        if (reply.count('\n') > 2 or len(reply) > 255) and room.getBehaviour() < 3:
-            room.send("Sorry, if I would react to that it would spam the room too"
-                      " much. Please repeat it to me in PM.")
-        else:
-            room.send(mucReplaceString(reply, replace))
+        #for plugin in sender.getPlugins():
+        #    message, reply = plugin.process(room, message, reply)
 
+        if reply:
+            # Pick a random highlighting char:
+            hlchar = random.choice(self.conf.misc["hlchars"])
+            reply = u"%s%s %s" % (sender.nick, hlchar, reply)
+            self.room.send(muc_replace(reply, replace))
 
-def mucReplaceString(message, replace):
+def custom_replace(message, **replace):
     """This function replaces the message with elements from the dict.
-    
+
     If an error occurs (eg.: due to wrong formatting of the message) it is
     catched and an appropriate message is returned.
 
     """
     try:
         return message % replace
-
     except KeyError, e:
         return ''.join(('I was told to say "%s" now but I don\'t know what to',
                         ' replace %%(%s)s with.')) % (message, e[0])
-
     except StandardError, e:
         return ''.join(('I was taught to say "%s" now, but there seems to be'
                         ' something wrong with that..')) % message
 
 
-def invitedToMuc(room, situation, by = None, reason = None):
+def invited_2_muc_obsolete(room, situation, by = None, reason = None):
     """Handler to call if invited to a muc room.
 
     Takes:
@@ -238,17 +220,14 @@ def invitedToMuc(room, situation, by = None, reason = None):
         - by: a unicode containing the name of the person that invited the bot
         - reason: unicode containing the reason for the invite as supplied by
           the inviter
-    Technically speaking, the by and reason attributes are valid as long as
-    they have a .__str__() method. Of course, unicode should be used throughout
-    the entire bot, but it's not necessary.
 
     """
-    #this dictionary holds all the messages that could be sent. it's not very
-    #nice because you construct them all even though one is going to be used,
-    #but since this is called not very often I thought it would be nice,
-    #because it also improves readability. also note that right now the indexes
-    #are the situation codes, but that could very well be changed.
-    messages = {}
+    # this dictionary holds all the messages that could be sent. it's not very
+    # nice because you construct them all even though one is going to be used,
+    # but since this is called not very often I thought it would be nice,
+    # because it also improves readability. also note that right now the
+    # indexes are the situation codes, but that could very well be changed.
+    messages = dict()
     if reason:
         messages[0] = ''.join(("I was invited to this room, being told '%s',",
                               " but I'm already in here...")) % reason
@@ -262,34 +241,3 @@ def invitedToMuc(room, situation, by = None, reason = None):
         room.join()
 
     room.send(messages[situation])
-
-
-# The different behaviour-levels and their textual representations:
-# 1 With this behaviour you should typically not say anything.
-# 2 Only talk when talked to.
-# 3 React to everything you can react to, even if not addressed.
-# 4 Say random things at random moments, be annoying.
-
-behaviour = {
-    0: 'silent',
-    1: 'shy',
-    2: 'normal',
-    3: 'loudly'
-}
-
-def getBehaviour(id):
-    return behaviour[id]
-
-def getBehaviourID(text):
-    """Get the numerical ID of the specified behaviour."""
-    for elem in behaviour.iteritems():
-        if elem[1] == text:
-            return elem[0]
-    raise ValueError, text
-
-def isBehaviour(arg):
-    """Returns True if supplied behaviour (textual OR numerical) is valid."""
-    if isinstance(arg, int):
-        return arg in behaviour
-    else:
-        return arg in behaviour.values()

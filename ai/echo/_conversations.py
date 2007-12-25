@@ -1,4 +1,4 @@
-"""Sends all incoming messages back, useful for testing."""
+"""The conversation classes for the echo AI module."""
 
 import ai
 import aihandler
@@ -17,6 +17,7 @@ class OneOnOne(ai.BaseOneOnOne):
                 ai_class = aihandler.get_oneonone(ai_str)
                 new_ai = ai_class(self.ident)
                 self.ident.set_AI(new_ai)
+                self.ident.send("Success.")
                 return
             except ValueError, e:
                 self.ident.send("Failed to load module %s: %s" % (ai_str, e))

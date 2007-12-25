@@ -6,7 +6,7 @@ class BaseGroup(object):
     """Parent-class for classes representing a group having a conversation."""
     pass
 
-class BaseGroupMember(BaseIndividual):
+class BaseGroupMember(object):
     """Parent-class for classes representing a member of a Group chat."""
     pass
 

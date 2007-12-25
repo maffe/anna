@@ -36,7 +36,7 @@ class AnnaConfigParser(object):
     def __init__(self):
         """Take all needed actions to complete the configuration.
         
-        If the file is malformed a ConfigParser.Error exception is raised.
+        @raise ConfigParser.Error: The file is malformed.
         
         """
         self.parse_conf(self.get_conf_loc())

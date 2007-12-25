@@ -8,7 +8,7 @@ is threadsafe. Updating the list is not.
 The names are case-insensitive so two AI modules that only differ in case are
 not allowed.
 
-TODO: acquire a GIL on update?
+@TODO: acquire a GIL on update?
 
 """
 import imp
@@ -19,26 +19,35 @@ import ai
 # Pre-fetch a reference to all classes. Lowercase keynames.
 _refs = {}
 
-class NoSuchAIError(Exception):
-    def __init__(self, name):
-        self.name = name
-
-    def __str__(self):
-        return 'No such AI module: "%s".' % self.name
-
 def get_names():
     """Return an iterator with the names of all available AI modules."""
     return _refs.iterkeys()
 
 def get_manyonmany(name):
-    """Get the ManyOnMany class of given AI module."""
+    """Get the ManyOnMany class of given AI module.
+
+    @param name: The textual representation of the module.
+    @type name: C{unicode}
+    @raise NoSuchAIError: The specified AI does not exist.
+
+    """
+    if not isinstance(name, unicode):
+        raise TypeError, "name argument must be a unicode object."
     try:
         return _refs[name.lower()].ManyOnMany
     except KeyError:
         raise NoSuchAIError, name
 
 def get_oneonone(name):
-    """Get the OneOnOne class of given AI module."""
+    """Get the OneOnOne class of given AI module.
+
+    @param name: The textual representation of the module.
+    @type name: C{unicode}
+    @raise NoSuchAIError: The specified AI does not exist.
+
+    """
+    if not isinstance(name, unicode):
+        raise TypeError, "name argument must be a unicode object."
     try:
         return _refs[name.lower()].OneOnOne
     except KeyError:
@@ -59,5 +68,15 @@ def update_refs():
                 print >> sys.stderr, "AI module", name, "does not comply",
                 print >> sys.stderr, "with the API.\nDEBUG:", repr(dir(mod))
     imp.release_lock()
+
+class NoSuchAIError(Exception):
+    def __init__(self, name):
+        self.name = name
+
+    def __str__(self):
+        return 'No such AI module: "%s".' % self.name
+
+    def __unicode__(self):
+        return u'No such AI module: "%s".' % self.name
 
 update_refs()

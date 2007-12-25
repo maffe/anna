@@ -132,7 +132,7 @@ class Group(BaseGroup):
                 stanza_type="groupchat")
         self.stream.send(message)
 
-class GroupMember(Individual, px.jab.muc.MucRoomUser, BaseGroupMember):
+class GroupMember(px.jab.muc.MucRoomUser, BaseGroupMember):
     def __init__(self, room, *args):
         """Store a reference to the Group instance and create MucRoomUser().
 
