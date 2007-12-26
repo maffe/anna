@@ -39,10 +39,10 @@ from [http://subversion.tigris.org/], or search the web for another one.
 
    ## 2) INSTALL ##
 
-The only thing to install is the configuration-file, but the anna.py
+The only thing to install is the configuration-file, but the program
 script should do this for you automatically. Try running this first:
 
-  $ python anna.py
+  $ ./anna
 
 
    ## 3) EXECUTE ##
@@ -52,7 +52,7 @@ your home-directory, containing a file called "config". Edit that file
 and make sure all required fields are filled out, then run the command
 again:
 
-  $ python anna.py
+  $ ./anna
 
 Hopefully you now see a lot of coloured debug-output (this is from the
 xmpppy module).
@@ -64,7 +64,7 @@ Once the chatbot is up and running, you will probably want to run it in
 the background and close the login sessions you have with the server.
 This command won't do the trick though:
 
-  $ python anna.py &
+  $ ./anna &
 
 The problem is that, in case you're using SSH at least, once you
 disconnect from the server by typing "exit", for example, the HANGUP
@@ -72,7 +72,7 @@ disconnect from the server by typing "exit", for example, the HANGUP
 This includes the anna.py process you started above. To prevent this
 from happening, use the nohup command:
 
-  $ nohup python anna.py &
+  $ nohup ./anna &
 
 The nohup command catches all HANGUP signals sent to it and ignores them.
 This will also mean that, once logged out, there will be no way to pull
@@ -84,7 +84,7 @@ to a file called nohup.out in your working directory. This means that all
 debugging will be stored in a file. After a while, this file can grow
 pretty large. If you don't want that, try this:
 
-  $ nohup python anna.py &> /dev/null &
+  $ nohup ./anna &> /dev/null &
 
 
    ## 5) MISCELLANEOUS ##

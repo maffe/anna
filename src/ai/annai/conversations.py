@@ -2,11 +2,14 @@
 
 import random
 import re
+import sys
 
 import ai
 import aihandler
 import config
 import frontends
+
+import pluginhandler
 
 class OneOnOne(ai.BaseOneOnOne):
     def __init__(self, identity):
@@ -15,15 +18,10 @@ class OneOnOne(ai.BaseOneOnOne):
                 raise TypeError, "Identity must be an Individual."
         self.conf = config.get_conf_copy()
         self.ident = identity
-        self.plugins = []
+        self.plugins = set()
 
     def handle(self, message):
-        """Call all plugins and send back an answer if appropriate.
-
-        @param message: The incoming message.
-        @type message: C{unicode}
-
-        """
+        """Call all plugins and send back an answer if appropriate."""
         if __debug__:
             if not isinstance(message, unicode):
                 raise TypeError, "Message must be a unicode object."
@@ -34,7 +32,7 @@ class OneOnOne(ai.BaseOneOnOne):
                 )
         reply = self.general_reply(message)
         for plugin in self.plugins:
-            message, reply = plugin.process(self.ident, message, reply)
+            message, reply = plugin.process(message, reply)
 
         if reply is not None:
             self.ident.send(custom_replace(reply, **replacedict))
@@ -44,9 +42,6 @@ class OneOnOne(ai.BaseOneOnOne):
 
         If no reply is found None is returned. Otherwise a unicode object is
         returned.
-
-        @param message: The incoming message.
-        @type message: C{unicode}
 
         """
         if __debug__:
@@ -71,19 +66,25 @@ class OneOnOne(ai.BaseOneOnOne):
         if message.startswith("load plugin "):
             plug_name = message[len("load plugin "):]
             try:
-                self.plugins.append(load_plugin(plug_name))
-                return u"k."
-            except NoSuchPluginError:
+                plugin_cls = pluginhandler.plugins[plug_name].OneOnOnePlugin
+            except KeyError:
                 return u"plugin not found."
+            self.plugins.add(plugin_cls(self.ident))
+            return u"k."
 
         if message.startswith("unload plugin "):
+            plug_name = message[len("unload plugin "):]
             try:
-                self.plugins.remove(message[len("unload plugin "):])
-                return u"k."
-            except ValueError:
+                plugin_cls = pluginhandler.plugins[plug_name].OneOnOnePlugin
+            except KeyError:
                 return u"plugin not found."
+            for plugin in self.plugins:
+                if plugin.__class__ is plugin_cls:
+                    self.plugins.remove(plugin)
+                    return u"k."
+            return u"This plugin was not loaded."
 
-        if message.lower() == "list plugins":
+        if message.lower() == "list loaded plugins":
             if self.plugins:
                 plug_names = u"\n- ".join([unicode(p) for p in self.plugins])
                 return u"plugins:\n- %s" % plug_names
@@ -91,7 +92,7 @@ class OneOnOne(ai.BaseOneOnOne):
                 return u"no plugins loaded"
 
         if message.lower() == "list available plugins":
-            return u"TODO! bug the developpers about this."
+            return u", ".join(pluginhandler.plugins.iterkeys())
 
         # If it had nothing to do with moderating plugins, return None.
         return None
@@ -102,7 +103,7 @@ class ManyOnMany(ai.BaseManyOnMany):
             if not isinstance(room, frontends.BaseGroup):
                 raise TypeError, "Identity must be an Individual."
         self.conf = config.get_conf_copy()
-        self.plugins = []
+        self.plugins = set()
         self.room = room
 
     def handle(self, message, sender):
@@ -119,7 +120,7 @@ class ManyOnMany(ai.BaseManyOnMany):
         message = message.strip()
         reply = None
 
-        mynick = room.get_mynick().lower()
+        mynick = self.room.get_mynick().lower()
         if message.lower().startswith(mynick):
             highlight = message[len(mynick):]
             for elem in self.conf.misc["highlight"]:
@@ -129,12 +130,11 @@ class ManyOnMany(ai.BaseManyOnMany):
                     return self.highlight(msg, sender)
 
         for plugin in self.plugins:
-            message, reply = plugin.process(message, reply)
+            message, reply = plugin.process(message, reply, sender)
 
         if reply is not None:
-            reply = custom_replace(reply, user=sender.nick,
-                    nick=room.get_mynick())
-            room.send(reply)
+            reply = custom_replace(reply, user=sender.nick, nick=mynick)
+            self.room.send(reply)
         return
 
     def highlight(self, message, sender):
@@ -152,8 +152,6 @@ class ManyOnMany(ai.BaseManyOnMany):
             if not isinstance(sender, frontends.BaseGroupMember):
                 raise TypeError, "Sender must be a GroupMember."
         reply = None
-        uid = room.getUid()
-        nick = room.getNick()
         # Replace dictionary.
         replace = dict(
                 user=sender.nick,
@@ -166,10 +164,8 @@ class ManyOnMany(ai.BaseManyOnMany):
             self.room.send(u"... :'(")
             self.room.leave()
             return
-
         elif message.startswith("change your nickname to "):
-            room.set_mynick(message[len("change your nickname to "):])
-
+            self.room.set_mynick(message[len("change your nickname to "):])
         elif message.startswith("load module "):
             ai_name = message[len("load module "):]
             try:
@@ -177,18 +173,58 @@ class ManyOnMany(ai.BaseManyOnMany):
                 reply = u"success!"
             except aihandler.NoSuchAIError, e:
                 reply = unicode(e)
+        else:
+            reply = self.mod_plugins(message)
 
-        #if not reply:
-        #    reply = handlePlugins(message, room)
-
-        #for plugin in sender.getPlugins():
-        #    message, reply = plugin.process(room, message, reply)
+        for plugin in self.plugins:
+            message, reply = plugin.process(message, reply, sender)
 
         if reply:
             # Pick a random highlighting char:
-            hlchar = random.choice(self.conf.misc["hlchars"])
+            hlchar = random.choice(self.conf.misc["highlight"])
             reply = u"%s%s %s" % (sender.nick, hlchar, reply)
-            self.room.send(muc_replace(reply, replace))
+            self.room.send(reply)
+
+    def mod_plugins(self, message):
+        """Checks if the message wants to modify plugin settings.
+        
+        @TODO: This is largely a rewrite of L{OneOnOnePlugin.mod_plugins}, code
+        should rather be reused.
+        
+        """
+        if message.startswith("load plugin "):
+            plug_name = message[len("load plugin "):]
+            try:
+                plugin_cls = pluginhandler.plugins[plug_name].ManyOnManyPlugin
+            except KeyError:
+                return u"plugin not found."
+            self.plugins.add(plugin_cls(self.room))
+            return u"k."
+
+        if message.startswith("unload plugin "):
+            plug_name = message[len("unload plugin "):]
+            try:
+                plugin_cls = pluginhandler.plugins[plug_name].ManyOnManyPlugin
+            except KeyError:
+                return u"plugin not found."
+            for plugin in self.plugins:
+                if plugin.__class__ is plugin_cls:
+                    self.plugins.remove(plugin)
+                    return u"k."
+            return u"This plugin was not loaded."
+
+        if message.lower() == "list loaded plugins":
+            if self.plugins:
+                plug_names = u"\n- ".join([unicode(p) for p in self.plugins])
+                return u"plugins:\n- %s" % plug_names
+            else:
+                return u"no plugins loaded"
+
+        if message.lower() == "list available plugins":
+            return u", ".join(pluginhandler.plugins.iterkeys())
+
+        # If it had nothing to do with moderating plugins, return None.
+        return None
 
 def custom_replace(message, **replace):
     """This function replaces the message with elements from the dict.

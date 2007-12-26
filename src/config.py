@@ -7,9 +7,12 @@ without having to open the file every time.  The get_conf_copy function
 can be used to this end.
 
 """
+
 import os
 import sys
 import ConfigParser
+
+ENC = "utf8"
 
 class AnnaConfig(object):
     """Used to communicate configuration values with other modules.
@@ -32,13 +35,11 @@ class AnnaConfigParser(object):
     Parsing is done on instantiation and results are stored in the self.vals
     dictionary (which contains a key/value dictionary for each section).
 
+    @raise ConfigParser.Error: The file is malformed.
+
     """
     def __init__(self):
-        """Take all needed actions to complete the configuration.
-        
-        @raise ConfigParser.Error: The file is malformed.
-        
-        """
+        """Take all needed actions to complete the configuration."""
         self.parse_conf(self.get_conf_loc())
 
     def create_first_conf(self, conf_loc):
@@ -82,6 +83,7 @@ class AnnaConfigParser(object):
         p = ConfigParser.SafeConfigParser()
         p.read(conf_loc)
         for (name, value) in p.items("jabber"):
+            name, value = name.decode(ENC), value.decode(ENC)
             if name == "jid":
                 user, node = value.split('@', 1)
                 vals["jabber"]["user"] = user
@@ -89,6 +91,7 @@ class AnnaConfigParser(object):
             else:
                 vals["jabber"][name] = value
         for (name, value) in p.items("misc"):
+            name, value = name.decode(ENC), value.decode(ENC)
             if name == "highlight":
                 vals["misc"][name] = list(value)
             else:

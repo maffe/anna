@@ -59,7 +59,7 @@ def update_refs():
     imp.acquire_lock()
     _refs = {}
     reload(ai)
-    for name in ai.__all__:
+    for name in [unicode(mod) for mod in ai.__all__]:
         assert(name.lower() not in _refs)
         mod = imp.load_module(name, *imp.find_module(name, ["ai"]))
         _refs[name.lower()] = mod

@@ -5,20 +5,6 @@ JID = anna@example.net
 password = secret
 resource = anna
 
-[mysql]
-
-# Info about mysql connections (_r is read user and _w write user)
-host   = localhost
-db     = chatbot
-port   = 3306
-socket = /var/lib/mysql.sock
-user_w = chatbot_w
-user_r = chatbot_r
-pass_w =
-pass_r =
-# Note: If you set "localhost" as the host, it will use the socket
-# automatically.  If you don't want this, use 127.0.0.1 instead.
-
 [misc]
 
 default_ai = echo
