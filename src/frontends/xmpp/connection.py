@@ -308,8 +308,12 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
         return True
 
     def nick_changed(self, user, old_nick, stanza):
-        self.room.del_participant(old_nick)
-        self.room.add_participant(parties.GroupMember(self.room, user))
+        try:
+            self.room.get_participant(old_nick).nick = user.nick
+        except parties.NoSuchParticipantError:
+            print >> sys.stderr, "WARNING: unknown user %r entered %r." % \
+                               (user.nick, unicode(self.room))
+            self.room.add_participant(parties.GroupMember(self.room, user))
         return True
     nick_changed.__doc__ = px.jab.muc.MucRoomHandler.nick_changed.__doc__
 

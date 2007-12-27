@@ -18,7 +18,7 @@ class OneOnOne(ai.BaseOneOnOne):
                 raise TypeError, "Identity must be an Individual."
         self.conf = config.get_conf_copy()
         self.ident = identity
-        self.plugins = set()
+        self.plugins = []
 
     def handle(self, message):
         """Call all plugins and send back an answer if appropriate."""
@@ -69,7 +69,7 @@ class OneOnOne(ai.BaseOneOnOne):
                 plugin_cls = pluginhandler.plugins[plug_name].OneOnOnePlugin
             except KeyError:
                 return u"plugin not found."
-            self.plugins.add(plugin_cls(self.ident))
+            self.plugins.append(plugin_cls(self.ident))
             return u"k."
 
         if message.startswith("unload plugin "):
@@ -86,7 +86,7 @@ class OneOnOne(ai.BaseOneOnOne):
 
         if message.lower() == "list loaded plugins":
             if self.plugins:
-                plug_names = u"\n- ".join([unicode(p) for p in self.plugins])
+                plug_names = u"\n- ".join([p.name for p in self.plugins])
                 return u"plugins:\n- %s" % plug_names
             else:
                 return u"no plugins loaded"
@@ -103,7 +103,7 @@ class ManyOnMany(ai.BaseManyOnMany):
             if not isinstance(room, frontends.BaseGroup):
                 raise TypeError, "Identity must be an Individual."
         self.conf = config.get_conf_copy()
-        self.plugins = set()
+        self.plugins = []
         self.room = room
 
     def handle(self, message, sender):
@@ -198,7 +198,7 @@ class ManyOnMany(ai.BaseManyOnMany):
                 plugin_cls = pluginhandler.plugins[plug_name].ManyOnManyPlugin
             except KeyError:
                 return u"plugin not found."
-            self.plugins.add(plugin_cls(self.room))
+            self.plugins.append(plugin_cls(self.room))
             return u"k."
 
         if message.startswith("unload plugin "):
@@ -215,7 +215,7 @@ class ManyOnMany(ai.BaseManyOnMany):
 
         if message.lower() == "list loaded plugins":
             if self.plugins:
-                plug_names = u"\n- ".join([unicode(p) for p in self.plugins])
+                plug_names = u"\n- ".join([p.name for p in self.plugins])
                 return u"plugins:\n- %s" % plug_names
             else:
                 return u"no plugins loaded"

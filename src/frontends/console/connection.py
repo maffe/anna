@@ -47,7 +47,7 @@ class Connection(BaseConnection):
             try:
                 self.idnty.set_AI(aihandler.get_oneonone(choice)(self.idnty))
                 break
-            except ValueError, e:
+            except aihandler.NoSuchAIError, e:
                 print >> sys.stderr, e
                 print "Please try again.\n"
         print 'Module "%s" successfully loaded.' % choice
