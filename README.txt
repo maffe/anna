@@ -6,3 +6,5 @@ installation procedure is described in the INSTALL.txt file.
 Good luck,
 
 Hraban Luyat
+
+[1] http://0brg.net/anna/wiki/
