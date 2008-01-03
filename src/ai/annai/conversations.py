@@ -187,10 +187,10 @@ class ManyOnMany(ai.BaseManyOnMany):
 
     def mod_plugins(self, message):
         """Checks if the message wants to modify plugin settings.
-        
-        @TODO: This is largely a rewrite of L{OneOnOnePlugin.mod_plugins}, code
+
+        @TODO: This is largely a rewrite of L{OneOnOne.mod_plugins}, code
         should rather be reused.
-        
+
         """
         if message.startswith("load plugin "):
             plug_name = message[len("load plugin "):]
@@ -241,39 +241,3 @@ def custom_replace(message, **replace):
     except StandardError, e:
         return ''.join(('I was taught to say "%s" now, but there seems to be'
                         ' something wrong with that..')) % message
-
-
-def invited_2_muc_obsolete(room, situation, by = None, reason = None):
-    """Handler to call if invited to a muc room.
-
-    Takes:
-        - room: the instance of the (unjoined room)
-        - situation: the situation we are in and the reason for the invitation.
-          situations:
-          0) already active in room: return an excuse message to the room
-          1) room known, but inactive: join it and say thx 4 inviting
-          2) room unknown: create it, join it and say thx
-        - by: a unicode containing the name of the person that invited the bot
-        - reason: unicode containing the reason for the invite as supplied by
-          the inviter
-
-    """
-    # this dictionary holds all the messages that could be sent. it's not very
-    # nice because you construct them all even though one is going to be used,
-    # but since this is called not very often I thought it would be nice,
-    # because it also improves readability. also note that right now the
-    # indexes are the situation codes, but that could very well be changed.
-    messages = dict()
-    if reason:
-        messages[0] = ''.join(("I was invited to this room, being told '%s',",
-                              " but I'm already in here...")) % reason
-    else:
-        messages[0] = "I was invited to this room again but I'm already in here..."
-    #below we also mention who invited to show the admins of the muc.
-    messages[1] = "Hey all. Thanks for inviting me again, %s." % by
-    messages[2] = "Lo, I'm a chatbot. I was invited here by somebody."
-
-    if situation != 0:
-        room.join()
-
-    room.send(messages[situation])
