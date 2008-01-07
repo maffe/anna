@@ -14,7 +14,8 @@ def handle_sig(sign, frame):
 class Anna(object):
     """The Anna bot.
 
-    Use the L{start} method to start the bot.
+    Use the L{run} method to start the bot. This method returns when the bot
+    exits.
 
     @TODO: Handle SIGINT properly (immediately).
 
