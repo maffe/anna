@@ -2,6 +2,10 @@
 
 import getpass
 import sys
+try:
+    import threading as _threading
+except ImportError:
+    import dummy_threading as _threading
 
 import pyxmpp.all as px
 import pyxmpp.jabber.all as pxj
@@ -11,16 +15,12 @@ px.jab.muc = pxjm
 del pxj, pxjm
 
 import aihandler
+import communication as c
 import config
 from frontends.xmpp import parties
 from frontends import BaseConnection
 
-class Connection(px.jab.Client, BaseConnection):
-    """A talk-specific connection with the other party.
-
-    Controls the comm ng handlers for incoming messages.
-
-    """
+class _RawConnection(px.jab.Client):
     UNSUPPORTED_TYPE = u"Sorry, this type of messages is not supported."""
     CHOOSE_AI = u"Please choose an AI from the list first:\n%s"
 
@@ -60,9 +60,7 @@ class Connection(px.jab.Client, BaseConnection):
         self.stream.send(message)
         if __debug__:
             marsh = message.serialize().decode("utf-8") # unicode object.
-            marsh = marsh.encode(sys.stdout.encoding, "replace") # byte string.
-            # Let's hope the stdout encoding is compatible with ASCII;
-            print >> sys.stderr, "DEBUG: xmpp: sending '%s'" % marsh
+            c.stderr(u"DEBUG: xmpp: sending '%s'\n" % marsh)
 
     def choose_AI(self, party, message, is_room):
         """Handles conversations with this party when no AI is assigned yet.
@@ -111,21 +109,13 @@ class Connection(px.jab.Client, BaseConnection):
             self._aichoosers.append(party)
         self._send(to_jid=party, body=msg, stanza_type=message.get_type())
 
-    def connect(self):
-        """Go into an endless loop polling for new messages."""
-        # Problem is that PyXMPP's API also describes the connect() method,
-        # which should not be overwritten in our case. So we have to call it
-        # explicitly to initiate this instance.
-        px.jab.Client.connect(self)
-        self.loop()
-
     def disconnected(self):
         """Try to reconnect to the xmpp network when disconnected.
         
         @TODO: Check if this actually works.
         
         """
-        print >> sys.stderr, "DEBUG: xmpp: disconnected, trying to reconnect"
+        c.stderr(u"DEBUG: xmpp: disconnected, trying to reconnect\n")
         self.connect()
 
     def exit(self):
@@ -138,7 +128,7 @@ class Connection(px.jab.Client, BaseConnection):
             self.lock.release()
             time.sleep(1)
         if __debug__:
-            print >> sys.stderr, "DEBUG: xmpp.Connection.exit called"
+            c.stderr(u"DEBUG: xmpp.Connection.exit called\n")
 
     def get_passwd(self, jid):
         """Get the password from the config or user.
@@ -151,14 +141,10 @@ class Connection(px.jab.Client, BaseConnection):
         if not passw:
             try:
                 msg = u"Please enter the password for %s: " % unicode(jid)
-                passw = getpass.getpass(msg.encode(sys.stdout.encoding,
-                                                                "replace"))
-                passw = passw.decode(sys.stdin.encoding)
-            except (KeyboardInterrupt, EOFError):
+                passw = c.getpass(msg)
+            except KeyboardInterrupt, EOFError:
                 passw = u""
-                print
-        if not passw:
-            print >> sys.stderr, "WARNING: empty password."
+                c.stdout_block("\n")
         return passw
 
     def handle_msg_chat(self, message):
@@ -170,8 +156,7 @@ class Connection(px.jab.Client, BaseConnection):
         except KeyError:
             self.choose_AI(sender, message, is_room=False)
         if __debug__:
-            msg = u"DEBUG: chat: '%s' from '%s'" % (text, sender)
-            print >> sys.stderr, msg.encode(sys.stdout.encoding, "replace")
+            c.stderr(u"DEBUG: chat: '%s' from '%s'\n" % (text, sender))
         return True
 
     def handle_msg_unsup(self, message):
@@ -186,8 +171,8 @@ class Connection(px.jab.Client, BaseConnection):
         self._send(to_jid=message.get_from(), body=self.UNSUPPORTED_TYPE,
                 stanza_type=message.get_type())
         if __debug__:
-            msg = u"DEBUG: unhandled: %s" % message.serialize().decode("utf-8")
-            print >> sys.stderr, msg.encode(sys.stdout.encoding, "replace")
+            msg = u"DEBUG: xmpp: unhandled: %s\n"
+            c.stderr(msg % message.serialize().decode("utf-8"))
         return True
 
     def handle_mucinvite(self, message):
@@ -200,8 +185,7 @@ class Connection(px.jab.Client, BaseConnection):
 
         """
         if __debug__:
-            msg = u"DEBUG: xmpp: invited to %s" % message.get_from()
-            print >> sys.stderr, msg.encode(sys.stdout.encoding, "replace")
+            c.stderr(u"DEBUG: xmpp: invited to %s\n" % message.get_from())
         ns_map = {"mu": "http://jabber.org/protocol/muc#user"}
         nick = self.conf.misc["bot_nickname"]
         ai_list = self._create_AI_list()
@@ -211,12 +195,10 @@ class Connection(px.jab.Client, BaseConnection):
         try:
             room_jid = px.JID(message.get_from().bare())
         except px.JIDError, e:
-            msg = u"WARNING: handle_mucinvite: %s" % unicode(e)
-            print >> sys.stderr, msg.encode(sys.stdout.encoding, "replace")
+            c.stderr(u"WARNING: handle_mucinvite: %s\n" % unicode(e))
             return True
         if room_jid in self._parties:
-            msg = u"WARNING: already in %s" % unicode(room_jid)
-            print >> sys.stderr, msg.encode(sys.stdout.encoding, "replace")
+            c.stderr(u"WARNING: already in %s\n" % unicode(room_jid))
             return True
         # Room without AI until a module is assigned.
         room = parties.Group(room_jid, self.stream)
@@ -256,12 +238,11 @@ class Connection(px.jab.Client, BaseConnection):
         #                            handler=self.handle_version)
         self.rooms = px.jab.muc.MucRoomManager(self.stream)
         self.rooms.set_handlers(priority=40)
-        msg = u"XMPP: logged in as %s" % unicode(self.jid)
-        print msg.encode(sys.stdout.encoding)
+        c.stdout(u"NOTICE: xmpp: logged in as %s\n" % unicode(self.jid))
 
     def state_change(*args):
         """Debug handler overwriting parent method."""
-        print >> sys.stderr, "DEBUG: state_change(%s, %s, %s)" % args
+        c.stderr("DEBUG: state_change(%s, %s, %s)\n" % args)
 
 class _MucEventHandler(px.jab.muc.MucRoomHandler):
     """Define handlers for events from MUC rooms.
@@ -295,8 +276,8 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
             return True
         text = message.get_body()
         if __debug__:
-            msg = u"DEBUG: xmpp: muc: %s: '%s'" % (message.get_from(), text)
-            print >> sys.stderr, msg.encode(sys.stdout.encoding, "replace")
+            c.stderr(u"DEBUG: xmpp: muc: %s: '%s'\n" %
+                            (message.get_from(), text))
         # Rooms always have an instance stored in the _parties dictionary.
         room = self.conn._parties[room_jid]
         if room_jid in self.conn._aichoosers:
@@ -311,8 +292,8 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
         try:
             self.room.get_participant(old_nick).nick = user.nick
         except parties.NoSuchParticipantError:
-            print >> sys.stderr, "WARNING: unknown user %r entered %r." % \
-                               (user.nick, unicode(self.room))
+            c.stderr(u"WARNING: unknown user %s entered %s.\n" %
+                               (user.nick, self.room))
             self.room.add_participant(parties.GroupMember(self.room, user))
         return True
     nick_changed.__doc__ = px.jab.muc.MucRoomHandler.nick_changed.__doc__
@@ -320,8 +301,7 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
     def user_joined(self, user, stanza):
         self.room.add_participant(parties.GroupMember(self.room, user))
         if __debug__:
-            msg = u"DEBUG: %s entered %s." % (user.nick, unicode(self.room))
-            print >> sys.stderr, msg.encode(sys.stdout.encoding)
+            c.stderr(u"DEBUG: %s entered %s.\n" % (user.nick, self.room))
         return True
     user_joined.__doc__ = px.jab.muc.MucRoomHandler.user_joined.__doc__
 
@@ -329,3 +309,13 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
         if user.same_as(self.room.mucstate.me):
             self.conn.leave_room(self.room.mucstate)
         self.room.del_participant(parties.GroupMember(self.room, user))
+
+class Connection(BaseConnection, _threading.Thread):
+    """Threaded version of the actual connection."""
+    def __init__(self):
+        _threading.Thread.__init__(self, name="xmpp frontend")
+        self.real = _RawConnection()
+
+    def run(self):
+        self.real.connect()
+        self.real.loop()

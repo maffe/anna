@@ -11,11 +11,12 @@ px.jab.muc = pxjm
 px.jab.muccore = pxjmc
 del pxj, pxjm, pxjmc
 
+import communication as c
 from frontends import BaseIndividual, BaseGroup, BaseGroupMember
 
 class Individual(BaseIndividual):
     def __init__(self, jid, stream):
-        print >> sys.stderr, "DEBUG: xmpp: Individual instantiated."
+        c.stderr(u"DEBUG: xmpp: Individual %s instantiated.\n" % jid)
         self.jid = jid
         self.name = jid.node
         self.stream = stream
@@ -54,7 +55,7 @@ class Group(BaseGroup):
     """
     mucstate = None
     def __init__(self, jid, stream):
-        print >> sys.stderr, "DEBUG: xmpp: Group instantiated."
+        c.stderr(u"DEBUG: xmpp: Group %s instantiated.\n" % jid)
         assert(isinstance(jid, px.JID))
         self.jid = jid
         self.nick = jid.node
@@ -111,13 +112,11 @@ class Group(BaseGroup):
         pres.make_join_request(history_maxstanzas=0)
         self.stream.send(pres)
         if __debug__:
-            msg = u"DEBUG: join %s" % unicode(self)
-            print >> sys.stderr, msg.encode(sys.stdout.encoding)
+            c.stderr(u"DEBUG: join %s\n" % self)
 
     def leave(self):
         if __debug__:
-            msg = u"DEBUG: leaving %s" % unicode(self)
-            print >> sys.stderr, msg.encode(sys.stdout.encoding)
+            c.stderr(u"DEBUG: leaving %s\n" % self)
         self.pres.set_type("unavailable")
         self.stream.send(self.pres)
 

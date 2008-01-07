@@ -8,15 +8,16 @@ import frontends.console
 import frontends.xmpp
 
 def handle_sig(sign, frame):
-    c.stderr("SIGNAL %r\n" % sign)
-    print >> sys.stderr, ("SIGNAL %r\n" % sign)
+    cleanup()
+    sys.exit()
 
 def init():
     global pool
     pool = []
     signal.signal(signal.SIGINT, handle_sig) # DEBUG
     c.start()
-    pool.append(frontends.console.Connection(name="console frontend"))
+    pool.append(frontends.console.Connection())
+    pool.append(frontends.xmpp.Connection())
 
 def run():
     """This is the phase that the main thread is in until all threads die."""

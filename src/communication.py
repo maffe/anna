@@ -5,6 +5,7 @@ L{start}. If you call that function, don't forget to call L{stop} before
 exiting your program to kill the two threads polling for messages.
 
 """
+import getpass as _getpass_mod
 import sys
 try:
     import threading as _threading
@@ -18,12 +19,10 @@ _lock = _threading.RLock()
 combined_out_err = True
 
 class _PrintPoller(_threading.Thread):
-    """Print all messages in the given queue to a stream as soon as possible.
+    """Print all messages in a queue to given stream as soon as possible.
 
     Adding None to the stdout queue kills the thread.
 
-    @param queue: The queue to poll for messages.
-    @type queue: C{Queue.Queue}
     @param stream: The stream to print the messages to.
     @type stream: A file-like object.
     @param name: The textual representation of the stream.
@@ -31,11 +30,11 @@ class _PrintPoller(_threading.Thread):
     @TODO: do not quit on exceptions but print nice traceback.
 
     """
-    def __init__(self, queue, stream, name):
+    def __init__(self, stream, name):
         _threading.Thread.__init__(self)
-        self.queue = queue
-        self.stream = stream
         self.name = name
+        self.queue = Queue.Queue()
+        self.stream = stream
 
     def run(self):
         while 1:
@@ -93,7 +92,7 @@ def stdout(msg, encoding=None):
         msg = _encode(msg, encoding)
     elif __debug__:
         stderr(u"WARNING: passing non-unicode object to stdout().")
-    _stdout_q.put(msg)
+    _poller_out.queue.put(msg)
 
 def stdout_block(msg, encoding=None):
     """Like L{stdout} except that it blocks until the message is printed."""
@@ -119,7 +118,7 @@ def stderr(msg, encoding=None):
     if isinstance(msg, unicode):
         msg = _encode(msg, encoding)
     if combined_out_err:
-        _stderr_q.put(msg)
+        _poller_err.queue.put(msg)
     else:
         sys.stderr.write(msg)
         sys.stderr.flush()
@@ -138,6 +137,43 @@ def stderr_block(msg, encoding=None):
     else:
         sys.stderr.write(msg)
         sys.stderr.flush()
+
+def _banner(msg, encoding, func):
+    """Assert given function is executed right after given message is printed.
+
+    This is useful for prompts like C{raw_input} and C{getpass.getpass}.
+    Returns the return value of given function. The return value must be a
+    C{str} and will be decoded using given encoding. The given message will
+    also be encoded with this encoding if it is a C{str} instead of a
+    C{unicode} object. Given args and kwargs are supplied to the function
+    as arguments if the C{func} argument is a tuple.
+
+    @param func: Function to call or tuple containing three elements:
+        0. The function to call.
+        1. The arguments.
+        2. The keyword arguments.
+    @type func: iterator or callable
+
+    """
+    if isinstance(msg, unicode):
+        msg = _encode(msg, encoding)
+    _lock.acquire()
+    try:
+        sys.stdout.write(msg)
+        sys.stdout.flush()
+        if callable(func):
+            val = func()
+        else:
+            val = func[0](*func[1], **func[2])
+    finally:
+        _lock.release()
+    if encoding is not None:
+        return val.decode(encoding, "replace")
+    else:
+        try:
+            return val.decode(sys.stdin.encoding, "replace")
+        except valueerror:
+            return val.decode("utf-8", "replace")
 
 def stdin(msg, encoding=None):
     """Thread-safe implementation of raw_input() using stdout.
@@ -158,22 +194,11 @@ def stdin(msg, encoding=None):
     @raise EOFError: The user hits Ctrl-D.
 
     """
-    if isinstance(msg, unicode):
-        msg = _encode(msg, encoding)
-    _lock.acquire()
-    try:
-        sys.stdout.write(msg)
-        sys.stdout.flush()
-        val = raw_input()
-    finally:
-        _lock.release()
-    if encoding is not None:
-        return val.decode(encoding, "replace")
-    else:
-        try:
-            return val.decode(sys.stdin.encoding, "replace")
-        except ValueError:
-            return val.decode("utf-8", "replace")
+    return _banner(msg, encoding, raw_input)
+
+def getpass(msg, encoding=None):
+    """Like L{stdin} but for C{getpass.getpass} instead of C{raw_input}."""
+    return _banner(msg, encoding, (_getpass_mod.getpass, (), dict(prompt="")))
 
 def start():
     """Use this function to initiate the connection polling.
@@ -183,11 +208,9 @@ def start():
 
     """
     # Start polling for messages to print to stdout/stderr in a seperate thread.
-    global _poller_out, _poller_err, _stdout_q, _stderr_q
-    _stdout_q = Queue.Queue()
-    _stderr_q = Queue.Queue()
-    _poller_out = _PrintPoller(_stdout_q, sys.stdout, "stdout")
-    _poller_err = _PrintPoller(_stderr_q, sys.stderr, "stderr")
+    global _poller_out, _poller_err
+    _poller_out = _PrintPoller(sys.stdout, "stdout")
+    _poller_err = _PrintPoller(sys.stderr, "stderr")
     _poller_out.setDaemon(False)
     _poller_err.setDaemon(False)
     _poller_out.start()
@@ -196,8 +219,8 @@ def start():
 def stop():
     """Cleanup function that stops all running pollers."""
     global _poller_out, _poller_err
-    _stdout_q.put(None)
-    _stderr_q.put(None)
+    _poller_out.queue.put(None)
+    _poller_err.queue.put(None)
     _poller_out.join()
     _poller_err.join()
     del _poller_out, _poller_err

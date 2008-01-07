@@ -25,10 +25,10 @@ from frontends.console.parties import Individual
 
 USAGE = u"""
 Welcome to the interactive Anna shell.  Just type a message as you
-normally would.  First, you need to specify which AI module you would
+normally would.   First, you need to specify which AI module you would
 like to use.  To quit this frontend, hit ctrl + d.
 
-WARNING: this module blocks the stdout on every prompt. To prevent the
+WARNING: this frontend blocks the stdout on every prompt. To prevent the
 output buffer from growing too big, it should only be used alone or at
 least not left without input for long periods of time while other
 frontends produce lots of output.
@@ -39,8 +39,8 @@ CHOOSE_AI = u"""Please choose an ai to load from the following list:
 >>> """
 
 class Connection(BaseConnection, _threading.Thread):
-    def __init__(self, *args, **kwargs):
-        _threading.Thread.__init__(self, *args, **kwargs)
+    def __init__(self):
+        _threading.Thread.__init__(self, name="console frontend")
         username = pwd.getpwuid(os.getuid())[0]
         self.idnty = Individual(username)
 
