@@ -17,50 +17,43 @@ _lock = _threading.RLock()
 #: Whether or not the stderr should wait for the stdout.
 combined_out_err = True
 
-class _PollerStdout(_threading.Thread):
+class _PrintPoller(_threading.Thread):
+    """Print all messages in the given queue to a stream as soon as possible.
+
+    Adding None to the stdout queue kills the thread.
+
+    @param queue: The queue to poll for messages.
+    @type queue: C{Queue.Queue}
+    @param stream: The stream to print the messages to.
+    @type stream: A file-like object.
+    @param name: The textual representation of the stream.
+    @type name: C{unicode} or C{str}
+    @TODO: do not quit on exceptions but print nice traceback.
+
+    """
+    def __init__(self, queue, stream, name):
+        _threading.Thread.__init__(self)
+        self.queue = queue
+        self.stream = stream
+        self.name = name
+
     def run(self):
-        """Print all messages in the stdout queue as soon as possible.
-
-        Adding None to the stdout queue kills the thread.
-
-        @TODO: do not quit on exceptions but print nice traceback.
-
-        """
-        global _stdout_q
         while 1:
-            msg = _stdout_q.get()
+            # Queue.Queue.get() is blocking.
+            msg = self.queue.get()
+            # Test for exit-condition:
             if msg is None:
                 return
             _lock.acquire()
             try:
                 try:
-                    sys.stdout.write(msg)
-                    sys.stdout.flush()
+                    self.stream.write(msg)
+                    self.stream.flush()
                 except:
-                    print >> sys.stderr, "ERROR: stdout queue halted"
-                    # The system is fubar now anyway, better delete the queue and
-                    # die than risk the calling function catching this exception
-                    # somehow and continuing to pump messages in the queue.
-                    del _stdout_q
-                    raise
-            finally:
-                _lock.release()
-
-class _PollerStderr(_threading.Thread):
-    def run(self):
-        global _stderr_q
-        while 1:
-            msg = _stderr_q.get()
-            if msg is None:
-                return
-            _lock.acquire()
-            try:
-                try:
-                    sys.stderr.write(msg)
-                    sys.stderr.flush()
-                except:
-                    print >> sys.stderr, "ERROR: stderr queue halted"
-                    del _stderr_q
+                    print >> sys.stderr, "ERROR:", self.name, "queue halted"
+                    # The system is fubar now anyway, better die than risk the
+                    # calling function catching this exception somehow and
+                    # continuing to pump messages in the queue.
                     raise
             finally:
                 _lock.release()
@@ -193,8 +186,8 @@ def start():
     global _poller_out, _poller_err, _stdout_q, _stderr_q
     _stdout_q = Queue.Queue()
     _stderr_q = Queue.Queue()
-    _poller_out = _PollerStdout()
-    _poller_err = _PollerStderr()
+    _poller_out = _PrintPoller(_stdout_q, sys.stdout, "stdout")
+    _poller_err = _PrintPoller(_stderr_q, sys.stderr, "stderr")
     _poller_out.setDaemon(False)
     _poller_err.setDaemon(False)
     _poller_out.start()
