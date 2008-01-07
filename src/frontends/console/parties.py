@@ -3,11 +3,12 @@
 import sys
 
 import aihandler
+import communication as c
 import config
 from frontends import BaseIndividual
 
 class Individual(BaseIndividual):
-    def __init__(self, name="you"):
+    def __init__(self, name=u"you"):
         self.party = name
 
     def __str__(self):
@@ -20,17 +21,20 @@ class Individual(BaseIndividual):
         return self.party
 
     def get_type(self):
-        return "console"
+        return u"console"
 
     def set_AI(self, ai):
         self.ai = ai
 
     def set_name(self, name):
+        if __debug__:
+            if not isinstance(name, unicode):
+                raise TypeError, "Name must be a unicode object."
         self.party = name
 
     def send(self, message):
         my_name = config.get_conf_copy().misc['bot_nickname']
         if message.startswith("/me "):
-            print "*", my_name, message[4:].encode(sys.stdout.encoding)
+            c.stdout_block(u"*%s %s\n" % (my_name, message[4:]))
         else:
-            print "<%s>" % my_name, message.encode(sys.stdout.encoding)
+            c.stdout_block(u"<%s> %s\n" % (my_name, message))

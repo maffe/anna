@@ -25,7 +25,7 @@ class OneOnOnePlugin(BasePlugin):
         """Do simple processing on the message (only useful for tests).
 
         Returns "Test plugin: success." if there was no supplied message.  If
-        the current computer reply is not None a distinct message is
+        the current computed reply is not None a distinct message is
         appended to it.
 
         """

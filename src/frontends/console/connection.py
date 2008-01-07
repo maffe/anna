@@ -1,28 +1,46 @@
 """This is the console frontend to the Anna bot.
 
-It allows the user to communicate with the bot directly through stdin and
-stdout but lacks certain functionality for obvious reasons (such as group-chat
-support).
+It allows the user to communicate with the bot directly through stdin
+and stdout but lacks certain functionality for obvious reasons (such as
+group-chat support).
+
+
 
 """
 import os
 import pwd #password database, for system uid <--> username lookup
 import sys
+try:
+    import threading as _threading
+except ImportError:
+    import dummy_threading as _threading
+import time
 import types
 
 import aihandler
+import communication as c
 import config
 from frontends import BaseConnection
 from frontends.console.parties import Individual
 
-USAGE = """
+USAGE = u"""
 Welcome to the interactive Anna shell.  Just type a message as you
 normally would.  First, you need to specify which AI module you would
-like to use.  To quit, hit ctrl + d or ctrl + c.
-"""
+like to use.  To quit this frontend, hit ctrl + d.
 
-class Connection(BaseConnection):
-    def __init__(self):
+WARNING: this module blocks the stdout on every prompt. To prevent the
+output buffer from growing too big, it should only be used alone or at
+least not left without input for long periods of time while other
+frontends produce lots of output.
+
+"""
+CHOOSE_AI = u"""Please choose an ai to load from the following list:
+%s
+>>> """
+
+class Connection(BaseConnection, _threading.Thread):
+    def __init__(self, *args, **kwargs):
+        _threading.Thread.__init__(self, *args, **kwargs)
         username = pwd.getpwuid(os.getuid())[0]
         self.idnty = Individual(username)
 
@@ -30,15 +48,13 @@ class Connection(BaseConnection):
         """Ask the user what AI module to use and return its reference."""
         def_ai = config.get_conf_copy().misc["default_ai"]
         while 1:
-            print "Please choose which ai you want to load from the following list:"
+            ais = []
             for name in aihandler.get_names():
-                print " -", name,
                 if name.lower() == def_ai.lower():
-                    print "(default)"
-                else:
-                    print
+                    name = u" ".join((name, "(default)"))
+                ais.append(u"- %s\n" % name)
             # This can raise an EOFError.
-            choice = raw_input(">>> ").decode(sys.stdin.encoding).strip()
+            choice = c.stdin(CHOOSE_AI % u"".join(ais)).strip()
             if choice == "":
                 choice = def_ai
             elif choice.endswith(" (default)"):
@@ -48,27 +64,24 @@ class Connection(BaseConnection):
                 self.idnty.set_AI(aihandler.get_oneonone(choice)(self.idnty))
                 break
             except aihandler.NoSuchAIError, e:
-                print >> sys.stderr, e
-                print "Please try again.\n"
-        print 'Module "%s" successfully loaded.' % choice
+                c.stderr_block(unicode(e))
+                c.stdout_block(u"Please try again.\n")
+        c.stdout_block(u'Module "%s" successfully loaded.\n' % choice)
 
-    def connect(self):
+    def run(self):
         """Take over the stdin and do nifty stuff... etc.
 
         This method is called as a seperate thread from the main script so it
         must be thread-safe.
 
         """
-        print USAGE
+        c.stdout_block(USAGE)
         try:
             self.get_ai()
             while 1:
-                message = raw_input("<%s> " % self.idnty)
+                # The AI can change at run-time.
                 ai = self.idnty.get_AI()
-                ai.handle(message.decode(sys.stdin.encoding))
-        except KeyboardInterrupt:
-            print
-            return
+                ai.handle(c.stdin(u"<%s> " % self.idnty))
         except EOFError:
-            print
-            return
+            c.stdout_block(u"\n")
+    connect = run

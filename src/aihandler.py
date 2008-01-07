@@ -53,12 +53,13 @@ def get_oneonone(name):
     except KeyError:
         raise NoSuchAIError, name
 
-def update_refs():
+def _update_refs():
     """Update the list of references with all modules in the AI module."""
     global _refs
     imp.acquire_lock()
     _refs = {}
-    reload(ai)
+    # There is no real need for reload() here (yet). Better leave it out.
+    #reload(ai)
     for name in [unicode(mod) for mod in ai.__all__]:
         assert(name.lower() not in _refs)
         mod = imp.load_module(name, *imp.find_module(name, ["ai"]))
@@ -79,4 +80,4 @@ class NoSuchAIError(Exception):
     def __unicode__(self):
         return u'No such AI module: "%s".' % self.name
 
-update_refs()
+_update_refs()

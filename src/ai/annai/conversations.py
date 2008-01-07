@@ -86,7 +86,7 @@ class OneOnOne(ai.BaseOneOnOne):
 
         if message.lower() == "list loaded plugins":
             if self.plugins:
-                plug_names = u"\n- ".join([p.name for p in self.plugins])
+                plug_names = u"\n- ".join((unicode(p) for p in self.plugins))
                 return u"plugins:\n- %s" % plug_names
             else:
                 return u"no plugins loaded"
@@ -215,7 +215,7 @@ class ManyOnMany(ai.BaseManyOnMany):
 
         if message.lower() == "list loaded plugins":
             if self.plugins:
-                plug_names = u"\n- ".join([p.name for p in self.plugins])
+                plug_names = u"\n- ".join((unicode(p) for p in self.plugins))
                 return u"plugins:\n- %s" % plug_names
             else:
                 return u"no plugins loaded"

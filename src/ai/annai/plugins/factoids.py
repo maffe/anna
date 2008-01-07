@@ -10,12 +10,29 @@ already a reply constructed by one of the previous plugins (ie:
 from ai.annai.plugins import BasePlugin
 import frontends
 
-class OneOnOnePlugin(BasePlugin):
-    def __init__(self, identity):
-        self.ident = identity
+class _Plugin(BasePlugin):
+    """Common functions for both the OneOnOne and ManyOnMany plugins."""
+    def __init__(self):
+        self.db
 
     def __unicode__(self):
         return "factoids plugin"
+
+    def _get_factoid(object):
+        """Get the definition of given object.
+
+        @return: The definition (or None if it there is none).
+        @rtype: C{unicode} or C{None}.
+
+        """
+        if __debug__:
+            if not isinstance(object, unicode):
+                raise TypeError, "The argument must be a unicode object."
+
+class OneOnOnePlugin(_Plugin):
+    def __init__(self, identity):
+        _Plugin.__init__(self)
+        self.ident = identity
 
     def process(self, message, reply):
         """Determine if the message wants to know about or edit a factoid.
