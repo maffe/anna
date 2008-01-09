@@ -1,7 +1,10 @@
-"""Test plugin handler."""
+"""Test plugin handler.
 
-import sys
+A lot of checks take place in this module (all if __debug__: things)
+which are not really necessary; they are only put in here to make the
+plugin useful for checking any code that uses the plugins.
 
+"""
 from ai.annai.plugins import BasePlugin
 import frontends
 
@@ -16,7 +19,6 @@ class OneOnOnePlugin(BasePlugin):
         if __debug__:
             if not isinstance(identity, frontends.BaseIndividual):
                 raise TypeError, "Identity must be an Individual instance."
-        self.ident = identity
 
     def __unicode__(self):
         return u"test plugin."
@@ -49,7 +51,6 @@ class ManyOnManyPlugin(BasePlugin):
         if __debug__:
             if not isinstance(room, frontends.BaseGroup):
                 raise TypeError, "Room must be a Group frontend instance."
-        self.room = room
 
     def __unicode__(self):
         return u"test plugin."
