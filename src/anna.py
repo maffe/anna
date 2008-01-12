@@ -23,8 +23,8 @@ class Anna(object):
     def __init__(self):
         signal.signal(signal.SIGINT, handle_sig)
         self.pool = []
-        self.pool.append(frontends.console.Connection())
-        #self.pool.append(frontends.xmpp.Connection())
+        #self.pool.append(frontends.console.Connection())
+        self.pool.append(frontends.xmpp.Connection())
 
     def run(self):
         """This is where the main thread is until all frontend threads die."""

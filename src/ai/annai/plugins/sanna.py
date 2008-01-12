@@ -105,5 +105,5 @@ class OneOnOnePlugin(_Plugin):
 
 class ManyOnManyPlugin(_Plugin):
     def process(self, message, reply, sender):
-        reply = OneOnOnePlugin.process(self, message, reply)[1]
+        reply = _Plugin.process(self, message, reply)[1]
         return (message, u"%s: %s" % (sender.nick, reply))
