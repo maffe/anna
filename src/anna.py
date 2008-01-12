@@ -22,10 +22,9 @@ class Anna(object):
     """
     def __init__(self):
         signal.signal(signal.SIGINT, handle_sig)
-        pool = []
-        #pool.append(frontends.console.Connection())
-        pool.append(frontends.xmpp.Connection())
-        self.pool = pool
+        self.pool = []
+        self.pool.append(frontends.console.Connection())
+        #self.pool.append(frontends.xmpp.Connection())
 
     def run(self):
         """This is where the main thread is until all frontend threads die."""
@@ -37,7 +36,10 @@ class Anna(object):
 def main():
     c.start()
     bot = Anna()
-    bot.run()
+    try:
+        bot.run()
+    except KeyboardInterrupt:
+        print >> sys.stderr, "DEBUG: checkpoint #1"
     c.stop()
 
 if __name__ == "__main__":

@@ -142,7 +142,7 @@ class _RawConnection(px.jab.Client):
             try:
                 msg = u"Please enter the password for %s: " % unicode(jid)
                 passw = c.getpass(msg)
-            except KeyboardInterrupt, EOFError:
+            except (EOFError, IOError):
                 passw = u""
                 c.stdout_block("\n")
         return passw

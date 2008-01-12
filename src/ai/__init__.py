@@ -7,8 +7,8 @@ about the AI modules API <http://0brg.net/anna/wiki/AI_modules_API>}.
 """
 from _baseclasses import *
 
-__all__=[
-    'echo',
+__all__ = [
     'annai',
+    'echo',
 #    'fishbot',
 ]

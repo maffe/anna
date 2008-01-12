@@ -85,7 +85,7 @@ def stdout(msg, encoding=None):
     infinite) buffer.
 
     @param msg: The message to print to stdout.
-    @type msg: C{string} or C{unicode}
+    @type msg: C{str} or C{unicode}
 
     """
     if isinstance(msg, unicode):
