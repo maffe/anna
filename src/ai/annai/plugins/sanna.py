@@ -106,4 +106,7 @@ class OneOnOnePlugin(_Plugin):
 class ManyOnManyPlugin(_Plugin):
     def process(self, message, reply, sender):
         reply = _Plugin.process(self, message, reply)[1]
-        return (message, u"%s: %s" % (sender.nick, reply))
+        if reply is None:
+            return (message, None)
+        else:
+            return (message, u"%s: %s" % (sender.nick, reply))
