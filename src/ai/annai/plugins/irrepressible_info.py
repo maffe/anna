@@ -1,16 +1,25 @@
 """Plugin for u{http://irrepressible.info/}.
 
-Fetches quotes on-demand an at random intervals (customizable).
+Fetches quotes on-demand an at random intervals (customizable). Only
+allows one fetch every ten seconds.
 
 """
+try:
+    import threading as _threading
+except ImportError:
+    import dummy_threading as _threading
 import urllib
 import xml.dom.minidom
+import xml.parsers.expat
 
 from ai.annai.plugins import BasePlugin
 import communication as c
 import frontends
 
-_url_base = "http://irrepressible.info/query?%s"
+_URL_BASE = "http://irrepressible.info/query?%s"
+
+# Create a lock for fetching.
+_fetch_mutex = c.Timed_Mutex(10)
 
 def get_ii_fragment(**filters):
     """Fetch a (random) fragment, optionally using given filter.
@@ -27,7 +36,7 @@ def get_ii_fragment(**filters):
     filters["limit"] = 1
     filters["random"] = True
     params = urllib.urlencode(filters)
-    u = urllib.urlopen(_url_base % params)
+    u = urllib.urlopen(_URL_BASE % params)
     doc = xml.dom.minidom.parse(u)
     u.close()
     fragment = doc.firstChild.firstChild.nextSibling.firstChild.nextSibling
@@ -46,8 +55,12 @@ class _Plugin(BasePlugin):
     def process(self, message, reply):
         if not message == "ii":
             return (message, reply)
+        elif not _fetch_mutex.testandset():
+            return (message, u"%s overloaded, please try again later." % self)
+        # The lock has been acquired. It will be released after a timeout.
+
         if __debug__:
-            c.stderr("NOTICE: irrepressible.info plugin: fetching fragment.\n")
+            c.stderr(u"NOTICE: %s: fetching fragment.\n" % self)
         return (message, u"Fragment %s:\n\t%s\nfrom: <%s>" % get_ii_fragment())
 
 class OneOnOnePlugin(_Plugin):

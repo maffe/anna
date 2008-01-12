@@ -14,6 +14,9 @@ plugins[u"test"] = test
 from plugins import spamblock
 spamblock.name = u"spamblock"
 plugins[u"spamblock"] = spamblock
+from plugins import sanna
+sanna.name = u"sanna"
+plugins[u"sanna"] = sanna
 from plugins import irrepressible_info
 irrepressible_info.name = u"irrepressible.info"
 plugins[u"irrepressible.info"] = irrepressible_info

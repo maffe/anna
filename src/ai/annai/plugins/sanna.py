@@ -9,6 +9,7 @@ import re
 import urllib
 
 from ai.annai.plugins import BasePlugin
+import communication as c
 import frontends 
 
 # ATTENTION PROGRAMMERS: remember that these plugins, too, are threaded! Do not
@@ -32,6 +33,9 @@ _default_messages = dict(en=dict(
         ))
 _find_wiki_rex = "(?<=window\.status=\')http://%s.wikipedia.org/wiki/\S*(?=\';)"
 
+# Create a lock for fetching.
+_fetch_mutex = c.Timed_Mutex(5)
+
 class _Plugin(BasePlugin):
     def __init__(self, peer):
         self.lang = u"en"
@@ -50,13 +54,20 @@ class _Plugin(BasePlugin):
         # Using None as delimiter makes split() use its default values.
         try:
             cmd, arg = msg.split(None, 1)
-            return (message, self._mods[cmd](arg))
+            func = self._mods[cmd]
         except (ValueError, KeyError):
             # Assume the message was not intended for this plugin if either:
             # ValueError: There were no spaces in the message.
             # KeyError: the first word of the message is not a registered
             # search type.
             return (message, reply)
+        if not _fetch_mutex.testandset():
+            return (message, u"%s overloaded, please try again later." % self)
+        # The lock has been acquired. It will be released after a timeout.
+
+        if __debug__:
+            c.stderr(u"NOTICE: %s: %s(%r).\n" % (self, cmd, arg))
+        return (message, func(arg))
 
     def wikipedia(self, tofind):
         """Searches Wikipedia and returns the URI to the matching article.

@@ -1,4 +1,4 @@
-"""Handle operations on std(in/out/err) in a thread-safe way.
+"""Tools for safe inter-thread operations.
 
 Before using the L{stdout} and L{stderr} functions make sure to call
 L{start}. If you call that function, don't forget to call L{stop} before
@@ -6,6 +6,7 @@ exiting your program to kill the two threads polling for messages.
 
 """
 import getpass as _getpass_mod
+import mutex
 import sys
 try:
     import threading as _threading
@@ -70,6 +71,36 @@ def _encode(msg, encoding):
         except TypeError:
             return msg.encode("utf-8", "replace")
 
+class Timed_Mutex(mutex.mutex):
+    """A mutex that unlocks itself after a given amount of seconds.
+
+    This class can be used to moderate the interval at which all threads
+    combined can use a certain resource.
+
+    >>> import time
+    >>> m = Timed_Mutex(5)
+    >>> m.testandset()
+    True
+    >>> m.testandset()
+    False
+    >>> time.sleep(5)
+    >>> m.testandset()
+    True
+
+    @TODO: Support bursts (so 3 quickly is fine, but not 4, for example).
+
+    """
+    def __init__(self, timeout):
+        mutex.mutex.__init__(self)
+        self.timeout = timeout
+
+    def testandset(self):
+        if mutex.mutex.testandset(self):
+            _threading.Timer(self.timeout, mutex.mutex.unlock, [self]).start()
+            return True
+        else:
+            return False
+
 def stdout(msg, encoding=None):
     """Print given message to stdout in a thread-safe non-blocking way.
 
@@ -83,6 +114,9 @@ def stdout(msg, encoding=None):
     If another thread is either printing or waiting for input this message will
     wait until that thread is finished.  The message will be placed in a(n
     infinite) buffer.
+
+    Do not forget to call L{start} before using this function. Call L{stop}
+    when you are done.
 
     @param msg: The message to print to stdout.
     @type msg: C{str} or C{unicode}
