@@ -16,13 +16,21 @@ import frontends
 
 # Use a dictionary with keys 'lang' and 'q' to format this to a proper get
 # request for google webservers.
-_wiki_get = "/search?hl=%(lang)s&sitesearch=%(lang)s.wikipedia.org&q=%(q)s"
+#_wiki_get = "/search?hl=%(lang)s&sitesearch=%(lang)s.wikipedia.org&q=%(q)s"
+
+# NEW! Use a dictionary with keys 'lang' and 'q' to format this to a proper get
+# request for dogpile webservers.
+_wiki_get = "".join(("/dogpile/ws/results/Web/%(q)s/1/485/TopNavigation/",
+                    "Relevance/iq=true/zoom=off/_iceUrlFlag=7?_IceUrl=true",
+                    "&adv=qall%%3d%(q)s%%26domaini%%3dinclude%%26domaint",
+                    "%%3d%(lang)s.wikipedia.org"))
+
 _default_messages = dict(en=dict(
         WNOTFOUND=u"whaddayamean?",
         WFOUND=u"i found your article! take a look at it..",
-        WGOOGLEFOUND=u"i searched google.com for that.. is it this?",
+        WWEBFOUND=u"i searched the web for that.. is it this?",
         ))
-_find_wiki_rex = "(?<=href=\")http://%s.wikipedia.org/wiki/\S*(?=\")"
+_find_wiki_rex = "(?<=window\.status=\')http://%s.wikipedia.org/wiki/\S*(?=\';)"
 
 class _Plugin(BasePlugin):
     def __init__(self, peer):
@@ -67,8 +75,8 @@ class _Plugin(BasePlugin):
 
         if location != 1:
             return u"%s\n%s" % (self.messages[self.lang]["WFOUND"], location)
-        # else search google: "wikipedia %s" % tofind
-        con = httplib.HTTPConnection("www.google.com", 80)
+        # else search dogpile: "wikipedia %s" % tofind
+        con = httplib.HTTPConnection("www.dogpile.com", 80)
         con.connect()
         con.request("GET", _wiki_get % dict(lang=self.lang, q=tofind))
         response = con.getresponse().read()
@@ -76,7 +84,7 @@ class _Plugin(BasePlugin):
 
         regex = re.search(_find_wiki_rex % self.lang, response)
         if regex != None:
-            return u"%s\n%s" % (self.messages[self.lang]["WGOOGLEFOUND"],
+            return u"%s\n%s" % (self.messages[self.lang]["WWEBFOUND"],
                     regex.group(0))
         # if you haven't found anything there too return a sad message,
         return self.messages[self.lang]["WNOTFOUND"]
