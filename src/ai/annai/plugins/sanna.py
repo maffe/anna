@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Web search plugin for the annai AI module.
 
 Provides several functions for searching the web about a given keyword.
@@ -12,20 +11,27 @@ import urllib
 from ai.annai.plugins import BasePlugin
 import frontends 
 
+# ATTENTION PROGRAMMERS: remember that these plugins, too, are threaded! Do not
+# write to global variables!
+
 # Use a dictionary with keys 'lang' and 'q' to format this to a proper get
 # request for google webservers.
-_default_gr = "/search?hl=%(lang)s&sitesearch=%(lang)s.wikipedia.org&q=%(q)s"
+_wiki_get = "/search?hl=%(lang)s&sitesearch=%(lang)s.wikipedia.org&q=%(q)s"
+_default_messages = dict(en=dict(
+        WNOTFOUND=u"whaddayamean?",
+        WFOUND=u"i found your article! take a look at it..",
+        WGOOGLEFOUND=u"i searched google.com for that.. is it this?",
+        ))
+_find_wiki_rex = "(?<=href=\")http://%s.wikipedia.org/wiki/\S*(?=\")"
 
-class OneOnOnePlugin(BasePlugin):
-    def __init__(self, multiorsingle):
+class _Plugin(BasePlugin):
+    def __init__(self, peer):
         self.lang = u"en"
-        self.dict = { u"en" : {"WNOTFOUND" : u"whaddayamean?",
-                "WFOUND" : u"i found your article! take a look at it..",
-                "WGOOGLEFOUND" : u"i guess i found your article... check it out:"}}
-        self._get_raw = _default_gr
+        # Use the global dictionary (no writing occurs so its thread-safe).
+        self.messages = _default_messages
         # The different search types.
         self._mods = dict(
-                w=self.w,
+                w=self.wikipedia,
                 )
 
     def __unicode__(self):
@@ -44,10 +50,11 @@ class OneOnOnePlugin(BasePlugin):
             # search type.
             return (message, reply)
 
-    def w(self, tofind):
+    def wikipedia(self, tofind):
         """Searches Wikipedia and returns the URI to the matching article.
 
         Returns the location of the article.
+
         """
         # If wikipedia has found the article, the HTTP reply contains 
         # a Location: header.
@@ -59,24 +66,25 @@ class OneOnOnePlugin(BasePlugin):
         con.close()
 
         if location != 1:
-            return u"%s\n%s" % (self.dict[self.lang]["WFOUND"], location)
+            return u"%s\n%s" % (self.messages[self.lang]["WFOUND"], location)
         # else search google: "wikipedia %s" % tofind
         con = httplib.HTTPConnection("www.google.com", 80)
         con.connect()
-        con.request("GET", self._get_raw % dict(lang=self.lang, q=tofind))
-        str = con.getresponse().read()
+        con.request("GET", _wiki_get % dict(lang=self.lang, q=tofind))
+        response = con.getresponse().read()
         con.close()
-        
-        regexp = "(?<=href=\")http://%s.wikipedia.org/wiki/\S*(?=\")"
-        regex = re.compile(regexp % self.lang)
-        regex = regex.search(str)
-        if regex != None:
-            return u"%s\n%s" % (self.dict[self.lang]["WGOOGLEFOUND"], 
-                    regex.group(0))
-        # if you haven"t found anything there too return a sad message,
-        return self.dict[self.lang]["WNOTFOUND"]
 
-class ManyOnManyPlugin(OneOnOnePlugin):
+        regex = re.search(_find_wiki_rex % self.lang, response)
+        if regex != None:
+            return u"%s\n%s" % (self.messages[self.lang]["WGOOGLEFOUND"],
+                    regex.group(0))
+        # if you haven't found anything there too return a sad message,
+        return self.messages[self.lang]["WNOTFOUND"]
+
+class OneOnOnePlugin(_Plugin):
+    pass
+
+class ManyOnManyPlugin(_Plugin):
     def process(self, message, reply, sender):
         reply = OneOnOnePlugin.process(self, message, reply)[1]
         return (message, u"%s: %s" % (sender.nick, reply))

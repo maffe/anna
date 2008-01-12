@@ -7,18 +7,29 @@ already a reply constructed by one of the previous plugins (ie:
 @TODO: Implement low-level functions (get_factoid() etc).
 
 """
+import sqlalchemy as sa
+
 from ai.annai.plugins import BasePlugin
 import frontends
 
 class _Plugin(BasePlugin):
-    """Common functions for both the OneOnOne and ManyOnMany plugins."""
+    """Common functions for both the OneOnOne and ManyOnMany plugins.
+
+    @TODO: Design a clean way to handle databasing.
+
+    """
     def __init__(self):
-        self.db
+        self.db = sa.create_engine("sqlite:///factoids.db")
+        self.metadata = sa.BoundMetaData(self.db)
+        if __debug__:
+            # TODO: thread-safe?
+            self.metadata.engine.echo = True
+        self.factoids = sa.Table('factoid', self.metadata, autoload=True)
 
     def __unicode__(self):
         return "factoids plugin"
 
-    def _get_factoid(object):
+    def _get_factoid(obj):
         """Get the definition of given object.
 
         @return: The definition (or None if it there is none).
@@ -26,8 +37,11 @@ class _Plugin(BasePlugin):
 
         """
         if __debug__:
-            if not isinstance(object, unicode):
+            if not isinstance(obj, unicode):
                 raise TypeError, "The argument must be a unicode object."
+        table = self.factoids
+        r = table.select(table.c.object==obj).execute()
+        r.fetchone()
 
 class OneOnOnePlugin(_Plugin):
     def __init__(self, identity):
@@ -107,11 +121,9 @@ class OneOnOnePlugin(_Plugin):
             else:
                 return u"but... but... %s is %s" % (object, existing)
 
-class ManyOnManyPlugin(object):
+class ManyOnManyPlugin(_Plugin):
     def __init__(self, room):
         """Tell the room that this plugin is unavailable for now."""
         room.send(u"The factoids plugin does not (yet) work for groupchats.")
-    def __unicode__(self):
-        return "factoids plugin"
     def process(self, message, reply, sender):
         return (message, reply)
