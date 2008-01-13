@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 cd "$PWD/`dirname $0`/src"
-exec -a anna python $@ anna.py
+exec -a anna python anna.py $@

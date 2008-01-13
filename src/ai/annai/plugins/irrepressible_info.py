@@ -1,4 +1,4 @@
-"""Plugin for u{http://irrepressible.info/}.
+"""Plugin for U{http://irrepressible.info/}.
 
 Fetches quotes on-demand an at random intervals (customizable). Only
 allows one fetch every ten seconds.
@@ -27,8 +27,8 @@ def get_ii_fragment(**filters):
     Assumes the remote server encodes content in utf-8. For more information on
     the available filters, see U{http://irrepressible.info/api}.
 
-    @return: The content of the specified url.
-    @rtype: A C{tuple} of C{unicode} objects: (id, content, url).
+    @return: Information about the fragment: (id, content, url).
+    @rtype: C{tuple} of C{unicode} objects
     @raise IOError: An error occurred opening the URL.
     @raise xml.parsers.expat.ExpatError: The XML is not well-formed.
 

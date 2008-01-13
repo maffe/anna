@@ -20,16 +20,18 @@ import config
 from frontends.xmpp import parties
 from frontends import BaseConnection
 
-class _RawConnection(px.jab.Client):
+class Connection(px.jab.Client, _threading.Thread):
+    """Threaded connection to an XMPP server.
+
+    Set the halt attribute to False to halt a connected instance.
+
+    """
     UNSUPPORTED_TYPE = u"Sorry, this type of messages is not supported."""
     CHOOSE_AI = u"Please choose an AI from the list first:\n%s"
 
     def __init__(self, **kwargs):
+        _threading.Thread.__init__(self, name="xmpp frontend")
         self.conf = config.get_conf_copy()
-        # Everybody waiting to be assigned an AI instance.
-        self._aichoosers = []
-        # List of party instances known to the bot. Maps JIDs to Identities.
-        self._parties = {}
         if "jid" not in kwargs:
             jab_conf = self.conf.jabber
             args = (jab_conf["user"], jab_conf["server"], jab_conf["resource"])
@@ -37,6 +39,13 @@ class _RawConnection(px.jab.Client):
         if "password" not in kwargs:
             kwargs["password"] = self.get_passwd(kwargs["jid"])
         px.jab.Client.__init__(self, **kwargs)
+
+        # Everybody waiting to be assigned an AI instance.
+        self._aichoosers = []
+        # List of party instances known to the bot. Maps JIDs to Identities.
+        self._parties = {}
+        # The connection will be closed when this is set to True.
+        self.halt = False
 
     def _create_AI_list(self):
         """Creates a textual representation of the available AIs."""
@@ -115,8 +124,9 @@ class _RawConnection(px.jab.Client):
         @TODO: Check if this actually works.
         
         """
-        c.stderr(u"DEBUG: xmpp: disconnected, trying to reconnect\n")
-        self.connect()
+        if not self.halt:
+            c.stderr(u"DEBUG: xmpp: disconnected, trying to reconnect\n")
+            self.connect()
 
     def exit(self):
         """Disconnect and exit.""" 
@@ -225,6 +235,17 @@ class _RawConnection(px.jab.Client):
         del self._parties[room.room_jid.bare()]
         self.rooms.forget(room)
 
+    def loop(self, timeout=1):
+        """Simple looping that stops when self.halt is False."""
+        while not self.halt:
+            self.stream.loop_iter(timeout=timeout)
+            self.idle()
+
+    def run(self):
+        self.connect()
+        self.loop()
+        self.disconnect()
+
     def session_started(self):
         """Called by pyxmpp when the session has succesfully started."""
         # Priorities in PyXMPP are from low to high.
@@ -309,13 +330,3 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
         if user.same_as(self.room.mucstate.me):
             self.conn.leave_room(self.room.mucstate)
         self.room.del_participant(parties.GroupMember(self.room, user))
-
-class Connection(BaseConnection, _threading.Thread):
-    """Threaded version of the actual connection."""
-    def __init__(self):
-        _threading.Thread.__init__(self, name="xmpp frontend")
-        self.real = _RawConnection()
-
-    def run(self):
-        self.real.connect()
-        self.real.loop()

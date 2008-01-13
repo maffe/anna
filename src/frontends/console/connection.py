@@ -23,10 +23,9 @@ import config
 from frontends import BaseConnection
 from frontends.console.parties import Individual
 
-USAGE = u"""
-Welcome to the interactive Anna shell.  Just type a message as you
-normally would.   First, you need to specify which AI module you would
-like to use.  To quit this frontend, hit ctrl + d.
+USAGE = u"""Welcome to the interactive Anna shell.  Just type a message
+as you normally would.   First, you need to specify which AI module you
+would like to use.  To quit this frontend (not the bot), hit ctrl + D.
 
 WARNING: this frontend blocks the stdout on every prompt. To prevent the
 output buffer from growing too big, it should only be used alone or at
@@ -42,6 +41,8 @@ class Connection(BaseConnection, _threading.Thread):
     def __init__(self):
         _threading.Thread.__init__(self, name="console frontend")
         username = pwd.getpwuid(os.getuid())[0]
+        # The connection will be closed when this is set to True.
+        self.halt = False
         self.idnty = Individual(username)
 
     def get_ai(self):
@@ -78,7 +79,7 @@ class Connection(BaseConnection, _threading.Thread):
         c.stdout_block(USAGE)
         try:
             self.get_ai()
-            while 1:
+            while not self.halt:
                 # The AI can change at run-time.
                 ai = self.idnty.get_AI()
                 ai.handle(c.stdin(u"<%s> " % self.idnty))

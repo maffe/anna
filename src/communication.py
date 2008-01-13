@@ -87,12 +87,17 @@ class Timed_Mutex(mutex.mutex):
     >>> m.testandset()
     True
 
+    @param timeout: Seconds to wait before unlocking.
+    @type timeout: C{int}
     @TODO: Support bursts (so 3 quickly is fine, but not 4, for example).
 
     """
     def __init__(self, timeout):
         mutex.mutex.__init__(self)
         self.timeout = timeout
+
+    def __repr__(self):
+        return "<Timed_Mutex(%d)>" % self.timeout
 
     def testandset(self):
         if mutex.mutex.testandset(self):
