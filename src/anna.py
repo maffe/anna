@@ -26,9 +26,6 @@ def discard_args(func):
 class Anna(object):
     """The Anna bot.
 
-    Use the L{run} method to start the bot. This method returns when the bot
-    exits.
-
     @TODO: Handle SIGINT properly (immediately).
 
     """

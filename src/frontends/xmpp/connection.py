@@ -119,11 +119,7 @@ class Connection(px.jab.Client, _threading.Thread):
         self._send(to_jid=party, body=msg, stanza_type=message.get_type())
 
     def disconnected(self):
-        """Try to reconnect to the xmpp network when disconnected.
-        
-        @TODO: Check if this actually works.
-        
-        """
+        """Try to reconnect to the xmpp network when disconnected."""
         if not self.halt:
             c.stderr(u"DEBUG: xmpp: disconnected, trying to reconnect\n")
             self.connect()
