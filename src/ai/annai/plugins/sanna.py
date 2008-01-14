@@ -32,7 +32,7 @@ _default_messages = dict(en=dict(
         WWEBFOUND=u"i searched the web for that.. is it this?",
         ))
 _find_wiki_rex = "(?<=window\.status=\')http://%s.wikipedia.org/wiki/\S*(?=\';)"
-_default_http_headers = dict([("user-agent": 
+_default_http_headers = dict([("user-agent", 
     "Mozilla/5.0 (compatible; Anna/1; +http://0brg.net/anna/)")])
 
 # Create a lock for fetching.
