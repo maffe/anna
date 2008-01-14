@@ -8,6 +8,9 @@ L{ai.annai} module only!
 # Keeping it simple while that's possible:
 
 plugins = {}
+from plugins import dump
+dump.name = u"dump"
+plugins[u"dump"] = dump
 from plugins import test
 test.name = u"test"
 plugins[u"test"] = test

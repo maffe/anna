@@ -17,6 +17,9 @@ import communication as c
 import frontends
 
 _URL_BASE = "http://irrepressible.info/query?%s"
+FETCH_ERROR = u"An error occurred while fetching a fragment from \
+irrepressible.info. If the error persists, please tell us about it on \
+the wiki <http://0brg.net/anna/wiki/Annawiki_talk:Community_Portal>."
 
 # Create a lock for fetching.
 _fetch_mutex = c.Timed_Mutex(10)
@@ -31,6 +34,8 @@ def get_ii_fragment(**filters):
     @rtype: C{tuple} of C{unicode} objects
     @raise IOError: An error occurred opening the URL.
     @raise xml.parsers.expat.ExpatError: The XML is not well-formed.
+    @TODO: Catch C{AttributeError} when xml is well-formed but not like we
+        expect it to be anymore.
 
     """
     filters["limit"] = 1
@@ -39,6 +44,9 @@ def get_ii_fragment(**filters):
     u = urllib.urlopen(_URL_BASE % params)
     doc = xml.dom.minidom.parse(u)
     u.close()
+    # These operations can raise an AttributeError (because one of the
+    # attributes is actually None instead of an XML node) if the XML format is
+    # suddenly changed.
     fragment = doc.firstChild.firstChild.nextSibling.firstChild.nextSibling
     id = fragment.getAttribute("id")
     url = fragment.getAttribute("href")
@@ -61,7 +69,13 @@ class _Plugin(BasePlugin):
 
         if __debug__:
             c.stderr(u"NOTICE: %s: fetching fragment.\n" % self)
-        return (message, u"Fragment %s:\n\t%s\nfrom: <%s>" % get_ii_fragment())
+        try:
+            frag = get_ii_fragment()
+        except (IOError, xml.parsers.expat.ExpatError), e:
+            c.stderr(e)
+            return (message, FETCH_ERROR)
+        else:
+            return (message, u"Fragment %s:\n\t%s\nfrom: <%s>" % frag)
 
 class OneOnOnePlugin(_Plugin):
     pass

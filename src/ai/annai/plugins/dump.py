@@ -5,67 +5,47 @@ which are not really necessary; they are only put in here to make the
 plugin useful for checking any code that uses the plugins.
 
 """
-from ai.annai.plugins import BasePlugin
-import frontends
+import httplib
 import re
-import urllib
+
+from ai.annai.plugins import BasePlugin
 import communication as c
+import frontends
 
 # Create a lock for fetching.
-_fetch_mutex = c.Timed_Mutex(10)
+_fetch_mutex = c.Timed_Mutex(3)
 
 class _Plugin(BasePlugin):
+    #: Regular expression used to search for dump requests.
+    rex = re.compile(r"\bdump\b\W+\#?(\d+)\b")
+    def __init__(self, ident):
+        pass
+
+    def __unicode__(self):
+        return u"dump plugin."
 
     def process(self, message, reply):
-	p = re.compile(".*dump\D*(\d+).*")
-	res = p.match(message)
-
+	res = self.rex.search(message)
 	if res is None:
             return (message, reply)
-    	
+        dump_num = res.group(1)
         if not _fetch_mutex.testandset():
             return (message, u"%s overloaded, please try again later." % self)
         # The lock has been acquired. It will be released after a timeout.
-    
-        u = urllib.urlopen("http://b4.xs4all.nl/dump/%s?type=text"
-            % res.group(1))
-	result = u.read()
-	if result == "This dump does not exist.\n":
-            return(message, reply)
-        else:
-	    return (message, result)
 
+        h = httplib.HTTPConnection("b4.xs4all.nl")
+        h.request("GET", "/dump/%s?type=text" % dump_num)
+        response = h.getresponse()
+        if response.status == 200:
+            reply = "Dump #%s:\n\n%s" % (dump_num, response.read().strip())
+        h.close()
+        return (message, reply)
 
 class OneOnOnePlugin(_Plugin):
-    """ Dump plugin
+    """ Dump plugin for OneOnOne conversations."""
+    pass
 
-    @param identity: The identity associated with this plugin.
-    @type identity: L{frontends.BaseIndividual}
-
-    """
-    def __init__(self, identity):
-	    pass
-
-    def __unicode__(self):
-        return u"dump plugin."
-
-    def process(self, message, reply):
-        """Returns the dump with the given numer
-        """
-        return(_Plugin.process(self, message, reply))
-
-class ManyOnManyPlugin(BasePlugin):
-    """Dump plugin for many-on-many conversations.
-
-    @param room: The room the discussion is taking place in.
-    @type room: L{frontends.BaseGroup}
-
-    """
-    def __init__(self, room):
-	    pass
-
-    def __unicode__(self):
-        return u"dump plugin."
-
+class ManyOnManyPlugin(_Plugin):
+    """Dump plugin for many-on-many conversations."""
     def process(self, message, reply, sender):
-        return(_Plugin.process(self, message, reply))
+        return _Plugin.process(self, message, reply) 
