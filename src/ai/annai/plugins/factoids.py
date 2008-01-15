@@ -44,7 +44,7 @@ class _Plugin(BasePlugin):
         r.fetchone()
 
 class OneOnOnePlugin(_Plugin):
-    def __init__(self, identity):
+    def __init__(self, identity, args):
         _Plugin.__init__(self)
         self.ident = identity
 
@@ -122,7 +122,7 @@ class OneOnOnePlugin(_Plugin):
                 return u"but... but... %s is %s" % (object, existing)
 
 class ManyOnManyPlugin(_Plugin):
-    def __init__(self, room):
+    def __init__(self, room, args):
         """Tell the room that this plugin is unavailable for now."""
         room.send(u"The factoids plugin does not (yet) work for groupchats.")
     def process(self, message, reply, sender):

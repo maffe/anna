@@ -10,7 +10,7 @@ import time
 from ai.annai.plugins import BasePlugin
 
 class _Plugin(BasePlugin):
-    def __init__(self):
+    def __init__(self, party, args):
         # The time of the last outgoing message to the minute exact.
         self.lastmsg = time.gmtime()[:5]
         # Maximum amount of outgoing message per minute.
@@ -51,13 +51,8 @@ class _Plugin(BasePlugin):
             return (message, reply)
 
 class OneOnOnePlugin(_Plugin):
-    def __init__(self, identity):
-        self.ident = identity
-        _Plugin.__init__(self)
+    pass
 
 class ManyOnManyPlugin(_Plugin):
-    def __init__(self, room):
-        self.room = room
-        _Plugin.__init__(self)
     def process(self, message, reply, sender):
         return _Plugin.process(self, message, reply)

@@ -54,7 +54,7 @@ def get_ii_fragment(**filters):
     return (id, content, url)
 
 class _Plugin(BasePlugin):
-    def __init__(self, peer):
+    def __init__(self, peer, args):
         self.peer = peer
 
     def __unicode__(self):

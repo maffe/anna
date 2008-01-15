@@ -15,7 +15,7 @@ class OneOnOnePlugin(BasePlugin):
     @type identity: L{frontends.BaseIndividual}
 
     """
-    def __init__(self, identity):
+    def __init__(self, identity, args):
         if __debug__:
             if not isinstance(identity, frontends.BaseIndividual):
                 raise TypeError, "Identity must be an Individual instance."
@@ -47,7 +47,7 @@ class ManyOnManyPlugin(BasePlugin):
     @type room: L{frontends.BaseGroup}
 
     """
-    def __init__(self, room):
+    def __init__(self, room, args):
         if __debug__:
             if not isinstance(room, frontends.BaseGroup):
                 raise TypeError, "Room must be a Group frontend instance."

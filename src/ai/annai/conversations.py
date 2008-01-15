@@ -64,12 +64,13 @@ class OneOnOne(ai.BaseOneOnOne):
     def mod_plugins(self, message):
         """Checks if the message wants to modify plugin settings."""
         if message.startswith("load plugin "):
-            plug_name = message[len("load plugin "):]
+            cmd_str = message[len("load plugin "):].split()
+            plug_name = cmd_str[0]
             try:
                 plugin_cls = pluginhandler.plugins[plug_name].OneOnOnePlugin
             except KeyError:
                 return u"plugin not found."
-            self.plugins.append(plugin_cls(self.ident))
+            self.plugins.append(plugin_cls(self.ident, cmd_str[1:]))
             return u"k."
 
         if message.startswith("unload plugin "):
@@ -202,12 +203,13 @@ class ManyOnMany(ai.BaseManyOnMany):
 
         """
         if message.startswith("load plugin "):
-            plug_name = message[len("load plugin "):]
+            cmd_str = message[len("load plugin "):].split()
+            plug_name = cmd_str[0]
             try:
                 plugin_cls = pluginhandler.plugins[plug_name].ManyOnManyPlugin
             except KeyError:
                 return u"plugin not found."
-            self.plugins.append(plugin_cls(self.room))
+            self.plugins.append(plugin_cls(self.room, cmd_str[1:]))
             return u"k."
 
         if message.startswith("unload plugin "):

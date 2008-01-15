@@ -14,7 +14,7 @@ class _Plugin(BasePlugin):
     #: Regular expression used to search for dump requests.
     # There is no word-boundary (\b) after "dump" to allow dump123.
     rex = re.compile(r"\bdump\W*?\#?(\d+)\b", re.IGNORECASE)
-    def __init__(self, ident):
+    def __init__(self, ident, args):
         pass
 
     def __unicode__(self):

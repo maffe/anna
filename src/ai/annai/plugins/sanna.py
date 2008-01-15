@@ -39,7 +39,7 @@ _default_http_headers = {"user-agent":
 _fetch_mutex = c.Timed_Mutex(5)
 
 class _Plugin(BasePlugin):
-    def __init__(self, peer):
+    def __init__(self, peer, args):
         self.lang = u"en"
         # Use the global dictionary (no writing occurs so its thread-safe).
         self.messages = _default_messages
