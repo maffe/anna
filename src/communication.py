@@ -226,7 +226,10 @@ def stdin(msg, encoding=None):
     printing it with L{stdout}. That function is threaded and uses a message
     queue for delivering output while this function does not. The only other
     way of making sure your prompt is printed before this one is by using
-    L{stdout_block} instead of L{stdout}.
+    L{stdout_block} instead of L{stdout}. Note that that only ensures it is
+    printed somewhere before the prompt, not that nothing will be printed
+    between both calls, while passing a message I{does} ensure nothing is
+    printed in between.
 
     @return: User-provided value.
     @rtype: C{unicode}
@@ -250,8 +253,9 @@ def start():
     global _poller_out, _poller_err
     _poller_out = _PrintPoller(sys.stdout, "stdout")
     _poller_err = _PrintPoller(sys.stderr, "stderr")
-    _poller_out.setDaemon(False)
-    _poller_err.setDaemon(False)
+    # Daemons exit when the main thread exits.
+    _poller_out.setDaemon(True)
+    _poller_err.setDaemon(True)
     _poller_out.start()
     _poller_err.start()
 

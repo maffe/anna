@@ -58,7 +58,7 @@ class _Plugin(BasePlugin):
         self.peer = peer
 
     def __unicode__(self):
-        return u"irrepressible.info plugin."
+        return u"irrepressible.info plugin"
 
     def process(self, message, reply):
         if not message == "ii":

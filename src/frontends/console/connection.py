@@ -45,6 +45,9 @@ class Connection(BaseConnection, _threading.Thread):
         self.halt = False
         self.idnty = Individual(username)
 
+    def disconnect(self):
+        self.halt = True
+
     def get_ai(self):
         """Ask the user what AI module to use and return its reference."""
         def_ai = config.get_conf_copy().misc["default_ai"]

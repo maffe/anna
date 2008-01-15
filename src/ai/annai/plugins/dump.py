@@ -1,10 +1,5 @@
-"""Test plugin handler.
+"""Plugin for U{http://b4.xs4all.nl/dump/}."""
 
-A lot of checks take place in this module (all if __debug__: things)
-which are not really necessary; they are only put in here to make the
-plugin useful for checking any code that uses the plugins.
-
-"""
 import httplib
 import re
 
@@ -17,12 +12,13 @@ _fetch_mutex = c.Timed_Mutex(3)
 
 class _Plugin(BasePlugin):
     #: Regular expression used to search for dump requests.
-    rex = re.compile(r"\bdump\b\W+\#?(\d+)\b")
+    # There is no word-boundary (\b) after "dump" to allow dump123.
+    rex = re.compile(r"\bdump\W*?\#?(\d+)\b", re.IGNORECASE)
     def __init__(self, ident):
         pass
 
     def __unicode__(self):
-        return u"dump plugin."
+        return u"dump plugin"
 
     def process(self, message, reply):
 	res = self.rex.search(message)
@@ -37,7 +33,9 @@ class _Plugin(BasePlugin):
         h.request("GET", "/dump/%s?type=text" % dump_num)
         response = h.getresponse()
         if response.status == 200:
-            reply = "Dump #%s:\n\n%s" % (dump_num, response.read().strip())
+            encoding = response.getheader("content-type").split("charset=")[1]
+            dump_content = response.read().decode(encoding, "replace").strip()
+            reply = "Dump #%s:\n\n%s" % (dump_num, dump_content)
         h.close()
         return (message, reply)
 

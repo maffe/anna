@@ -81,7 +81,7 @@ class Group(BaseGroup):
         try:
             self.members.remove(participant)
         except ValueError:
-            raise NoSuchParticipantError, name
+            raise NoSuchParticipantError, participant.nick
 
     def get_AI(self):
         return self.ai
@@ -161,7 +161,8 @@ class GroupMember(px.jab.muc.MucRoomUser, BaseGroupMember):
 class NoSuchParticipantError(ValueError):
     """Raised when an unknown GroupMember is adressed."""
     def __init__(self, name):
-        self.name = name
-
-    def __str__(self):
+        self._msg = name
+        ValueError.__init__(self, name)
+    def __repr__(self):
         return "Participant %s does not exist." % name
+    __str__ = __repr__

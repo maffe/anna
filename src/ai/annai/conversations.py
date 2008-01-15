@@ -94,6 +94,15 @@ class OneOnOne(ai.BaseOneOnOne):
         if message.lower() == "list available plugins":
             return u", ".join(pluginhandler.plugins.iterkeys())
 
+        if message.lower().startswith("about plugin "):
+            name = message[len("about plugin "):]
+            try:
+                plugin = pluginhandler.plugins[name]
+            except KeyError:
+                return u"No such plugin."
+            else:
+                return u"About %s: %s" % (plugin.name, plugin.__doc__)
+
         # If it had nothing to do with moderating plugins, return None.
         return None
 
@@ -222,6 +231,15 @@ class ManyOnMany(ai.BaseManyOnMany):
 
         if message.lower() == "list available plugins":
             return u", ".join(pluginhandler.plugins.iterkeys())
+
+        if message.lower().startswith("about plugin "):
+            name = message[len("about plugin "):]
+            try:
+                plugin = pluginhandler.plugins[name]
+            except KeyError:
+                return u"No such plugin."
+            else:
+                return u"About %s: %s" % (plugin.name, plugin.__doc__)
 
         # If it had nothing to do with moderating plugins, return None.
         return None

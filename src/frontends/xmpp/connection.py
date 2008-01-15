@@ -6,6 +6,7 @@ try:
     import threading as _threading
 except ImportError:
     import dummy_threading as _threading
+import time
 
 import pyxmpp.all as px
 import pyxmpp.jabber.all as pxj
@@ -21,11 +22,7 @@ from frontends.xmpp import parties
 from frontends import BaseConnection
 
 class Connection(px.jab.Client, _threading.Thread):
-    """Threaded connection to an XMPP server.
-
-    Set the halt attribute to False to halt a connected instance.
-
-    """
+    """Threaded connection to an XMPP server."""
     UNSUPPORTED_TYPE = u"Sorry, this type of messages is not supported."""
     CHOOSE_AI = u"Please choose an AI from the list first:\n%s"
 
@@ -117,6 +114,14 @@ class Connection(px.jab.Client, _threading.Thread):
             msg = self._create_AI_list()
             self._aichoosers.append(party)
         self._send(to_jid=party, body=msg, stanza_type=message.get_type())
+
+    def connect(self):
+        """Overrides C{pyxmpp.jabber.Client.connect} for the sake of API."""
+        self.start()
+
+    def disconnect(self):
+        """Overrides C{pyxmpp.jabber.Client.disconnect} for the sake of API."""
+        self.halt = True
 
     def disconnected(self):
         """Try to reconnect to the xmpp network when disconnected."""
@@ -238,9 +243,9 @@ class Connection(px.jab.Client, _threading.Thread):
             self.idle()
 
     def run(self):
-        self.connect()
+        px.jab.Client.connect(self)
         self.loop()
-        self.disconnect()
+        self.exit()
 
     def session_started(self):
         """Called by pyxmpp when the session has succesfully started."""

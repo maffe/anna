@@ -24,26 +24,22 @@ def discard_args(func):
     return lonely_func
 
 class Anna(object):
-    """The Anna bot.
-
-    @TODO: Handle SIGINT properly (immediately).
-
-    """
+    """The Anna bot."""
     def __init__(self):
         signal.signal(signal.SIGINT, stop)
         self.pool = []
-        self.pool.append(frontends.console.Connection())
-        #self.pool.append(frontends.xmpp.Connection())
+        #self.pool.append(frontends.console.Connection())
+        self.pool.append(frontends.xmpp.Connection())
 
     def start(self):
         """Start all frontend threads."""
         for thread in self.pool:
-            thread.start()
+            thread.connect()
 
     def stop(self):
         """Stop all frontend threads (and wait for them to exit)."""
         for thread in self.pool:
-            thread.halt = True
+            thread.disconnect()
             thread.join()
 
 @discard_args
