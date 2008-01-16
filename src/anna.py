@@ -28,8 +28,8 @@ class Anna(object):
     def __init__(self):
         signal.signal(signal.SIGINT, stop)
         self.pool = []
-        #self.pool.append(frontends.console.Connection())
-        self.pool.append(frontends.xmpp.Connection())
+        self.pool.append(frontends.console.Connection())
+        #self.pool.append(frontends.xmpp.Connection())
 
     def start(self):
         """Start all frontend threads."""

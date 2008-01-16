@@ -127,7 +127,7 @@ class Connection(px.jab.Client, _threading.Thread):
         """Try to reconnect to the xmpp network when disconnected."""
         if not self.halt:
             c.stderr(u"DEBUG: xmpp: disconnected, trying to reconnect\n")
-            self.connect()
+            px.jab.Client.connect(self)
 
     def exit(self):
         """Disconnect and exit.""" 
