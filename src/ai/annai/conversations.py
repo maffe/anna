@@ -176,7 +176,7 @@ class ManyOnMany(ai.BaseManyOnMany):
         for plugin in self.plugins:
             try:
                 message, reply = plugin.process(message, reply, sender)
-            except plugins.pluginerror, e:
+            except plugins.PluginError, e:
                 self.room.send(unicode(e))
                 self.plugins.remove(plugin)
 
@@ -227,7 +227,7 @@ class ManyOnMany(ai.BaseManyOnMany):
         for plugin in self.plugins:
             try:
                 message, reply = plugin.process(message, reply, sender)
-            except plugins.pluginerror, e:
+            except plugins.PluginError, e:
                 self.room.send(unicode(e))
                 self.plugins.remove(plugin)
 

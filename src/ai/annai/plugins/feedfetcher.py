@@ -11,6 +11,7 @@ class _Plugin(BasePlugin):
     def __init__(self, party, args):
         if len(args) != 1:
             raise PluginError, u"Usage: load plugin feedparser <feed-url>"
+        self.feed_url = args[0]
 
     def __unicode__(self):
         return u"feed parser plugin for <%s>." % self.feed_url
