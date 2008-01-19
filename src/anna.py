@@ -68,10 +68,8 @@ def main():
     bot = Anna()
     bot.start()
     # time.sleep() is interrupted by signals, unlike threading.Thread.join().
-    # To be honest I don't know why this does not wait ~5 seconds before
-    # quitting after a ctrl D to the console frontend... anybody?
     while bot.is_running():
-        time.sleep(10)
+        time.sleep(5)
     c.stop()
 
 if __name__ == "__main__":

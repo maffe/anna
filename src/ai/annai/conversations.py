@@ -47,8 +47,11 @@ def _mod_plugins(ai, party, message):
             plug_cls = _get_plugin(ai, plug_name)
         except pluginhandler.NoSuchPluginError, e:
             return unicode(e)
-        ai.plugins.append(plug_cls(party, cmd_str[1:]))
-        return u"k."
+        try:
+            ai.plugins.append(plug_cls(party, cmd_str[1:]))
+            return u"k."
+        except plugins.PluginError, e:
+            return unicode(e)
 
     if message.startswith("unload plugin "):
         plug_name = message[len("unload plugin "):]
@@ -105,7 +108,11 @@ class OneOnOne(ai.BaseOneOnOne):
                 )
         reply = self.general_reply(message)
         for plugin in self.plugins:
-            message, reply = plugin.process(message, reply)
+            try:
+                message, reply = plugin.process(message, reply)
+            except plugins.PluginError, e:
+                self.ident.send(unicode(e))
+                self.plugins.remove(plugin)
 
         if reply is not None:
             self.ident.send(custom_replace(reply, **replacedict))
@@ -167,7 +174,11 @@ class ManyOnMany(ai.BaseManyOnMany):
                     return self.highlight(msg, sender)
 
         for plugin in self.plugins:
-            message, reply = plugin.process(message, reply, sender)
+            try:
+                message, reply = plugin.process(message, reply, sender)
+            except plugins.pluginerror, e:
+                self.room.send(unicode(e))
+                self.plugins.remove(plugin)
 
         if reply is not None:
             reply = custom_replace(reply, user=sender.nick, nick=mynick)
@@ -214,7 +225,11 @@ class ManyOnMany(ai.BaseManyOnMany):
             reply = _mod_plugins(self, self.room, message)
 
         for plugin in self.plugins:
-            message, reply = plugin.process(message, reply, sender)
+            try:
+                message, reply = plugin.process(message, reply, sender)
+            except plugins.pluginerror, e:
+                self.room.send(unicode(e))
+                self.plugins.remove(plugin)
 
         if reply:
             # Pick a random highlighting char:

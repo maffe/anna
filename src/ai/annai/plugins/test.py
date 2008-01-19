@@ -5,7 +5,7 @@ which are not really necessary; they are only put in here to make the
 plugin useful for checking any code that uses the plugins.
 
 """
-from ai.annai.plugins import BasePlugin
+from ai.annai.plugins import BasePlugin, PluginError
 import frontends
 
 class OneOnOnePlugin(BasePlugin):
@@ -35,7 +35,9 @@ class OneOnOnePlugin(BasePlugin):
             if not (isinstance(message, unicode) or message is None) or \
                     not (isinstance(reply, unicode) or reply is None):
                 raise TypeError, "Messages must be unicode objects or None."
-        if reply is None:
+        if message == "crashtest":
+            raise PluginError, u"Test plugin crashing itself..."
+        elif reply is None:
             return (message, u"Test plugin: success.")
         else:
             return (message, u"%s - test plugin loaded" % reply)
@@ -62,7 +64,9 @@ class ManyOnManyPlugin(BasePlugin):
                 raise TypeError, "Messages must be unicode objects or None."
             if not isinstance(sender, frontends.BaseGroupMember):
                 raise TypeError, "Sender must be a GroupMember."
-        if reply is None:
+        if message == "crashtest":
+            raise PluginError, u"Test plugin crashing itself..."
+        elif reply is None:
                 return (message, u"Test plugin: success.")
         else:
                 return (message, u"%s - test plugin loaded" % reply)
