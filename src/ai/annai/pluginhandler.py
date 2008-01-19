@@ -28,6 +28,14 @@ class NoSuchPluginError(Exception):
     def __unicode__(self):
         return u'No such plugin: "%s"' % self._msg
 
+def about(name):
+    """Return the docstring of given plugin as a C{unicode} object."""
+    assert(isinstance(name, unicode))
+    try:
+        return unicode(_refs[name].__doc__)
+    except KeyError:
+        raise NoSuchPluginError, name
+
 def get_names():
     """Get an iterator with all human-readable names of available plugins."""
     return _refs.iterkeys()

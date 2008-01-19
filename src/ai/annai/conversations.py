@@ -57,7 +57,7 @@ def _mod_plugins(ai, party, message):
         plug_name = message[len("unload plugin "):]
         try:
             plug_cls = _get_plugin(ai, plug_name)
-        except frontends.NoSuchPluginError, e:
+        except pluginhandler.NoSuchPluginError, e:
             return unicode(e)
         for plugin in ai.plugins:
             if plugin.__class__ is plug_cls:
@@ -76,13 +76,11 @@ def _mod_plugins(ai, party, message):
         return u", ".join(pluginhandler.get_names())
 
     if message.lower().startswith("about plugin "):
-        plug_name = message[len("about plugin "):]
+        name = message[len("about plugin "):]
         try:
-            plugin = _get_plugin(ai, plug_name)
-        except NoSuchPluginError, e:
+            return u"About %s: %s" % (name, pluginhandler.about(name))
+        except pluginhandler.NoSuchPluginError, e:
             return unicode(e)
-        else:
-            return u"About %s: %s" % (plugin.name, plugin.__doc__)
 
     # If it had nothing to do with moderating plugins, return None.
     return None
