@@ -73,7 +73,7 @@ def _mod_plugins(ai, party, message):
             return u"no plugins loaded"
 
     if message.lower() == "list available plugins":
-        return u", ".join(pluginhandler.get_names())
+        return u",\n".join(pluginhandler.get_names())
 
     if message.lower().startswith("about plugin "):
         name = message[len("about plugin "):]
