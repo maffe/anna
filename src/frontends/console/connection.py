@@ -41,9 +41,12 @@ class Connection(BaseConnection, _threading.Thread):
     def __init__(self):
         _threading.Thread.__init__(self, name="console frontend")
         username = pwd.getpwuid(os.getuid())[0]
+        self.idnty = Individual(username)
+
+    def connect(self):
         # The connection will be closed when this is set to True.
         self.halt = False
-        self.idnty = Individual(username)
+        self.start()
 
     def disconnect(self):
         self.halt = True
@@ -88,4 +91,3 @@ class Connection(BaseConnection, _threading.Thread):
                 ai.handle(c.stdin(u"<%s> " % self.idnty))
         except EOFError:
             c.stdout_block(u"\n")
-    connect = run

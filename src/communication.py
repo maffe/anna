@@ -71,14 +71,14 @@ def _encode(msg, encoding):
         except TypeError:
             return msg.encode("utf-8", "replace")
 
-class Timed_Mutex(mutex.mutex):
+class TimedMutex(mutex.mutex):
     """A mutex that unlocks itself after a given amount of seconds.
 
     This class can be used to moderate the interval at which all threads
     combined can use a certain resource.
 
     >>> import time
-    >>> m = Timed_Mutex(5)
+    >>> m = TimedMutex(5)
     >>> m.testandset()
     True
     >>> m.testandset()
@@ -97,7 +97,7 @@ class Timed_Mutex(mutex.mutex):
         self.timeout = timeout
 
     def __repr__(self):
-        return "<Timed_Mutex(%d)>" % self.timeout
+        return "<TimedMutex(%d)>" % self.timeout
 
     def testandset(self):
         if mutex.mutex.testandset(self):

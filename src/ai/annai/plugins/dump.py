@@ -8,7 +8,7 @@ import communication as c
 import frontends
 
 # Create a lock for fetching.
-_fetch_mutex = c.Timed_Mutex(3)
+_fetch_mutex = c.TimedMutex(3)
 
 class _Plugin(BasePlugin):
     #: Regular expression used to search for dump requests.

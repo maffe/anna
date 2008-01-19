@@ -5,11 +5,84 @@ import re
 import sys
 
 import ai
+from ai.annai import pluginhandler, plugins
 import aihandler
 import config
 import frontends
 
-import pluginhandler
+def _get_plugin(ai, plug_name):
+    """Get a plugin for this AI (automatically deteremine plugin type)."""
+    if isinstance(ai, OneOnOne):
+        return pluginhandler.get_oneonone(plug_name)
+    elif isinstance(ai, ManyOnMany):
+        return pluginhandler.get_manyonmany(plug_name)
+    else:
+        raise TypeError, "First argument must be an AI instance."
+
+def _mod_plugins(ai, party, message):
+    """Checks if the message wants to modify plugin settings.
+    
+    @param message: Message to check.
+    @type message: C{unicode}
+    @param ai: Instance of the Artificial Intelligence class handling this
+        message.
+    @type ai: L{OneOnOne} or L{ManyOnMany} instance
+    @param party: Frontend instance associated with given ai instance.
+    @type party: L{frontends.BaseIndividual} or L{frontends.BaseGroup}
+    @return: Message to deliver to the sender or None if the sender doesn't
+        want to do anything about the plugins.
+    @rtype: C{unicode} or C{None}
+
+    """
+    if __debug__:
+        if not (isinstance(ai, OneOnOne) or isinstance(ai, ManyOnMany)):
+            raise TypeError, "First argument must be an AI instance."
+        if not (isinstance(party, frontends.BaseIndividual)
+                or isinstance(party, frontends.BaseGroup)):
+            raise TypeError, "Second argument must be a frontend party."
+    if message.startswith("load plugin "):
+        cmd_str = message[len("load plugin "):].split()
+        plug_name = cmd_str[0]
+        try:
+            plug_cls = _get_plugin(ai, plug_name)
+        except pluginhandler.NoSuchPluginError, e:
+            return unicode(e)
+        ai.plugins.append(plug_cls(party, cmd_str[1:]))
+        return u"k."
+
+    if message.startswith("unload plugin "):
+        plug_name = message[len("unload plugin "):]
+        try:
+            plug_cls = _get_plugin(ai, plug_name)
+        except frontends.NoSuchPluginError, e:
+            return unicode(e)
+        for plugin in ai.plugins:
+            if plugin.__class__ is plug_cls:
+                ai.plugins.remove(plugin)
+                return u"k."
+        return u"This plugin was not loaded."
+
+    if message.lower() == "list loaded plugins":
+        if ai.plugins:
+            plug_names = u"\n- ".join((unicode(p) for p in ai.plugins))
+            return u"plugins:\n- %s" % plug_names
+        else:
+            return u"no plugins loaded"
+
+    if message.lower() == "list available plugins":
+        return u", ".join(pluginhandler.get_names())
+
+    if message.lower().startswith("about plugin "):
+        plug_name = message[len("about plugin "):]
+        try:
+            plugin = _get_plugin(ai, plug_name)
+        except NoSuchPluginError, e:
+            return unicode(e)
+        else:
+            return u"About %s: %s" % (plugin.name, plugin.__doc__)
+
+    # If it had nothing to do with moderating plugins, return None.
+    return None
 
 class OneOnOne(ai.BaseOneOnOne):
     def __init__(self, identity):
@@ -59,53 +132,7 @@ class OneOnOne(ai.BaseOneOnOne):
             except aihandler.NoSuchAIError, e:
                 return unicode(e)
 
-        return self.mod_plugins(message)
-
-    def mod_plugins(self, message):
-        """Checks if the message wants to modify plugin settings."""
-        if message.startswith("load plugin "):
-            cmd_str = message[len("load plugin "):].split()
-            plug_name = cmd_str[0]
-            try:
-                plugin_cls = pluginhandler.plugins[plug_name].OneOnOnePlugin
-            except KeyError:
-                return u"plugin not found."
-            self.plugins.append(plugin_cls(self.ident, cmd_str[1:]))
-            return u"k."
-
-        if message.startswith("unload plugin "):
-            plug_name = message[len("unload plugin "):]
-            try:
-                plugin_cls = pluginhandler.plugins[plug_name].OneOnOnePlugin
-            except KeyError:
-                return u"plugin not found."
-            for plugin in self.plugins:
-                if plugin.__class__ is plugin_cls:
-                    self.plugins.remove(plugin)
-                    return u"k."
-            return u"This plugin was not loaded."
-
-        if message.lower() == "list loaded plugins":
-            if self.plugins:
-                plug_names = u"\n- ".join((unicode(p) for p in self.plugins))
-                return u"plugins:\n- %s" % plug_names
-            else:
-                return u"no plugins loaded"
-
-        if message.lower() == "list available plugins":
-            return u", ".join(pluginhandler.plugins.iterkeys())
-
-        if message.lower().startswith("about plugin "):
-            name = message[len("about plugin "):]
-            try:
-                plugin = pluginhandler.plugins[name]
-            except KeyError:
-                return u"No such plugin."
-            else:
-                return u"About %s: %s" % (plugin.name, plugin.__doc__)
-
-        # If it had nothing to do with moderating plugins, return None.
-        return None
+        return _mod_plugins(self, self.ident, message)
 
 class ManyOnMany(ai.BaseManyOnMany):
     def __init__(self, room):
@@ -184,7 +211,7 @@ class ManyOnMany(ai.BaseManyOnMany):
             except aihandler.NoSuchAIError, e:
                 reply = unicode(e)
         else:
-            reply = self.mod_plugins(message)
+            reply = _mod_plugins(self, self.room, message)
 
         for plugin in self.plugins:
             message, reply = plugin.process(message, reply, sender)
@@ -194,57 +221,6 @@ class ManyOnMany(ai.BaseManyOnMany):
             hlchar = random.choice(self.conf.misc["highlight"])
             reply = u"%s%s %s" % (sender.nick, hlchar, reply)
             self.room.send(reply)
-
-    def mod_plugins(self, message):
-        """Checks if the message wants to modify plugin settings.
-
-        @TODO: This is largely a rewrite of L{OneOnOne.mod_plugins}, code
-        should rather be reused.
-
-        """
-        if message.startswith("load plugin "):
-            cmd_str = message[len("load plugin "):].split()
-            plug_name = cmd_str[0]
-            try:
-                plugin_cls = pluginhandler.plugins[plug_name].ManyOnManyPlugin
-            except KeyError:
-                return u"plugin not found."
-            self.plugins.append(plugin_cls(self.room, cmd_str[1:]))
-            return u"k."
-
-        if message.startswith("unload plugin "):
-            plug_name = message[len("unload plugin "):]
-            try:
-                plugin_cls = pluginhandler.plugins[plug_name].ManyOnManyPlugin
-            except KeyError:
-                return u"plugin not found."
-            for plugin in self.plugins:
-                if plugin.__class__ is plugin_cls:
-                    self.plugins.remove(plugin)
-                    return u"k."
-            return u"This plugin was not loaded."
-
-        if message.lower() == "list loaded plugins":
-            if self.plugins:
-                plug_names = u"\n- ".join((unicode(p) for p in self.plugins))
-                return u"plugins:\n- %s" % plug_names
-            else:
-                return u"no plugins loaded"
-
-        if message.lower() == "list available plugins":
-            return u", ".join(pluginhandler.plugins.iterkeys())
-
-        if message.lower().startswith("about plugin "):
-            name = message[len("about plugin "):]
-            try:
-                plugin = pluginhandler.plugins[name]
-            except KeyError:
-                return u"No such plugin."
-            else:
-                return u"About %s: %s" % (plugin.name, plugin.__doc__)
-
-        # If it had nothing to do with moderating plugins, return None.
-        return None
 
 def custom_replace(message, **replace):
     """This function replaces the message with elements from the dict.

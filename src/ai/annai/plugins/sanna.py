@@ -36,7 +36,7 @@ _default_http_headers = {"user-agent":
         "Mozilla/5.0 (compatible; Anna/1; +http://0brg.net/anna/)"}
 
 # Create a lock for fetching.
-_fetch_mutex = c.Timed_Mutex(5)
+_fetch_mutex = c.TimedMutex(5)
 
 class _Plugin(BasePlugin):
     def __init__(self, peer, args):

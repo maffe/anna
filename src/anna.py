@@ -31,6 +31,17 @@ class Anna(object):
         self.pool.append(frontends.console.Connection())
         #self.pool.append(frontends.xmpp.Connection())
 
+    def is_running(self):
+        """Returns C{True} if at least one frontend is connected.
+
+        Should only be called after calling L{start}.
+
+        """
+        for thread in self.pool:
+            if not thread.isAlive():
+                return False
+        return True
+
     def start(self):
         """Start all frontend threads."""
         for thread in self.pool:
@@ -45,22 +56,22 @@ class Anna(object):
 @discard_args
 def stop():
     """Stops the bot started by L{main}."""
-    global bot, halt_main
+    global bot
     c.stderr(u"Stopping the bot...\n")
     bot.stop()
-    halt_main = True
 
 def main():
     """Start one instance of the Anna bot."""
     print __doc__
-    global bot, halt_main
+    global bot
     c.start()
     bot = Anna()
     bot.start()
-    halt_main = False
     # time.sleep() is interrupted by signals, unlike threading.Thread.join().
-    while not halt_main:
-        time.sleep(100)
+    # To be honest I don't know why this does not wait ~5 seconds before
+    # quitting after a ctrl D to the console frontend... anybody?
+    while bot.is_running():
+        time.sleep(10)
     c.stop()
 
 if __name__ == "__main__":

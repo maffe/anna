@@ -22,7 +22,7 @@ irrepressible.info. If the error persists, please tell us about it on \
 the wiki <http://0brg.net/anna/wiki/Annawiki_talk:Community_Portal>."
 
 # Create a lock for fetching.
-_fetch_mutex = c.Timed_Mutex(10)
+_fetch_mutex = c.TimedMutex(10)
 
 def get_ii_fragment(**filters):
     """Fetch a (random) fragment, optionally using given filter.

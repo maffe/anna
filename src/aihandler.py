@@ -5,18 +5,17 @@ reference to them. Updating this list of references at runtime is
 possible. Fetching references using this module read-only operation and
 is threadsafe. Updating the list is not.
 
-The names are case-insensitive so two AI modules that only differ in case are
-not allowed.
+The names are case-sensitive.
 
 @TODO: acquire a GIL on update?
 
 """
 import imp
-import sys
 
 import ai
+import communication as c
 
-# Pre-fetch a reference to all classes. Lowercase keynames.
+# Pre-fetch a reference to all classes. Case-sensitive.
 _refs = {}
 
 def get_names():
@@ -34,7 +33,7 @@ def get_manyonmany(name):
     if not isinstance(name, unicode):
         raise TypeError, "name argument must be a unicode object."
     try:
-        return _refs[name.lower()].ManyOnMany
+        return _refs[name].ManyOnMany
     except KeyError:
         raise NoSuchAIError, name
 
@@ -49,7 +48,7 @@ def get_oneonone(name):
     if not isinstance(name, unicode):
         raise TypeError, "name argument must be a unicode object."
     try:
-        return _refs[name.lower()].OneOnOne
+        return _refs[name].OneOnOne
     except KeyError:
         raise NoSuchAIError, name
 
@@ -61,13 +60,13 @@ def _update_refs():
     # There is no real need for reload() here (yet). Better leave it out.
     #reload(ai)
     for name in [unicode(mod) for mod in ai.__all__]:
-        assert(name.lower() not in _refs)
+        assert(name not in _refs)
         mod = imp.load_module(name, *imp.find_module(name, ["ai"]))
-        _refs[name.lower()] = mod
+        _refs[name] = mod
         if __debug__:
             if not ("ManyOnMany" in dir(mod) and "OneOnOne" in dir(mod)):
-                print >> sys.stderr, "AI module", name, "does not comply",
-                print >> sys.stderr, "with the API.\nDEBUG:", repr(dir(mod))
+                c.stderr(u"AI module %s does not comply with the API." % name)
+                c.stderr(u"\nDEBUG: %r\n", dir(mod))
     imp.release_lock()
 
 class NoSuchAIError(Exception):
