@@ -11,12 +11,12 @@ from ai.annai.plugins import BasePlugin
 
 #: Dictionary mapping pretty names (vals) to real plugin module names (keys).
 _name_map = dict(
-        dump="dump",
-        feedfetcher="feedfetcher",
-        irrepressible_info="irrepressible.info",
-        sanna="sanna",
-        spamblock="spamblock",
-        test="test",
+        dump=u"dump",
+        #feedfetcher=u"feedfetcher",
+        irrepressible_info=u"irrepressible.info",
+        sanna=u"sanna",
+        spamblock=u"spamblock",
+        test=u"test",
         )
 #: Dictionary of references. Keys are pretty versions, values are references.
 _refs = {}
