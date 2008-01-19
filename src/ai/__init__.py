@@ -10,5 +10,5 @@ from _baseclasses import *
 __all__ = [
     'annai',
     'echo',
-#    'fishbot',
+    'fishbot',
 ]
