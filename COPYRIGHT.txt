@@ -1,6 +1,6 @@
 ===== THE ANNA BOT =====
 
-Copyright (c) 2007, 2008 Hraban Luyat (bb at jabber.xs4all.nl).
+Copyright (c) 2007, 2008 Hraban Luyat (xmpp:bb at jabber.xs4all.nl).
 
 ----- begin license block -----
 
@@ -61,14 +61,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 ===== FISHBOT =====
 
-Fishbot is an AI module originally created by d0k
+Fishbot (/src/ai/fishbot/) is an AI module originally created by d0k
 <http://doktorz.mooltied.de/> based on commands listed on
 <http://www.telkman.co.uk/f/commands.php>. Adapted to the Anna AI API by
 Hraban Luyat. Fishbot was licensed under the following license:
 
 ----- begin license block -----
 
-Copyright (c) 2006 "d0k" (d0ktorz at jabber.ccc.de)
+Copyright (c) 2006 "d0k" (xmpp:d0ktorz at jabber.ccc.de)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
