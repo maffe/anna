@@ -2,7 +2,7 @@
  * Annarithmetic
  * Author: Lucas moeskops
  * Created: 15-01-2008
- * Last change: 15-01-2008
+ * Last change: 21-01-2008 by Hraban Luyat
  */
 
 package annarithmetic;
