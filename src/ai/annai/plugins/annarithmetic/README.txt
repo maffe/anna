@@ -19,4 +19,8 @@ You will also need to compile the java source first and create a .jar:
  $ jar cf annarithmetic.jar annarithmetic
  $ rm -rf annarithmetic
 
+To test the plugin, run
+
+ $ python test.py
+
 [1] http://jpype.sourceforge.net/
