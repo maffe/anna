@@ -8,8 +8,13 @@
 package annarithmetic;
 
 public class Plugin {    
-    static String[] arith_ops = {"=", "l", "g", "le", "ge", "+", "-", "*", "/", "**", "="};
+    private static String[] arith_ops = {"=", "<", ">", "<=", ">=", "+", "-", "*", "/", "^", "="};
+    private Constant[] constants;
     
+    public Plugin() {
+        initializeConstants();
+    }
+
     public String usage() {
         return "Annarithmetics help\n" +
             "-------------------\n" +
@@ -27,19 +32,55 @@ public class Plugin {
             "-\tSubstract\n" +
             "*\tMultiply\n" +
             "/\tDivide\n" +
-            "**\tExponentiate\n" +
+            "^\tExponentiate\n" +
             "=\tReturns 1 if arguments are equal, else 0\n" +
-            "g\tReturns 1 if left arguments greater than right argument, else 0\n" +
-            "l\tReturns 1 if left arguments less than right argument, else 0\n" +
-            "ge\tReturns 1 if left arguments greater than or equal to right argument, else 0\n" +
-            "le\tReturns 1 if left arguments less than or equal to right argument, else 0";
+            ">\tReturns 1 if left arguments greater than right argument, else 0\n" +
+            "<\tReturns 1 if left arguments less than right argument, else 0\n" +
+            ">=\tReturns 1 if left arguments greater than or equal to right argument, else 0\n" +
+            "<=\tReturns 1 if left arguments less than or equal to right argument, else 0";
     }
     
-    public String parseString(String s) {
+    private void initializeConstants() {
+        constants = new Constant[2];
+        constants[0] = new Constant("pi", Math.PI);
+        constants[1] = new Constant("e", Math.E);
+    }
+    
+    private String replaceConstants(String s) {
+        int i, j;
+        
+        /* Add braces to make sure no constants at first or last position. */
+        s = "(" + s + ")";
+        
+        /* Replace constants. */
+        for (i = 0; i < constants.length; i++) {
+            j = 0;
+            while ((j = s.indexOf(constants[i].getName(), j)) >= 0 &&
+                    !Character.isLetter(s.charAt(j - 1)) && 
+                    !Character.isLetter(s.charAt(j + constants[i].getName().length()))) {
+                s = s.substring(0, j) + 
+                    String.valueOf(constants[i].getValue()) +
+                    s.substring(j + constants[i].getName().length());
+            }
+        }
+        return s;
+    }
+
+    public String processMessage(String s) {
+        s = replaceConstants(s);
+        try {
+            return parseString(s);
+        }
+        catch (InvalidInputException e) {
+            return "";
+        }
+    }
+
+    private String parseString(String s) throws InvalidInputException {
         char c;
         int i, j, k;
         String tmp;
-
+        
         while (true) {
             /* The most important elements are braces. */
             i = j = k = s.indexOf("(");
@@ -98,7 +139,7 @@ public class Plugin {
         }
     }
 
-    private String evaluateArithmetic(String argument) {
+    private String evaluateArithmetic(String argument) throws InvalidInputException {
         int i, j;
         String s, t;
         
@@ -127,7 +168,7 @@ public class Plugin {
         return argument;
     }
     
-    private String evaluateFunction(String function, String argument) {
+    private String evaluateFunction(String function, String argument) throws InvalidInputException {
         double answer;
         double[] args;
         int i = 0;
@@ -139,42 +180,39 @@ public class Plugin {
             for (i = 0; i < args.length; i++)
                 args[i] = Double.parseDouble(parseString(s_args[i]));
         } catch (Exception e) {
-            System.out.println("Ongeldige invoer: " + s_args[i] + "; ");
-            return "?";
+            throw new InvalidInputException("Ongeldige invoer: '" + s_args[i] + "'.");
         }
         
         /* Execute the right function. */
         if (function.equals("sqrt")) {
             if (args.length != 1)
-                return "Squareroot requires 1 argument.";
+                throw new InvalidInputException("Squareroot requires 1 argument.");
             answer = Ar_Functions.sqrt(args[0]);
         } else if (function.equals("round")) {
             if (args.length < 1 || args.length > 2)
-                return "Round requires 1 or 2 argument(s).";
+                throw new InvalidInputException("Round requires 1 or 2 argument(s).");
             if (args.length == 1) {
                 answer = Ar_Functions.round(args[0]);
             } else {
                 answer = Ar_Functions.round(args[0], args[1]);
             } 
         } else {
-            return "Unknown function '" + function + "'.";
+            throw new InvalidInputException("Unknown function '" + function + "'.");
         }
         return String.valueOf(answer);
     }
     
-    private String evaluateOperation(int type, String arg_a, String arg_b) {
+    private String evaluateOperation(int type, String arg_a, String arg_b) throws InvalidInputException {
         double a, b;
         try {
             a = Double.parseDouble(arg_a);
         } catch (Exception e) {
-            System.out.println("Ongeldige invoer: '" + arg_a + "'.");
-            return "?";
+            throw new InvalidInputException("Ongeldige invoer: '" + arg_a + "'.");
         }
         try {
             b = Double.parseDouble(arg_b);
         } catch (Exception e) {
-            System.out.println("Ongeldige invoer: '" + arg_b + "'.");
-            return "?";
+            throw new InvalidInputException("Ongeldige invoer: '" + arg_b + "'.");
         }
         switch (type) {
             case 0: /* = */
@@ -198,25 +236,33 @@ public class Plugin {
             case 9: /* ^ */
                 return String.valueOf(Math.pow(a, b));
             default:
-                return "?";
+                throw new InvalidInputException("Unknown operator " + arith_ops[type]);
         }
     }
 }
 
-class Ar_Functions {
+class Constant {
+    private String name;
+    private double value;
     
-    /* Square root */
-    public static double sqrt(double d) {
-        return Math.sqrt(d);
+    public Constant(String name, double value) {
+        this.name = name;
+        this.value = value;
     }
-    
-    /* Round */
-    public static double round(double d) {
-        return Math.round(d);
+
+    public String getName() {
+        return name;
     }
-    public static double round(double d, double precision) {
-        double tmp = Math.pow(10, precision);
-        return Math.round(d) / tmp;
+
+    public void setName(String name) {
+        this.name = name;
     }
-    
+
+    public double getValue() {
+        return value;
+    }
+
+    public void setValue(double value) {
+        this.value = value;
+    }   
 }
