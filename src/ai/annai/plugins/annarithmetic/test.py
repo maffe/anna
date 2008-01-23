@@ -31,9 +31,9 @@ def test(testfile):
             sys.stdout.write("\rRunning tests... [%d/%d] OK" % (i, len(tests)))
             sys.stdout.flush()
             passed += 1
-            prev_nlfail = False
+            prev_nl = False
         else:
-            if not prev_fail:
+            if not prev_nl:
                 print
             print "FAIL: [%d/%d]:" % (i, len(tests)), repr(test), "returns",
             print "'%s', should be: '%s'" % (result, sol)
