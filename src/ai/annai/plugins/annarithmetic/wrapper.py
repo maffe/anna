@@ -8,8 +8,9 @@ did, it does not even try to parse the incoming message.
 @TODO: Load JVM with correct classpath just once.
 
 """
-import jpype as j
 import os
+
+import jpype as j
 
 from ai.annai.plugins import BasePlugin
 
@@ -32,11 +33,10 @@ class _Plugin(BasePlugin):
         if message == "annarithmetic usage":
             result = self.jplugin.usage()
         else:
-            result = self.jplugin.parseString(str(message))
+            result = self.jplugin.processMessage(message)
         assert(isinstance(result, unicode))
         # HACK: plugin returns message on no-match.
-        #if not result:
-        if result == message:
+        if not result or result == message:
             result = reply
         j.detachThreadFromJVM()
         return (message, result)

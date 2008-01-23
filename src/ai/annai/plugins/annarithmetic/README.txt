@@ -11,13 +11,8 @@ module manually:
 
 If this does not raise any errors you are most likely good to go.
 
-You will also need to compile the java source first and create a .jar:
-
- $ javac Plugin.java
- $ mkdir annarithmetic
- $ mv Plugin.class annarithmetic
- $ jar cf annarithmetic.jar annarithmetic
- $ rm -rf annarithmetic
+You can use the compile.sh script provided in the javasource directory
+to compile the source into a usable .jar file.
 
 To test the plugin, run
 
