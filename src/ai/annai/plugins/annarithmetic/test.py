@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#TODO: Interpret ` as wildcard.
 """Test the Annarithmetic plugin.
 
 Usage:
@@ -22,7 +23,7 @@ def test(testfile):
     i = 0
     passed = 0
     # OK, this is ugly, but I don't know a better way to get pretty output.
-    prev_fail = False
+    prev_nl = False
     for test, sol in tests:
         i += 1
         result = p.processMessage(test)
@@ -30,14 +31,14 @@ def test(testfile):
             sys.stdout.write("\rRunning tests... [%d/%d] OK" % (i, len(tests)))
             sys.stdout.flush()
             passed += 1
-            prev_fail = False
+            prev_nlfail = False
         else:
             if not prev_fail:
                 print
-            print "FAIL: [%d/%d]:" % (i, len(tests)), test, "returns",
-            print result, "should be: '%s'" % sol
-            prev_fail = True
-    print "\nTest results:", passed, "of", len(tests), "passed."
+            print "FAIL: [%d/%d]:" % (i, len(tests)), repr(test), "returns",
+            print "'%s', should be: '%s'" % (result, sol)
+            prev_nl = True
+    print "\rTest results:", passed, "of", len(tests), "passed."
 
 def main():
     try:
