@@ -12,7 +12,8 @@ module manually:
 If this does not raise any errors you are most likely good to go.
 
 You can use the compile.sh script provided in the javasource directory
-to compile the source into a usable .jar file.
+to compile the source into a usable .jar file. Put the annarithmetic.jar
+file in the same directory as this README.
 
 To test the plugin, run
 

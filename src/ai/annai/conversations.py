@@ -59,11 +59,13 @@ def _mod_plugins(ai, party, message):
             plug_cls = _get_plugin(ai, plug_name)
         except pluginhandler.NoSuchPluginError, e:
             return unicode(e)
-        for plugin in ai.plugins:
+        valid_req = False
+        # Important: copy the list, don't modify it while looping over it!
+        for plugin in ai.plugins[:]:
             if plugin.__class__ is plug_cls:
                 ai.plugins.remove(plugin)
-                return u"k."
-        return u"This plugin was not loaded."
+                valid_req = True
+        return valid_req and u"k." or u"This plugin was not loaded."
 
     if message.lower() == "list loaded plugins":
         if ai.plugins:
@@ -81,6 +83,9 @@ def _mod_plugins(ai, party, message):
             return u"About %s: %s" % (name, pluginhandler.about(name))
         except pluginhandler.NoSuchPluginError, e:
             return unicode(e)
+
+    if message.lower() == "list plugins":
+        return u"Loaded or available plugins?"
 
     # If it had nothing to do with moderating plugins, return None.
     return None

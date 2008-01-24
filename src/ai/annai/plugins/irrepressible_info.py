@@ -3,6 +3,9 @@
 Fetches quotes on-demand an at random intervals (customizable). Only
 allows one fetch every ten seconds.
 
+@TODO: Use the same system as the feedfetcher for getting URLs in a
+non-blocking way.
+
 """
 try:
     import threading as _threading

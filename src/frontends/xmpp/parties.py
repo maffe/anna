@@ -158,11 +158,11 @@ class GroupMember(px.jab.muc.MucRoomUser, BaseGroupMember):
     def __unicode__(self):
         return u"xmpp:%s" % unicode(self.room_jid)
 
-class NoSuchParticipantError(ValueError):
+class NoSuchParticipantError(Exception):
     """Raised when an unknown GroupMember is adressed."""
     def __init__(self, name):
-        self._msg = name
-        ValueError.__init__(self, name)
+        Exception.__init__(self, name)
+        self.name = name
     def __repr__(self):
-        return "Participant %s does not exist." % name
+        return "Participant %s does not exist." % self.name
     __str__ = __repr__

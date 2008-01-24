@@ -7,16 +7,51 @@ is threadsafe. Updating the list is not.
 
 The names are case-sensitive.
 
-@TODO: acquire a GIL on update?
-
 """
 import imp
+try:
+    import threading as _threading
+except ImportError:
+    import dummy_threading as _threading
 
 import ai
 import communication as c
 
 # Pre-fetch a reference to all classes. Case-sensitive.
 _refs = {}
+# Lock for ensuring the _load_refs() method is only run once. Never .release()!
+__refs_loaded = _threading.Lock()
+
+def _load_refs():
+    """Update the list of references with all modules in the AI module.
+
+    This routine can only be run once.
+
+    """
+    global _refs
+    if not __refs_loaded.acquire(False):
+        return
+    imp.acquire_lock()
+    _refs = {}
+    for name in [unicode(mod) for mod in ai.__all__]:
+        assert(name not in _refs)
+        mod = imp.load_module(name, *imp.find_module(name, ["ai"]))
+        _refs[name] = mod
+        if __debug__:
+            if not ("ManyOnMany" in dir(mod) and "OneOnOne" in dir(mod)):
+                c.stderr(u"AI module %s does not comply with the API." % name)
+                c.stderr(u"\nDEBUG: %r\n", dir(mod))
+    imp.release_lock()
+
+class NoSuchAIError(Exception):
+    def __init__(self, name):
+        self.name = name
+
+    def __str__(self):
+        return 'No such AI module: "%s".' % self.name
+
+    def __unicode__(self):
+        return u'No such AI module: "%s".' % self.name
 
 def get_names():
     """Return an iterator with the names of all available AI modules."""
@@ -52,31 +87,4 @@ def get_oneonone(name):
     except KeyError:
         raise NoSuchAIError, name
 
-def _update_refs():
-    """Update the list of references with all modules in the AI module."""
-    global _refs
-    imp.acquire_lock()
-    _refs = {}
-    # There is no real need for reload() here (yet). Better leave it out.
-    #reload(ai)
-    for name in [unicode(mod) for mod in ai.__all__]:
-        assert(name not in _refs)
-        mod = imp.load_module(name, *imp.find_module(name, ["ai"]))
-        _refs[name] = mod
-        if __debug__:
-            if not ("ManyOnMany" in dir(mod) and "OneOnOne" in dir(mod)):
-                c.stderr(u"AI module %s does not comply with the API." % name)
-                c.stderr(u"\nDEBUG: %r\n", dir(mod))
-    imp.release_lock()
-
-class NoSuchAIError(Exception):
-    def __init__(self, name):
-        self.name = name
-
-    def __str__(self):
-        return 'No such AI module: "%s".' % self.name
-
-    def __unicode__(self):
-        return u'No such AI module: "%s".' % self.name
-
-_update_refs()
+_load_refs()

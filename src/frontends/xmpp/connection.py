@@ -1,5 +1,8 @@
-"""Connect to the xmpp network and define connection handlers."""
+"""Connect to the xmpp network and define connection handlers.
 
+@TODO: Display better error message when connection/auth fails.
+
+"""
 import getpass
 import sys
 try:
