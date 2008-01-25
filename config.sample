@@ -16,3 +16,8 @@ bot_nickname = anna
 # outgoing messages in groupchats. Every character is evaluated
 # seperately.
 highlight = :;,
+
+# User-agent header sent with HTTP connections. This value is not
+# enforced; some parts of the bot (like plugins for the annai module)
+# MAY choose to send something different or nothing at all.
+http_useragent = Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
