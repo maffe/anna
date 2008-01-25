@@ -1,10 +1,14 @@
 """Plugin that fetches and interprets news feeds.
 
-Currently only supports the atom 1.0 spefication.
+@TODO: Currently only supports the atom 1.0 spefication.
+@TODO: Parse (x)html content; if a feed does not provide text/plain type
+content the output of this plugin is now unusable.
 
 """
-
-import threading
+try:
+    import threading as _threading
+except ImportError:
+    import dummy_threading as _threading
 import time
 
 import ai.annai
@@ -30,7 +34,7 @@ FORMAT = u"""New feed message for %(feed_url)s:
 - <%(url)s>"""
 
 #: Semaphore for keeping track of concurrent feedfetcher threads.
-_tickets = threading.Semaphore(MAX_CONCURRENT_THREADS)
+_tickets = _threading.Semaphore(MAX_CONCURRENT_THREADS)
 
 def unpack_entry(entry):
     """Unpacks an atom entry as parsed by feedparser to a more consise object.
@@ -99,7 +103,7 @@ class _Plugin(BasePlugin):
         self.prefix = "news "
         # Seconds between updates.
         self.update_interval = DEFAULT_INTERVAL
-        self.timer = threading.Timer(0, self.check_feed)
+        self.timer = _threading.Timer(0, self.check_feed)
         self.timer.start()
 
     def __del__(self):
@@ -153,7 +157,7 @@ class _Plugin(BasePlugin):
                 # There is no self.latest_elem: this is the first fetch.
                 # TODO: This belongs in a seperate routine.
                 self.latest_elem = clean["updated"]
-                self.timer = threading.Timer(self.update_interval,
+                self.timer = _threading.Timer(self.update_interval,
                                                         self.check_feed)
                 self.timer.setDaemon(True)
                 self.timer.start()
@@ -167,7 +171,7 @@ class _Plugin(BasePlugin):
             self.party.send(FORMAT % clean)
             # Update the value of the latest feed we checked out.
             self.latest_elem = clean["updated"]
-        self.timer = threading.Timer(self.update_interval, self.check_feed)
+        self.timer = _threading.Timer(self.update_interval, self.check_feed)
         self.timer.setDaemon(True)
         self.timer.start()
 

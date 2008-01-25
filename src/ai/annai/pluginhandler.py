@@ -11,7 +11,7 @@ from ai.annai.plugins import BasePlugin
 
 #: Dictionary mapping pretty names (vals) to real plugin module names (keys).
 _name_map = dict(
-        annarithmetic=u"annarithmetic",
+        #annarithmetic=u"annarithmetic",
         dump=u"dump",
         feedfetcher=u"feedfetcher",
         irrepressible_info=u"irrepressible.info",

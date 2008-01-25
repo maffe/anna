@@ -19,9 +19,17 @@ def _get_plugin(ai, plug_name):
     else:
         raise TypeError, "First argument must be an AI instance."
 
+def _del_numeric_plugin(ai, num):
+    """Delete a plugin with this number from this ai instance."""
+    try:
+        del ai.plugins[num]
+        return u"k."
+    except IndexError:
+        return u"No plugin with that number."
+
 def _mod_plugins(ai, party, message):
     """Checks if the message wants to modify plugin settings.
-    
+
     @param message: Message to check.
     @type message: C{unicode}
     @param ai: Instance of the Artificial Intelligence class handling this
@@ -56,9 +64,12 @@ def _mod_plugins(ai, party, message):
     if message.startswith("unload plugin "):
         plug_name = message[len("unload plugin "):]
         try:
-            plug_cls = _get_plugin(ai, plug_name)
-        except pluginhandler.NoSuchPluginError, e:
-            return unicode(e)
+            return _del_numeric_plugin(ai, int(plug_name) - 1)
+        except ValueError:
+            try:
+                plug_cls = _get_plugin(ai, plug_name)
+            except pluginhandler.NoSuchPluginError, e:
+                return unicode(e)
         valid_req = False
         # Important: copy the list, don't modify it while looping over it!
         for plugin in ai.plugins[:]:
@@ -69,8 +80,10 @@ def _mod_plugins(ai, party, message):
 
     if message.lower() == "list loaded plugins":
         if ai.plugins:
-            plug_names = u"\n- ".join((unicode(p) for p in ai.plugins))
-            return u"plugins:\n- %s" % plug_names
+            msg = [u"Loaded plugins:"]
+            for num, plugin in enumerate(ai.plugins):
+                msg.append(u"%d: %s" % (num + 1, plugin))
+            return u"\n".join(msg)
         else:
             return u"no plugins loaded"
 
