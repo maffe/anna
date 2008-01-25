@@ -1,6 +1,10 @@
 """Conversation-party definitions for the xmpp frontend."""
 
 import sys
+try:
+    import threading as _threading
+except ImportError:
+    import dummy_threading as _threading
 
 import pyxmpp.all as px
 import pyxmpp.jabber.all as pxj
@@ -49,20 +53,16 @@ class Individual(BaseIndividual):
 
 class Group(BaseGroup):
     """The mucstate variable is a px.jab.muc.MucRoomState instance.
-    
+
     It must be set before it can be used.
-    
+
     """
     mucstate = None
     def __init__(self, jid, stream):
         c.stderr(u"DEBUG: xmpp: Group %s instantiated.\n" % jid)
         assert(isinstance(jid, px.JID))
         self.jid = jid
-        self.nick = jid.node
         self.members = []
-        self.stream = stream
-        # The cached presence stanza for this MUC.
-        self.pres = px.jab.muccore.MucPresence(to_jid=jid)
 
     def __str__(self):
         return "xmpp:%s" % self.jid
@@ -76,8 +76,9 @@ class Group(BaseGroup):
         self.members.append(participant)
 
     def del_participant(self, participant):
-        if not isinstance(participant, GroupMember):
-            raise TypeError, "Participants must be GroupMember instances."
+        if __debug__:
+            if not isinstance(participant, GroupMember):
+                raise TypeError, "Participants must be GroupMember instances."
         try:
             self.members.remove(participant)
         except ValueError:
@@ -87,7 +88,7 @@ class Group(BaseGroup):
         return self.ai
 
     def get_mynick(self):
-        return self.mucstate.me.nick
+        return self.mucstate.get_nick()
 
     def get_participant(self, name):
         assert(isinstance(name, unicode))
@@ -104,32 +105,26 @@ class Group(BaseGroup):
         return "xmpp"
 
     def is_active(self):
-        return self.pres.get_type() == "available"
+        return self.mucstate.joined
 
     def join(self):
-        self.pres.set_type("available")
-        pres = self.pres.copy()
-        pres.make_join_request(history_maxstanzas=0)
-        self.stream.send(pres)
         if __debug__:
             c.stderr(u"DEBUG: join %s\n" % self)
+        self.mucstate.join(history_maxstanzas=0)
 
     def leave(self):
         if __debug__:
             c.stderr(u"DEBUG: leaving %s\n" % self)
-        self.pres.set_type("unavailable")
-        self.stream.send(self.pres)
+        self.mucstate.leave()
 
     def set_AI(self, ai):
         self.ai = ai
 
     def set_mynick(self, nick):
-        self.nick = nick
+        self.mucstate.change_nick(nick)
 
     def send(self, message):
-        message = px.Message(to_jid=self.jid, body=message,
-                stanza_type="groupchat")
-        self.stream.send(message)
+        self.mucstate.send_message(message)
 
 class GroupMember(px.jab.muc.MucRoomUser, BaseGroupMember):
     def __init__(self, room, *args):

@@ -27,8 +27,6 @@ from frontends import BaseConnection
 class Connection(px.jab.Client, _threading.Thread):
     """Threaded connection to an XMPP server."""
     UNSUPPORTED_TYPE = u"Sorry, this type of messages is not supported."""
-    CHOOSE_AI = u"Please choose an AI from the list first:\n%s"
-
     def __init__(self, **kwargs):
         _threading.Thread.__init__(self, name="xmpp frontend")
         self.conf = config.get_conf_copy()
@@ -47,16 +45,6 @@ class Connection(px.jab.Client, _threading.Thread):
         # The connection will be closed when this is set to True.
         self.halt = False
 
-    def _create_AI_list(self):
-        """Creates a textual representation of the available AIs."""
-        ais = []
-        for name in aihandler.get_names():
-            if name.lower() == self.conf.misc["default_ai"].lower():
-                ais.append("%s (default)" % name)
-            else:
-                ais.append(name)
-        return self.CHOOSE_AI % u"\n".join(["- %s" % ai for ai in ais])
-
     def _send(self, *args, **kwargs):
         """Do not use this function, use the Individual/Group's send instead.
 
@@ -70,53 +58,6 @@ class Connection(px.jab.Client, _threading.Thread):
         if __debug__:
             marsh = message.serialize().decode("utf-8") # unicode object.
             c.stderr(u"DEBUG: xmpp: sending '%s'\n" % marsh)
-
-    def choose_AI(self, party, message, is_room):
-        """Handles conversations with this party when no AI is assigned yet.
-
-        The first argument is an pyxmpp.JID instance of the party starting a
-        new conversation, the second one is the message they sent. The is_room
-        argument specifies whether this is a groupchat or PM.
-
-        If this is a PM and there is no cached Individual instance available
-        for this party a new instance is created and stored. Rooms are always
-        expected to be instantiated and cached in the self._parties dictionary.
-
-        """
-        assert(isinstance(party, px.JID))
-        text = unicode(message.get_body()).strip()
-        # If this party already got the "choose AI" message this message he
-        # sent must be his choice. Parse it as such.
-        if party in self._aichoosers:
-            if text == "":
-                choice = self.conf.misc["default_ai"]
-            elif text.endswith(" (default)"):
-                # If the user thought " (default)" was part of the name, strip.
-                choice = text[:-len(" (default)")]
-            else:
-                choice = text
-            try:
-                if is_room:
-                    ai_class = aihandler.get_manyonmany(choice)
-                else:
-                    ai_class = aihandler.get_oneonone(choice)
-            except aihandler.NoSuchAIError, e:
-                msg = u"\n\n".join((unicode(e), self._create_AI_list()))
-            else:
-                if is_room:
-                    # Rooms are already instantiated somewhere else.
-                    idnty = self._parties[party]
-                else:
-                    idnty = parties.Individual(party, self.stream)
-                    self._parties[party] = idnty
-                idnty.set_AI(ai_class(idnty))
-                self._aichoosers.remove(party)
-                assert(party not in self._aichoosers)
-                msg = "Great success!"
-        else:
-            msg = self._create_AI_list()
-            self._aichoosers.append(party)
-        self._send(to_jid=party, body=msg, stanza_type=message.get_type())
 
     def connect(self):
         """Overrides C{pyxmpp.jabber.Client.connect} for the sake of API."""
@@ -163,14 +104,18 @@ class Connection(px.jab.Client, _threading.Thread):
 
     def handle_msg_chat(self, message):
         text = message.get_body()
-        sender = px.JID(message.get_from())
+        sender = px.JID(message.get_from().bare())
         try:
-            ai = self._parties[sender].get_AI()
-            ai.handle(text)
+            peer = self._parties[sender]
         except KeyError:
-            self.choose_AI(sender, message, is_room=False)
+            # This is the first message from this peer.
+            peer = parties.Individual(sender, self.stream)
+            self._parties[sender] = peer
+            peer.set_AI(aihandler.get_oneonone(u"choose_ai")(peer))
+        else:
+            peer.get_AI().handle(text)
         if __debug__:
-            c.stderr(u"DEBUG: chat: '%s' from '%s'\n" % (text, sender))
+            c.stderr(u"DEBUG: xmpp: pm: '%s' from '%s'\n" % (text, sender))
         return True
 
     def handle_msg_unsup(self, message):
@@ -202,7 +147,6 @@ class Connection(px.jab.Client, _threading.Thread):
             c.stderr(u"DEBUG: xmpp: invited to %s\n" % message.get_from())
         ns_map = {"mu": "http://jabber.org/protocol/muc#user"}
         nick = self.conf.misc["bot_nickname"]
-        ai_list = self._create_AI_list()
         if not message.xpath_eval("/ns:message/mu:x/mu:invite", ns_map):
             # This stanza is not an invitation to a MUC.
             return False
@@ -214,15 +158,12 @@ class Connection(px.jab.Client, _threading.Thread):
         if room_jid in self._parties:
             c.stderr(u"WARNING: already in %s\n" % unicode(room_jid))
             return True
-        # Room without AI until a module is assigned.
         room = parties.Group(room_jid, self.stream)
         handler = _MucEventHandler(self, room)
         self.rooms.join(room_jid, nick, handler, history_maxstanzas=0)
         room.mucstate = self.rooms.rooms[unicode(room_jid)]
-        # Send an AI choice prompt manually.
         self._parties[room_jid] = room
-        self._aichoosers.append(room_jid)
-        self._send(to_jid=room_jid, body=ai_list, stanza_type="groupchat")
+        room.set_AI(aihandler.get_manyonmany(u"choose_ai")(room))
         return True
 
     def leave_room(self, room):
@@ -305,12 +246,9 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
                             (message.get_from(), text))
         # Rooms always have an instance stored in the _parties dictionary.
         room = self.conn._parties[room_jid]
-        if room_jid in self.conn._aichoosers:
-            self.conn.choose_AI(room_jid, message, is_room=True)
-        else:
-            ai = room.get_AI()
-            member = room.get_participant(sender.nick)
-            ai.handle(text, member)
+        ai = room.get_AI()
+        member = room.get_participant(sender.nick)
+        ai.handle(text, member)
         return True
 
     def nick_changed(self, user, old_nick, stanza):

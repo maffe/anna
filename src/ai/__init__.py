@@ -9,6 +9,7 @@ from _baseclasses import *
 
 __all__ = [
     'annai',
+    'choose_ai',
     'echo',
     'fishbot',
 ]

@@ -17,10 +17,10 @@ except ImportError:
 import ai
 import communication as c
 
-# Pre-fetch a reference to all classes. Case-sensitive.
-_refs = {}
 # Lock for ensuring the _load_refs() method is only run once. Never .release()!
 __refs_loaded = _threading.Lock()
+# Pre-fetch a reference to all classes. Case-sensitive.
+_refs = {}
 
 def _load_refs():
     """Update the list of references with all modules in the AI module.

@@ -1,9 +1,12 @@
 #!/usr/bin/env python
-#TODO: Interpret ` as wildcard.
-"""Test the Annarithmetic plugin.
+"""Module used for testing the annarithmetic plugin.
 
+@TODO: Interpret ` as a wild-card character.
+
+"""
+USAGE = """
 Usage:
-    test.py TEST_FILE
+    $ test.py TEST_FILE
 
 """
 import csv
@@ -41,10 +44,11 @@ def test(testfile):
     print "\rTest results:", passed, "of", len(tests), "passed."
 
 def main():
+    print __doc__
     try:
         test(open(sys.argv[1]))
     except IndexError:
-        print >> sys.stderr, __doc__
+        print >> sys.stderr, USAGE
 
 if not j.isJVMStarted():
     start_JVM_from_curdir()

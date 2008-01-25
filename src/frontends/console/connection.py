@@ -51,30 +51,6 @@ class Connection(BaseConnection, _threading.Thread):
     def disconnect(self):
         self.halt = True
 
-    def get_ai(self):
-        """Ask the user what AI module to use and return its reference."""
-        def_ai = config.get_conf_copy().misc["default_ai"]
-        while 1:
-            ais = []
-            for name in aihandler.get_names():
-                if name.lower() == def_ai.lower():
-                    name = u" ".join((name, "(default)"))
-                ais.append(u"- %s\n" % name)
-            # This can raise an EOFError.
-            choice = c.stdin(CHOOSE_AI % u"".join(ais)).strip()
-            if choice == "":
-                choice = def_ai
-            elif choice.endswith(" (default)"):
-                # If the user thought " (default)" was part of the name, strip.
-                choice = choice[:-len(" (default)")]
-            try:
-                self.idnty.set_AI(aihandler.get_oneonone(choice)(self.idnty))
-                break
-            except aihandler.NoSuchAIError, e:
-                c.stderr_block(unicode(e))
-                c.stdout_block(u"Please try again.\n")
-        c.stdout_block(u'Module "%s" successfully loaded.\n' % choice)
-
     def run(self):
         """Take over the stdin and do nifty stuff... etc.
 
@@ -83,8 +59,8 @@ class Connection(BaseConnection, _threading.Thread):
 
         """
         c.stdout_block(USAGE)
+        self.idnty.set_AI(aihandler.get_oneonone(u"choose_ai")(self.idnty))
         try:
-            self.get_ai()
             while not self.halt:
                 # The AI can change at run-time.
                 ai = self.idnty.get_AI()
