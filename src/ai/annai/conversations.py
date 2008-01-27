@@ -261,7 +261,8 @@ def custom_replace(message, **replace):
 
     """
     try:
-        return message % replace
+        # Keep original %'s in message intact.
+        return message.replace("%", "%%") % replace
     except KeyError, e:
         return ''.join(('I was told to say "%s" now but I don\'t know what to',
                         ' replace %%(%s)s with.')) % (message, e[0])

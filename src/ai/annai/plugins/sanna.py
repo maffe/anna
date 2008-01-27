@@ -26,11 +26,11 @@ _wiki_get = "".join(("/dogpile/ws/results/Web/%(q)s/1/485/TopNavigation/",
                     "&adv=qall%%3d%(q)s%%26domaini%%3dinclude%%26domaint",
                     "%%3d%(lang)s.wikipedia.org"))
 
-_default_messages = dict(en=dict(
+_default_messages = dict(
         WNOTFOUND=u"whaddayamean?",
         WFOUND=u"i found your article! take a look at it..",
         WWEBFOUND=u"i searched the web for that.. is it this?",
-        ))
+        )
 _find_wiki_rex = "(?<=window\.status=\')http://%s.wikipedia.org/wiki/\S*(?=\';)"
 _default_http_headers = {"user-agent": 
         "Mozilla/5.0 (compatible; Anna/1; +http://0brg.net/anna/)"}
@@ -44,22 +44,29 @@ class _Plugin(BasePlugin):
         # Use the global dictionary (no writing occurs so its thread-safe).
         self.messages = _default_messages
         # The different search types.
-        self._mods = dict(
-                w=self.wikipedia,
-                )
+        self._mods = {
+                u"w": self.wikipedia,
+                }
 
     def __unicode__(self):
         return u"web search plugin"
 
-    def process(self, message, reply):
+    def process(self, message, reply, sender=None):
+        if message.startswith("sanna lang="):
+            self.lang=message[len("sanna lang="):]
+            return (message, u"k")
         msg = message.strip()
-        # Using None as delimiter makes split() use its default values.
         try:
+            # Using None as delimiter makes split() use its default values.
             cmd, arg = msg.split(None, 1)
-            func = self._mods[cmd]
-        except (ValueError, KeyError):
+        except (AttributeError, ValueError):
             # Assume the message was not intended for this plugin if either:
+            # AttributeError: There is no incoming message.
             # ValueError: There were no spaces in the message.
+            return (message, reply)
+        try:
+            func = self._mods[cmd]
+        except KeyError:
             # KeyError: the first word of the message is not a registered
             # search type.
             return (message, reply)
@@ -79,16 +86,18 @@ class _Plugin(BasePlugin):
         """
         # If wikipedia has found the article, the HTTP reply contains 
         # a Location: header.
-        tofind = urllib.pathname2url(tofind)
+        # Encoded querystring values are first encoded to utf-8.
+        assert(isinstance(tofind, unicode))
+        tofind = urllib.quote_plus(tofind.encode("utf-8"))
         con = httplib.HTTPConnection("%s.wikipedia.org" % self.lang, 80)
         con.connect()
         con.request("GET", "/wiki/Special:Search?search=%s&go=Go" % tofind,
-                None, _default_http_headers)
+                headers=_default_http_headers)
         location = con.getresponse().getheader("location", 1)
         con.close()
 
         if location != 1:
-            return u"%s\n%s" % (self.messages[self.lang]["WFOUND"], location)
+            return u"%s\n%s" % (self.messages["WFOUND"], location)
         # else search dogpile: "wikipedia %s" % tofind
         con = httplib.HTTPConnection("www.dogpile.com", 80)
         con.connect()
@@ -97,19 +106,14 @@ class _Plugin(BasePlugin):
         con.close()
 
         regex = re.search(_find_wiki_rex % self.lang, response)
-        if regex != None:
-            return u"%s\n%s" % (self.messages[self.lang]["WWEBFOUND"],
+        if regex is not None:
+            return u"%s\n%s" % (self.messages["WWEBFOUND"],
                     regex.group(0))
         # if you haven't found anything there too return a sad message,
-        return self.messages[self.lang]["WNOTFOUND"]
+        return self.messages["WNOTFOUND"]
 
 class OneOnOnePlugin(_Plugin):
     pass
 
 class ManyOnManyPlugin(_Plugin):
-    def process(self, message, reply, sender):
-        reply = _Plugin.process(self, message, reply)[1]
-        if reply is None:
-            return (message, None)
-        else:
-            return (message, u"%s: %s" % (sender.nick, reply))
+    pass
