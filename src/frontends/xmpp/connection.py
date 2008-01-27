@@ -3,8 +3,6 @@
 @TODO: Display better error message when connection/auth fails.
 
 """
-import getpass
-import sys
 try:
     import threading as _threading
 except ImportError:
@@ -247,8 +245,12 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
         # Rooms always have an instance stored in the _parties dictionary.
         room = self.conn._parties[room_jid]
         ai = room.get_AI()
-        member = room.get_participant(sender.nick)
-        ai.handle(text, member)
+        try:
+            member = room.get_participant(sender.nick)
+        except parties.NoSuchParticipantError, e:
+            c.stderr(u"NOTICE: xmpp: muc: ignoring: %s" % e)
+        else:
+            ai.handle(text, member)
         return True
 
     def nick_changed(self, user, old_nick, stanza):
@@ -271,4 +273,7 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
     def user_left(self, user, stanza):
         if user.same_as(self.room.mucstate.me):
             self.conn.leave_room(self.room.mucstate)
-        self.room.del_participant(parties.GroupMember(self.room, user))
+        try:
+            self.room.del_participant(parties.GroupMember(self.room, user))
+        except parties.NoSuchParticipantError, e:
+            c.stderr(u"NOTICE: xmpp: muc: unknown prtcipant leaving: %s\n" % e)

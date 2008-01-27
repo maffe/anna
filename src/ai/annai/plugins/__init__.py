@@ -7,7 +7,8 @@ class PluginError(Exception):
 
     Any message passed to this exception on instantiation should be forwarded
     to the identity in question when the exception is caught by the AI module.
-    Should only be raised by process() and __init__().
+    Should only be raised by process() and __init__(). See
+    U{https://0brg.net/anna/wiki/Annai_Plugins_API} for more information.
 
     """
     def __init__(self, msg):
