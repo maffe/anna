@@ -35,7 +35,7 @@ def _get_dump(party, id):
 
 class _Plugin(BasePlugin):
     #: Regular expression used to search for dump requests.
-    rex = re.compile(r"\bdump\W*?\#?(\d+)\b", re.IGNORECASE)
+    rex = re.compile(r"\bdump\W*?\#?(\d+|random)\b", re.IGNORECASE)
     # There is no word-boundary (\b) after "dump" to allow dump123.
     def __init__(self, party, args):
         self.party = party
