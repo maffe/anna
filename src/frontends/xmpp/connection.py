@@ -248,7 +248,7 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
         try:
             member = room.get_participant(sender.nick)
         except parties.NoSuchParticipantError, e:
-            c.stderr(u"NOTICE: xmpp: muc: ignoring: %s" % e)
+            c.stderr(u"NOTICE: xmpp: muc: ignoring: %s\n" % e)
         else:
             ai.handle(text, member)
         return True
@@ -277,3 +277,5 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
             self.room.del_participant(parties.GroupMember(self.room, user))
         except parties.NoSuchParticipantError, e:
             c.stderr(u"NOTICE: xmpp: muc: unknown prtcipant leaving: %s\n" % e)
+        if __debug__:
+            c.stderr(u"DEBUG: %s left %s.\n" % (user.nick, self.room))

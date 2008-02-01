@@ -35,7 +35,7 @@ def _get_dump(party, id):
 
 class _Plugin(BasePlugin):
     #: Regular expression used to search for dump requests.
-    rex = re.compile(r"\bdump\W*?\#?(\d+|random)\b", re.IGNORECASE)
+    rex = re.compile(r"\bdump\W*?\#?(\d+|random)\b")
     # There is no word-boundary (\b) after "dump" to allow dump123.
     def __init__(self, party, args):
         self.party = party
@@ -44,15 +44,15 @@ class _Plugin(BasePlugin):
         return u"dump plugin"
 
     def process(self, message, reply, sender=None):
-	res = self.rex.search(message)
+	res = self.rex.search(message.lower())
 	if res is None:
             return (message, reply)
-        dump_num = res.group(1)
+        dump_id = res.group(1)
         if not _fetch_mutex.testandset() or _fetch_lock.locked():
             return (message, u"%s overloaded, please try again later." % self)
-        # The lock has been acquired. It will be released after a timeout.
         else:
-            _thread.start_new_thread(_get_dump, (self.party, dump_num))
+            # The lock has been acquired. It will be released after a timeout.
+            _thread.start_new_thread(_get_dump, (self.party, dump_id))
             return (message, reply)
 
 class OneOnOnePlugin(_Plugin):

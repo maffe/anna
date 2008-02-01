@@ -51,9 +51,6 @@ class _PrintPoller(_threading.Thread):
                     self.stream.flush()
                 except:
                     print >> sys.stderr, "ERROR:", self.name, "queue halted"
-                    # The system is fubar now anyway, better die than risk the
-                    # calling function catching this exception somehow and
-                    # continuing to pump messages in the queue.
                     raise
             finally:
                 _lock.release()
@@ -83,7 +80,7 @@ class TimedMutex(mutex.mutex):
     True
     >>> m.testandset()
     False
-    >>> time.sleep(5)
+    >>> time.sleep(6)
     >>> m.testandset()
     True
 

@@ -3,6 +3,8 @@
 @TODO: Currently only supports the atom 1.0 spefication.
 @TODO: Parse (x)html content; if a feed does not provide text/plain type
 content the output of this plugin is now unusable.
+@BUG: Plugin is not destroyed when unloaded. Probably due to the Timer object
+keeping a reference to it.
 
 """
 try:
@@ -78,7 +80,6 @@ def unpack_entry(entry):
     # Now check if all elements are unicode objects.
     if not (isinstance(title, unicode) and isinstance(url, unicode)
             and isinstance(content, unicode)):
-        c.stderr(u"Checkpoint #2\n")
         return None
     return dict(title=title, updated=updated, content=content, url=url)
 
@@ -113,9 +114,9 @@ class _Plugin(BasePlugin):
         Does not do any harm if L{stop} has been called previously.
 
         """
+        c.stderr(u"All references to feedfetcher plugin deleted.\n")
         if self.error is None:
             _tickets.release()
-            c.stderr(u"All references to feedfetcher plugin deleted.\n")
             self.error = u"All references deleted."
 
     def __unicode__(self):
