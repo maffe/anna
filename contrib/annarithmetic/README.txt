@@ -7,16 +7,19 @@ your java development kit root. You can test this by importing the jpype
 module manually:
 
  >>> from jpype import *
- >>> startJVM(j.getDefaultJVMPath())
+ >>> startJVM(getDefaultJVMPath())
 
 If this does not raise any errors you are most likely good to go.
 
 You can use the compile.sh script provided in the javasource directory
-to compile the source into a usable .jar file. Put the annarithmetic.jar
-file in the same directory as this README.
+to compile the source into a usable .jar file.
 
 To test the plugin, run
 
  $ python test.py
+
+To include the plugin in the bot, compile the .jar file and put it
+in the same directory as this README. Then put this directory in the
+/src/ai/annai/plugins folder. 
 
 [1] http://jpype.sourceforge.net/
