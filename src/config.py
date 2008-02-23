@@ -79,23 +79,23 @@ class AnnaConfigParser(object):
         Works with new configuration files (post r136).
 
         """
-        vals = dict(jabber={}, misc={})
+        vals = {}
         p = ConfigParser.SafeConfigParser()
         p.read(conf_loc)
-        for (name, value) in p.items("jabber"):
-            name, value = name.decode(ENC), value.decode(ENC)
-            if name == "jid":
-                user, node = value.split('@', 1)
-                vals["jabber"]["user"] = user
-                vals["jabber"]["server"] = node
-            else:
-                vals["jabber"][name] = value
-        for (name, value) in p.items("misc"):
-            name, value = name.decode(ENC), value.decode(ENC)
-            if name == "highlight":
-                vals["misc"][name] = list(value)
-            else:
-                vals["misc"][name] = value
+        for section in p.sections():
+            vals[section] = {}
+            for (name, value) in p.items(section):
+                name, value = name.decode(ENC), value.decode(ENC)
+                # Hard-coded hacks.
+                if section == "jabber" and name == "jid":
+                    user, node = value.split('@', 1)
+                    vals["jabber"][u"user"] = user
+                    vals["jabber"][u"server"] = node
+                elif name == "highlight":
+                    vals["misc"]["highlight"] = list(value)
+                # Normal values.
+                else:
+                    vals[section][name.decode(ENC)] = value.decode(ENC)
         self.vals = vals
 
 # Load and cache the configuration.

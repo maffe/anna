@@ -5,6 +5,10 @@ JID = anna@example.net
 password = secret
 resource = anna
 
+[factoids_plugin]
+
+db_uri = sqlite:///factoids.db
+
 [misc]
 
 default_ai = echo

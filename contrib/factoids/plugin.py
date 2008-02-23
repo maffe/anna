@@ -1,51 +1,79 @@
 """Fetch a factoid.
 
 Because this plugin is considered so "heavy" it acts SHY: if there is
-already a reply constructed by one of the previous plugins (ie:
-"if reply is not None"), it exits immediately.
+already a reply constructed by one of the previous plugins, it exits
+immediately.
 
-@TODO: Implement low-level functions (get_factoid() etc).
+@TODO: Implement low-level functions (self._get_factoid() etc).
 
 """
 import sqlalchemy as sa
 
 from ai.annai.plugins import BasePlugin, PluginError
+import communication as c
+import config
 import frontends
 
-NOMUC = u"The factoids plugin does not (yet) work for groupchats."
+db_uri = config.get_conf_copy().factoids_plugin["db_uri"]
 
-def _get_factoid(obj):
-    """Get the definition of given object.
-
-    @return: The definition (or None if it there is none).
-    @rtype: C{unicode} or C{None}.
-
-    """
-    if __debug__:
-        if not isinstance(obj, unicode):
-            raise TypeError, "The argument must be a unicode object."
-    table = self.factoids
-    r = table.select(table.c.object==obj).execute()
-    r.fetchone()
+def _init_db():
+    """Create the database if it doesn't exist and return a MetaData object."""
+    engine = sa.create_engine(db_uri)#, echo=True) # Extra debugging info.
+    md = sa.MetaData()
+    t_fac = sa.Table("factoid", md,
+            sa.Column("factoid_id", sa.Integer, primary_key=True),
+            sa.Column("reqnum", sa.Integer, nullable=False, default=0),
+            sa.Column("object", sa.String(512), nullable=False),
+            sa.Column("definition", sa.String(512), nullable=False),
+            )
+    md.bind = engine
+    md.create_all(engine)
+    return md
 
 class _Plugin(BasePlugin):
     """Common functions for both the OneOnOne and ManyOnMany plugins."""
     def __init__(self, party, args):
-        self.db = sa.create_engine("sqlite:///factoids.db")
-        self.metadata = sa.BoundMetaData(self.db)
         self.party = party
-        if __debug__:
-            # TODO: thread-safe?
-            self.metadata.engine.echo = True
-        self.factoids = sa.Table('factoid', self.metadata, autoload=True)
+        self.md = _init_db()
 
     def __unicode__(self):
-        return "factoids plugin"
+        return u"factoids plugin"
+
+    def _get_factoid(self, obj):
+        """Get the definition of given object.
+
+        @param obj: The factoid to define.
+        @type obj: C{unicode}
+        @return: The definition (or None if it there is none).
+        @rtype: C{unicode} or C{None}.
+
+        """
+        if __debug__:
+            if not isinstance(obj, unicode):
+                raise TypeError, "The argument must be a unicode object."
+        table = self.md.tables["factoid"]
+        res = sa.select(
+                columns=[table.c.definition],
+                whereclause=table.c.object == obj,
+                from_obj=table
+                ).execute()
+        row = res.fetchone()
+        res.close()
+        if row is None:
+            return None
+        else:
+            return row[table.c.definition]
+
+    def _set_factoid(self, obj, definition):
+        """Set the definition of given factoid."""
+        c.stderr(u"DEBUG: not gonna remember: %s means %s.\n" % (obj, definition))
 
 class OneOnOnePlugin(_Plugin):
     def __init__(self, identity, args):
-        _Plugin.__init__(self)
+        _Plugin.__init__(self, identity, args)
         self.ident = identity
+        # Functions to apply to incoming messages subsequently.
+        self._msg_parsers = (self.fetch, self.edit)
 
     def process(self, message, reply):
         """Determine if the message wants to know about or edit a factoid.
@@ -60,12 +88,13 @@ class OneOnOnePlugin(_Plugin):
             return (message, reply)
 
         cleanmsg = message.strip()
-        result = self.edit(cleanmsg)
-        if result is not None:
-            assert(isinstance(result, unicode))
-            return (message, result)
-        else:
-            return (message, self.fetch(cleanmsg))
+        for parser in self._msg_parsers:
+            result = parser(cleanmsg)
+            if result is not None:
+                assert(isinstance(result, unicode))
+                return (message, result)
+        # None of the parsers felt the need to answer to this message.
+        return (message, reply)
 
     def fetch(self, message):
         """Determine if this message wants the definition of a factoid.
@@ -76,17 +105,18 @@ class OneOnOnePlugin(_Plugin):
         """
         result = None
         if message[:8].lower() == "what is ":
-            result = get_factoid(message[8:].rstrip(" ?"))
+            result = self._get_factoid(message[8:].rstrip(" ?"))
         elif message[:7].lower() == "what's ":
-            result = get_factoid(message[7:].rstrip(" ?"))
+            result = self._get_factoid(message[7:].rstrip(" ?"))
         elif message[:17].lower() == "do you know what " \
                 and message.rstrip(" ?").endswith(" is"):
-            result = get_factoid(message.rstrip(" ?")[17:-3])
-        elif result.endswith("?"):
-            result = get_factoid(message.rstrip(" ?"))
-            if result is None:
-                return None
+            result = self._get_factoid(message.rstrip(" ?")[17:-3])
+        elif message.endswith("?"):
+            result = self._get_factoid(message.rstrip(" ?"))
+        else:
+            return None
 
+        # result holds the return value of a _get_factoid() call.
         return result is None and u"Idk.. can you tell me?" or result
 
     def edit(self, message):
@@ -111,10 +141,10 @@ class OneOnOnePlugin(_Plugin):
 
         result = set
         try:
-            set_factoid(object, definition)
+            self._set_factoid(object, definition)
             return u"k"
         except FactoidExistsError:
-            existing = get_factoid(object)
+            existing = self._get_factoid(object)
             if definition == existing:
                 return u"I know"
             else:
@@ -123,6 +153,14 @@ class OneOnOnePlugin(_Plugin):
 class ManyOnManyPlugin(_Plugin):
     def __init__(self, room, args):
         """Tell the room that this plugin is unavailable for now."""
-        raise 
+        raise PluginError, u"This plugin is only available for PM."
     def process(self, message, reply, sender):
-        return (message, reply)
+        assert(False)
+
+class FactoidExistsError(Exception):
+    """Raised if an existing factoid is tried to be overwritten."""
+    def __init__(self, obj):
+        assert(isinstance(obj, unicode))
+        self.obj = obj
+    def __unicode__(self):
+        return u"Factoid '%s' already exists." % self.obj
