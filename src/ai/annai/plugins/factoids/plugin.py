@@ -1,8 +1,10 @@
-"""Fetch a factoid.
+"""Manipulate the factoids database.
 
 Because this plugin is considered so "heavy" it acts SHY: if there is
 already a reply constructed by one of the previous plugins, it exits
 immediately.
+
+See U{https://0brg.net/anna/wiki/Factoids_plugin} for more info.
 
 """
 import sqlalchemy as sa
