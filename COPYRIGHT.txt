@@ -1,5 +1,8 @@
 ===== THE ANNA BOT =====
 
+Everything not explicitly covered by a different license agreement below falls
+under under the terms of this license block.
+
 ----- begin license block -----
 
 Copyright (c) 2007, 2008 Hraban Luyat (xmpp:bb at jabber.xs4all.nl).

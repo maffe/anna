@@ -7,4 +7,4 @@ Good luck,
 
 Hraban Luyat
 
-[1] http://0brg.net/anna/wiki/
+[1] https://0brg.net/anna/wiki/
