@@ -144,7 +144,7 @@ class _Plugin(BasePlugin):
         """
         pass
 
-    def process(self, message, reply, *args, **kwargs):
+    def process(self, message, reply, sender=None, highlight=None):
         """Determine if the message wants to know about or edit a factoid.
 
         Takes apropriate action in respective cases and returns a response. If
@@ -157,12 +157,16 @@ class _Plugin(BasePlugin):
             return (message, reply)
 
         cleanmsg = message.strip()
+        # State-machine :)
+        self.highlight = highlight
         for parser in self._msg_parsers:
             result = parser(cleanmsg)
             if result is not None:
                 assert(isinstance(result, unicode))
+                del self.highlight
                 return (message, result)
         # None of the parsers felt the need to answer to this message.
+        del self.highlight
         return (message, reply)
 
 class OneOnOnePlugin(_Plugin):
@@ -200,6 +204,8 @@ class OneOnOnePlugin(_Plugin):
 
 class ManyOnManyPlugin(_Plugin):
     def _handle_add(self, message):
+        if not self.highlight:
+            return None
         result = self._analyze_request_add(message)
         if result is None:
             return None
@@ -216,6 +222,8 @@ class ManyOnManyPlugin(_Plugin):
                 return u"but... but... %s is %s" % (object, existing)
 
     def _handle_delete(self, message):
+        if not self.highlight:
+            return None
         obj = self._analyze_request_delete(message)
         if obj is not None:
             try:
@@ -229,7 +237,12 @@ class ManyOnManyPlugin(_Plugin):
         if obj is None:
             return None
         definition = self._factoid_get(obj)
-        return definition is None and u"Idk.. can you tell me?" or definition
+        if definition is not None:
+            return definition
+        elif self.highlight:
+            return u"Idk.. can you tell me?"
+        else:
+            return None
 
 class FactoidExistsError(Exception):
     """Raised when an existing factoid is tried to be overwritten."""
