@@ -96,8 +96,8 @@ THE SOFTWARE.
 
 ===== ANNARITHMETIC =====
 
-Annarithmetic (/src/ai/annai/plugins/annarithmetic/Plugin.java) is Java
-application that interprets arithmetic expressions.
+Annarithmetic (/contrib/annarithmetic/javasource/) is a Java package that
+interprets arithmetic expressions.
 
 Copyright (c) 2008 Lucas Moeskops,
 All rights reserved.

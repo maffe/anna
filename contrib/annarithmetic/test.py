@@ -28,8 +28,8 @@ def test(testfile):
     prev_nl = False
     for test, solu in tests:
         i += 1
-        # Create a compiled regular expression from this test. Changes "0.6`7"
-        # into r"0\.6\d*7$". I.e.: "`" means "any number of digits".
+        # Create a regular expression from this test. Changes "0.6`7" into
+        # r"0\.6\d*7$". I.e.: "`" means "any number of digits".
         rsolu = "%s$" % re.escape(solu).replace(r"\`", r"\d*")
         result = p.processMessage(test)
         # .match() matches at the start of the string.
@@ -51,7 +51,7 @@ def main():
     try:
         filename = sys.argv[1]
     except IndexError:
-        print >> sys.stderr, USAGE
+        sys.exit(USAGE)
     test(open(filename))
 
 if not j.isJVMStarted():
