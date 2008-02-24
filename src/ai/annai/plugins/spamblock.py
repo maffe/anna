@@ -22,7 +22,7 @@ class _Plugin(BasePlugin):
     def __unicode__(self):
         return u"spamblock plugin"
 
-    def process(self, message, reply):
+    def process(self, message, reply, *args, **kwargs):
         now = time.gmtime()[:5]
 
         if message.startswith("%s rate " % self.prefix):
@@ -54,5 +54,4 @@ class OneOnOnePlugin(_Plugin):
     pass
 
 class ManyOnManyPlugin(_Plugin):
-    def process(self, message, reply, sender):
-        return _Plugin.process(self, message, reply)
+    pass

@@ -51,7 +51,7 @@ class _Plugin(BasePlugin):
     def __unicode__(self):
         return u"web search plugin"
 
-    def process(self, message, reply, sender=None):
+    def process(self, message, reply, *args, **kwargs):
         if message.startswith("sanna lang="):
             self.lang=message[len("sanna lang="):]
             return (message, u"k")

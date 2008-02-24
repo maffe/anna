@@ -176,7 +176,7 @@ class _Plugin(BasePlugin):
         self.timer.setDaemon(True)
         self.timer.start()
 
-    def process(self, message, reply, sender=None):
+    def process(self, message, reply, *args, **kwargs):
         if self.error is not None:
             raise PluginError, self.error
         elif message.startswith(self.prefix):

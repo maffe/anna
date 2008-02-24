@@ -47,6 +47,9 @@ class Individual(BaseIndividual):
         self.name = name
 
     def send(self, message):
+        if __debug__:
+            if not isinstance(message, unicode):
+                raise TypeError, "Message must be a unicode object."
         message = px.Message(to_jid=self.jid, body=message,
                 stanza_type="chat")
         self.stream.send(message)
@@ -124,6 +127,9 @@ class Group(BaseGroup):
         self.mucstate.change_nick(nick)
 
     def send(self, message):
+        if __debug__:
+            if not isinstance(message, unicode):
+                raise TypeError, "Message must be a unicode object."
         self.mucstate.send_message(message)
 
 class GroupMember(px.jab.muc.MucRoomUser, BaseGroupMember):

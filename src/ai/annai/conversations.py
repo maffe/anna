@@ -73,6 +73,7 @@ def _mod_plugins(ai, party, message):
         valid_req = False
         # Important: copy the list, don't modify it while looping over it!
         for plugin in ai.plugins[:]:
+            # isinstance() also verifies subclasses whici is not good.
             if plugin.__class__ is plug_cls:
                 ai.plugins.remove(plugin)
                 valid_req = True
@@ -191,7 +192,7 @@ class ManyOnMany(ai.BaseManyOnMany):
 
         for plugin in self.plugins:
             try:
-                message, reply = plugin.process(message, reply, sender)
+                message, reply = plugin.process(message, reply, sender, False)
             except plugins.PluginError, e:
                 self.room.send(unicode(e))
                 self.plugins.remove(plugin)
@@ -222,9 +223,7 @@ class ManyOnMany(ai.BaseManyOnMany):
                 nick=self.room.get_mynick(),
                 )
 
-        leave_rex = re.compile(u"((please )?leave)|(exit)",
-                                        re.IGNORECASE | re.UNICODE)
-        if leave_rex.search(message) is not None:
+        if re.search(u"((please )?leave)|(exit)", message, re.I) is not None:
             self.room.send(u"... :'(")
             self.room.leave()
             return
@@ -242,7 +241,7 @@ class ManyOnMany(ai.BaseManyOnMany):
 
         for plugin in self.plugins:
             try:
-                message, reply = plugin.process(message, reply, sender)
+                message, reply = plugin.process(message, reply, sender, True)
             except plugins.PluginError, e:
                 self.room.send(unicode(e))
                 self.plugins.remove(plugin)

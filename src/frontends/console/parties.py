@@ -33,6 +33,9 @@ class Individual(BaseIndividual):
         self.party = name
 
     def send(self, message):
+        if __debug__:
+            if not isinstance(message, unicode):
+                raise TypeError, "Message must be a unicode object."
         my_name = config.get_conf_copy().misc['bot_nickname']
         if message.startswith("/me "):
             c.stdout_block(u"*%s %s\n" % (my_name, message[4:]))

@@ -13,6 +13,7 @@ from ai.annai.plugins import BasePlugin
 _name_map = dict(
         #annarithmetic=u"annarithmetic",
         dump=u"dump",
+        #factoids=u"factoids",
         feedfetcher=u"feedfetcher",
         irrepressible_info=u"irrepressible.info",
         sanna=u"sanna",
@@ -63,8 +64,8 @@ def get_manyonmany(plug_name):
     except KeyError:
         raise NoSuchPluginError, plug_name
 
-def _update_refs():
-    """Update the list of references to plugin modules.
+def _load_refs():
+    """Load and store the references to plugin modules.
 
     Note; it is important not to catch any exceptions this function raises
     because it does not release the import lock when failing. Besides, failure
@@ -81,4 +82,4 @@ def _update_refs():
         _refs[_name_map[name]] = mod
     imp.release_lock()
 
-_update_refs()
+_load_refs()

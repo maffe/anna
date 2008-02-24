@@ -144,7 +144,7 @@ class _Plugin(BasePlugin):
         """
         pass
 
-    def process(self, message, reply, sender=None):
+    def process(self, message, reply, *args, **kwargs):
         """Determine if the message wants to know about or edit a factoid.
 
         Takes apropriate action in respective cases and returns a response. If

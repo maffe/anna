@@ -57,17 +57,20 @@ class ManyOnManyPlugin(BasePlugin):
     def __unicode__(self):
         return u"test plugin."
 
-    def process(self, message, reply, sender):
+    def process(self, message, reply, sender, highlight):
         if __debug__:
             if not (isinstance(message, unicode) or message is None) or \
                     not (isinstance(reply, unicode) or reply is None):
                 raise TypeError, "Messages must be unicode objects or None."
             if not isinstance(sender, frontends.BaseGroupMember):
                 raise TypeError, "Sender must be a GroupMember."
+            assert(highlight is True or highlight is False)
         if message == "crashtest":
             raise PluginError, u"Test plugin crashing itself..."
+        elif message == "highlight":
+            return (message, unicode(highlight))
         elif reply is None:
-                return (message, u"Test plugin: success.")
+            return (message, u"Test plugin: success.")
         else:
-                return (message, u"%s - test plugin loaded" % reply)
+            return (message, u"%s - test plugin loaded" % reply)
     process.__doc__ = OneOnOnePlugin.process.__doc__

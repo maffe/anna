@@ -22,7 +22,7 @@ import frontends
 _URL_BASE = "http://irrepressible.info/query?%s"
 FETCH_ERROR = u"An error occurred while fetching a fragment from \
 irrepressible.info. If the error persists, please tell us about it on \
-the wiki <http://0brg.net/anna/wiki/Annawiki_talk:Community_Portal>."
+the wiki <https://0brg.net/anna/wiki/Annawiki_talk:Community_Portal>."
 
 # Create a lock for fetching.
 _fetch_mutex = c.TimedMutex(10)
@@ -63,7 +63,7 @@ class _Plugin(BasePlugin):
     def __unicode__(self):
         return u"irrepressible.info plugin"
 
-    def process(self, message, reply):
+    def process(self, message, reply, *args, **kwargs):
         if not message == "ii":
             return (message, reply)
         elif not _fetch_mutex.testandset():
@@ -84,5 +84,4 @@ class OneOnOnePlugin(_Plugin):
     pass
 
 class ManyOnManyPlugin(_Plugin):
-    def process(self, message, reply, sender):
-        return _Plugin.process(self, message, reply)
+    pass
