@@ -4,18 +4,13 @@ It allows the user to communicate with the bot directly through stdin
 and stdout but lacks certain functionality for obvious reasons (such as
 group-chat support).
 
-
-
 """
 import os
 import pwd #password database, for system uid <--> username lookup
-import sys
 try:
     import threading as _threading
 except ImportError:
     import dummy_threading as _threading
-import time
-import types
 
 import aihandler
 import communication as c
@@ -24,8 +19,7 @@ from frontends import BaseConnection
 from frontends.console.parties import Individual
 
 USAGE = u"""Welcome to the interactive Anna shell.  Just type a message
-as you normally would.   First, you need to specify which AI module you
-would like to use.  To quit this frontend (not the bot), hit ctrl + D.
+as you normally would.
 
 WARNING: this frontend blocks the stdout on every prompt. To prevent the
 output buffer from growing too big, it should only be used alone or at
@@ -33,15 +27,13 @@ least not left without input for long periods of time while other
 frontends produce lots of output.
 
 """
-CHOOSE_AI = u"""Please choose an ai to load from the following list:
-%s
->>> """
 
 class Connection(BaseConnection, _threading.Thread):
     def __init__(self):
         _threading.Thread.__init__(self, name="console frontend")
         username = pwd.getpwuid(os.getuid())[0]
         self.idnty = Individual(username)
+        self.def_AI = config.get_conf_copy().misc["default_ai"]
 
     def connect(self):
         # The connection will be closed when this is set to True.
@@ -59,7 +51,7 @@ class Connection(BaseConnection, _threading.Thread):
 
         """
         c.stdout_block(USAGE)
-        self.idnty.set_AI(aihandler.get_oneonone(u"choose_ai")(self.idnty))
+        self.idnty.set_AI(aihandler.get_oneonone(self.def_AI)(self.idnty))
         try:
             while not self.halt:
                 # The AI can change at run-time.

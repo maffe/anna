@@ -103,17 +103,18 @@ class Connection(px.jab.Client, _threading.Thread):
     def handle_msg_chat(self, message):
         text = message.get_body()
         sender = px.JID(message.get_from().bare())
+        if __debug__:
+            c.stderr(u"DEBUG: xmpp: pm: '%s' from '%s'\n" % (text, sender))
         try:
             peer = self._parties[sender]
         except KeyError:
             # This is the first message from this peer.
             peer = parties.Individual(sender, self.stream)
             self._parties[sender] = peer
-            peer.set_AI(aihandler.get_oneonone(u"choose_ai")(peer))
+            def_AI = self.conf.misc["default_ai"]
+            peer.set_AI(aihandler.get_oneonone(def_AI)(peer))
         else:
             peer.get_AI().handle(text)
-        if __debug__:
-            c.stderr(u"DEBUG: xmpp: pm: '%s' from '%s'\n" % (text, sender))
         return True
 
     def handle_msg_unsup(self, message):
@@ -122,9 +123,6 @@ class Connection(px.jab.Client, _threading.Thread):
         @TODO: handle error messages.
 
         """
-        # The only <message type="normal"/> supported is an invitation to MUC.
-        if message.get_type() == "normal":
-            return self.handle_mucinvite(message)
         self._send(to_jid=message.get_from(), body=self.UNSUPPORTED_TYPE,
                 stanza_type=message.get_type())
         if __debug__:
@@ -161,7 +159,9 @@ class Connection(px.jab.Client, _threading.Thread):
         self.rooms.join(room_jid, nick, handler, history_maxstanzas=0)
         room.mucstate = self.rooms.rooms[unicode(room_jid)]
         self._parties[room_jid] = room
-        room.set_AI(aihandler.get_manyonmany(u"choose_ai")(room))
+        def_AI = self.conf.misc["default_ai"]
+        room.set_AI(aihandler.get_manyonmany(def_AI)(room))
+        room.send(u"Hi, I am a chatbot. Thanks for inviting me here.")
         return True
 
     def leave_room(self, room):
@@ -194,7 +194,7 @@ class Connection(px.jab.Client, _threading.Thread):
         # Priorities in PyXMPP are from low to high.
         self.stream.set_message_handler(typ="chat", priority=30,
                 handler=self.handle_msg_chat)
-        self.stream.set_message_handler(typ=None, priority=50,
+        self.stream.set_message_handler(typ="normal", priority=50,
                 handler=self.handle_mucinvite)
         self.stream.set_message_handler(typ="normal", priority=70,
                 handler=self.handle_msg_unsup)
