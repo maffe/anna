@@ -27,12 +27,14 @@ class _Plugin(BasePlugin):
                 self._handle_delete,
                 )
         # Create the database if it doesn't exist.
-        self._engine = sa.create_engine(db_uri)#, echo=True) # Extra debugging info.
+        self._engine = sa.create_engine(db_uri, echo=True)
         self._md = sa.MetaData()
-        self._table = sa.Table("factoid", self._md,
+        self._table = sa.Table("factoid", self._md, 
                 sa.Column("factoid_id", sa.Integer, primary_key=True),
-                sa.Column("numreq", sa.Integer, nullable=False, default=0),
-                sa.Column("object", sa.String(512), nullable=False),
+                sa.Column("numreq", sa.Integer, nullable=False,
+                    default=sa.PassiveDefault(0)),
+                sa.Column("object", sa.String(512), nullable=False,
+                    unique=True),
                 sa.Column("definition", sa.String(512), nullable=False),
                 )
         self._md.bind = self._engine
