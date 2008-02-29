@@ -3,6 +3,9 @@
 Fetches quotes on-demand an at random intervals (customizable). Only
 allows one fetch every ten seconds.
 
+For more information, see
+U{https://0brg.net/anna/wiki/Irrepressible.info_plugin}.
+
 @TODO: Use the same system as the feedfetcher for getting URLs in a
 non-blocking way.
 
