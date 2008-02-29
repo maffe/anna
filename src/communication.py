@@ -208,7 +208,8 @@ def _banner(msg, encoding, func):
     else:
         try:
             return val.decode(sys.stdin.encoding, "replace")
-        except valueerror:
+        except TypeError:
+            # sys.stdin.encoding is None; not auto-detected.
             return val.decode("utf-8", "replace")
 
 def stdin(msg, encoding=None):
