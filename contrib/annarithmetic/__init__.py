@@ -1,1 +1,1 @@
-from wrapper import OneOnOnePlugin, ManyOnManyPlugin
+from wrapper import OneOnOnePlugin, ManyOnManyPlugin, __doc__
