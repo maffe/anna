@@ -8,22 +8,13 @@ help you get started.
 
    ## 0) PREPARATIONS ##
 
-A short list of dependencies:
+Dependencies:
 
-- Python: 2.4 is known to work (http://www.python.org/)
-- MySQL-python: 1.2.1 or higher (http://sourceforge.net/projects/mysql-python)
-- xmpppy: 0.3.1 is known to work (http://xmpppy.sourceforge.net/)
-
-furthermore, you need access to a MySQL database and you need a
-jabber-account for the chatbot.
-
-For the MySQL account, two accounts can be configured:
-read-account:  SELECT on CHATBOTDBNAME.*
-write-account: SELECT, INSERT, UPDATE, DELETE on CHATBOTDBNAME.*
-
-This is mainly for permission freaks or paranoid sysops, feel free
-to use one and the same account for both (do note that if you do,
-this account will need to meet all requirments for BOTH accounts!)
+- Python: 2.4 or higher. [1]
+- Sqlalchemy 0.4.5 is known to work. Needed for the factoids plugin. [2]
+- PyXMPP 1.0.0 is known to work. Needed for the XMPP frontend. [3]
+- Java runtime environment and JPython needed for the annarithmetic
+  plugin.
 
 
    ## 1) DOWNLOAD ##
@@ -34,28 +25,33 @@ download the latest trunk, execute the following command:
   $ svn co svn://0brg.net/anna/trunk
 
 If you don't have a subversion client you can get the official client
-from [http://subversion.tigris.org/], or search the web for another one.
+[4], or search the web for another one.
 
 
    ## 2) INSTALL ##
 
 The only thing to install is the configuration-file, but the program
-script should do this for you automatically. Try running this first:
+should do this for you automatically. Try running this first:
 
-  $ ./anna
+  $ ./anna console
+
+If an error occured, create a directory called ".anna" in your home
+directory and copy the config.sample file to it. Rename it to "config"
+and edit the values as appropriate.
 
 
    ## 3) EXECUTE ##
 
-If everything worked out, you now have a directory called ".anna" in
-your home-directory, containing a file called "config". Edit that file
-and make sure all required fields are filled out, then run the command
-again:
+To see the list of available frontends, run:
 
-  $ ./anna
+  $ ./anna --list
 
-Hopefully you now see a lot of coloured debug-output (this is from the
-xmpppy module).
+To run the bot with the chosen frontend, run:
+
+  $ ./anna FRONTEND_NAME
+
+You can supply multiple frontends to run simultaneously, seperated by
+spaces.
 
 
    ## 4) EXECUTE IN BACKGROUND ##
@@ -93,3 +89,8 @@ Want to complain? Contribute? Dance? join us in:
 bob@conference.jabber.xs4all.nl
 
 Good luck =]
+
+[1] http://www.python.org/
+[2] http://www.sqlalchemy.org/
+[3] http://pyxmpp.jajcus.net/
+[4] http://subversion.tigris.org/

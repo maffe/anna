@@ -2,6 +2,7 @@
 
 # Info about the bot's jabber account
 JID = anna@example.net
+# Leave the password field blank to be prompted at startup.
 password = secret
 resource = anna
 
