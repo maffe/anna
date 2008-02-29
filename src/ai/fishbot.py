@@ -120,7 +120,7 @@ class ManyOnMany(ai.BaseManyOnMany):
             else:
                 new_ai = ai_class(self.room)
                 self.room.set_AI(new_ai)
-                self.room.send("Great success!")
+                self.room.send(u"Great success!")
             return
 
         # Default:
