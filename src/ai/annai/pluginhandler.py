@@ -13,7 +13,7 @@ from ai.annai.plugins import BasePlugin
 _name_map = dict(
         #annarithmetic=u"annarithmetic",
         dump=u"dump",
-        factoids=u"factoids",
+        #factoids=u"factoids",
         feedfetcher=u"feedfetcher",
         irrepressible_info=u"irrepressible.info",
         sanna=u"sanna",
