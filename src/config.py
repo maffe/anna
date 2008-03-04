@@ -27,7 +27,8 @@ class AnnaConfig(object):
     {'password': 'secret', 'user': 'anna', 'server': 'example.net'}
 
     """
-    pass
+    def __init__(self, vals):
+        self.__dict__.update(vals)
 
 class AnnaConfigParser(object):
     """Used to parse the real configuration file.
@@ -95,7 +96,7 @@ class AnnaConfigParser(object):
                     vals["misc"]["highlight"] = list(value)
                 # Normal values.
                 else:
-                    vals[section][name.decode(ENC)] = value.decode(ENC)
+                    vals[section][name] = value
         self.vals = vals
 
 # Load and cache the configuration.
@@ -103,6 +104,5 @@ c = AnnaConfigParser()
 
 def get_conf_copy():
     """Get a cached copy of the configuration."""
-    n = AnnaConfig()
-    n.__dict__.update(c.vals)
+    n = AnnaConfig(c.vals)
     return n

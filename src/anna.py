@@ -5,10 +5,6 @@ Copyright (c) 2006, 2007, 2008 Hraban Luyat.
 To kill the entire chatbot, use ctrl + C.
 
 """
-USAGE = """Usage:
-    $ anna FRONTEND_NAME[, ...]
-
-"""
 import imp
 import signal
 import sys
@@ -21,9 +17,14 @@ import time
 import communication as c
 import frontends
 
+USAGE = """Usage:
+    $ anna FRONTEND_NAME[, ...]
+    $ anna --list
+"""
+
 # Lock for ensuring the _import_frontends() method is only run once. Never
 # .release()!
-__frontends_imported = _threading.Lock()
+_frontends_imported = _threading.Lock()
 # Dictionary of references to imported frontends.
 _frontends = {}
 
@@ -36,7 +37,7 @@ def discard_args(func):
 def _import_frontends(frontends):
     """Import the supplied frontends (only imports once, NOP after that)."""
     global _frontends
-    if not __frontends_imported.acquire(False):
+    if not _frontends_imported.acquire(False):
         return
     imp.acquire_lock()
     _frontends = {}
@@ -94,6 +95,12 @@ def main():
     if len(sys.argv) == 1:
         print USAGE
         sys.exit(1)
+    if sys.argv[1] in ("-list", "--list", "-l"):
+        print "Available frontends:"
+        for frontend in frontends.__all__:
+            print "    - %s" % frontend
+        print
+        sys.exit()
     global bot
     c.start()
     _import_frontends(sys.argv[1:])
