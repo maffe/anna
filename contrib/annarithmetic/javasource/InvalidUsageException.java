@@ -1,10 +1,10 @@
 package annarithmetic;
 
-public class InvalidInputException extends Exception {
+public class InvalidUsageException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 	
-	public InvalidInputException(String msg) {
+	public InvalidUsageException(String msg) {
 		super(msg);
 	}
 
