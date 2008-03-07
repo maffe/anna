@@ -27,7 +27,7 @@ class _Plugin(BasePlugin):
                 self._handle_delete,
                 )
         # Create the database if it doesn't exist.
-        self._engine = sa.create_engine(db_uri, echo=True)
+        self._engine = sa.create_engine(db_uri)#, echo=True)
         self._md = sa.MetaData()
         self._table = sa.Table("factoid", self._md, 
                 sa.Column("factoid_id", sa.Integer, primary_key=True),
