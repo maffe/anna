@@ -1,7 +1,7 @@
 ===== THE ANNA BOT =====
 
 Everything not explicitly covered by a different license agreement below falls
-under under the terms of this license block.
+under the terms of this license block.
 
 ----- begin license block -----
 

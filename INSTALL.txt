@@ -1,5 +1,4 @@
-Up-to-date information can always be found on the wiki:
-http://0brg.net/anna/wiki/Install
+Up-to-date information can always be found on the wiki [5].
 
 To install and run the chatbot, you will have to install a few
 software-packages as well as download some data. This guide should
@@ -64,9 +63,9 @@ This command won't do the trick though:
 
 The problem is that, in case you're using SSH at least, once you
 disconnect from the server by typing "exit", for example, the HANGUP
-(HUP for short) command is sent to all running processes of your session.
-This includes the anna.py process you started above. To prevent this
-from happening, use the nohup command:
+(HUP for short) signal is sent to all running processes of your session.
+This includes the anna process you started above. To prevent this from
+happening, use the nohup command:
 
   $ nohup ./anna &
 
@@ -86,7 +85,7 @@ pretty large. If you don't want that, try this:
    ## 5) MISCELLANEOUS ##
 
 Want to complain? Contribute? Dance? join us in:
-bob@conference.jabber.xs4all.nl
+bob at conference.jabber.xs4all.nl
 
 Good luck =]
 
@@ -94,3 +93,4 @@ Good luck =]
 [2] http://www.sqlalchemy.org/
 [3] http://pyxmpp.jajcus.net/
 [4] http://subversion.tigris.org/
+[5] https://0brg.net/anna/wiki/Install

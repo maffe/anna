@@ -31,8 +31,8 @@ class _Plugin(BasePlugin):
         self._md = sa.MetaData()
         self._table = sa.Table("factoid", self._md, 
                 sa.Column("factoid_id", sa.Integer, primary_key=True),
-                sa.Column("numreq", sa.Integer, nullable=False,
-                    default=sa.PassiveDefault(0)),
+                sa.Column("numreq", sa.Integer, sa.PassiveDefault('0'),
+                    nullable=False),
                 sa.Column("object", sa.String(512), nullable=False,
                     unique=True),
                 sa.Column("definition", sa.String(512), nullable=False),
