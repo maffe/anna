@@ -21,12 +21,11 @@ def start_JVM_from_curdir():
 
 def test(testfile):
     p = j.JPackage("annarithmetic").Plugin()
-    tests = [l for l in csv.reader(testfile) if l]
     i = 0
     passed = 0
     # OK, this is ugly, but I don't know a better way to get pretty output.
     prev_nl = False
-    for test, solu in tests:
+    for test, solu in (l for l in csv.reader(testfile) if l):
         i += 1
         # Create a regular expression from this test. Changes "0.6`7" into
         # r"0\.6\d*7$". I.e.: "`" means "any number of digits".
