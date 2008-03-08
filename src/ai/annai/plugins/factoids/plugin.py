@@ -64,10 +64,10 @@ class _Plugin(BasePlugin):
         """
         # forget factoid
         if msg[:7].lower() == "forget ":
-            object = msg[7:]
-            if object.startswith("what ") and object.endswith(" is"):
-                object = object[5:-3]
-            return object.strip()
+            object_ = msg[7:]
+            if object_.startswith("what ") and object_.endswith(" is"):
+                object_ = object_[5:-3]
+            return object_.strip()
         else:
             return None
 
@@ -99,9 +99,9 @@ class _Plugin(BasePlugin):
         conn.execute(ins)
 
     def _factoid_delete(self, obj):
-        conn = self._engine.connect()
         if self._factoid_get(obj) is None:
             raise NoSuchFactoidError, obj
+        conn = self._engine.connect()
         conn.execute(self._table.delete(self._table.c.object==obj))
 
     def _factoid_get(self, obj):
@@ -123,7 +123,10 @@ class _Plugin(BasePlugin):
                 ).execute()
         row = res.fetchone()
         res.close()
-        return row is not None and row[self._table.c.definition] or None
+        if row is None:
+            return None
+        else:
+            return row[self._table.c.definition]
 
     # These three methods must be overridden in subclasses!
 
@@ -132,11 +135,7 @@ class _Plugin(BasePlugin):
         pass
 
     def _handle_delete(self, message):
-        """See if the sender wants to delete factoid.
-
-        @TODO: check for unexistant factoid.
-
-        """
+        """See if the sender wants to delete factoid."""
         pass
 
     def _handle_fetch(self, message):
@@ -178,17 +177,17 @@ class OneOnOnePlugin(_Plugin):
         result = self._analyze_request_add(message)
         if result is None:
             return None
-        object, definition = result
+        object_, definition = result
         try:
-            self._factoid_add(object, definition)
+            self._factoid_add(object_, definition)
             return u"k"
         except FactoidExistsError:
-            existing = self._factoid_get(object)
+            existing = self._factoid_get(object_)
             assert(existing is not None)
             if definition == existing:
                 return u"I know"
             else:
-                return u"but... but... %s is %s" % (object, existing)
+                return u"but... but... %s is %s" % (object_, existing)
 
     def _handle_delete(self, message):
         obj = self._analyze_request_delete(message)
@@ -213,17 +212,17 @@ class ManyOnManyPlugin(_Plugin):
         result = self._analyze_request_add(message)
         if result is None:
             return None
-        object, definition = result
+        object_, definition = result
         try:
-            self._factoid_add(object, definition)
+            self._factoid_add(object_, definition)
             return u"k"
         except FactoidExistsError:
-            existing = self._factoid_get(object)
+            existing = self._factoid_get(object_)
             assert(existing is not None)
             if definition == existing:
                 return u"I know"
             else:
-                return u"but... but... %s is %s" % (object, existing)
+                return u"but... but... %s is %s" % (object_, existing)
 
     def _handle_delete(self, message):
         if not self.highlight:
