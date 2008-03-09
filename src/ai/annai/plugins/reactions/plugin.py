@@ -85,11 +85,15 @@ class _Plugin(BasePlugin):
         return m.group(2)
 
     def _reaction_add(self, hook, rectn):
-        """Set the reaction to given hook."""
+        """Set the reaction to given hook.
+
+        Stores the hook in lowercase to enable case-insensitive hook-matching.
+
+        """
         if self._reaction_get(hook) is not None:
             raise ReactionExistsError, hook
         ins = self._table.insert(values=dict(
-                hook=hook,
+                hook=hook.lower(),
                 reaction=rectn,
                 type=self._type
                 ))
@@ -100,7 +104,7 @@ class _Plugin(BasePlugin):
         if self._reaction_get(hook) is None:
             raise NoSuchReactionError, hook
         conn = self._engine.connect()
-        conn.execute(self._table.delete(self._table.c.hook==hook))
+        conn.execute(self._table.delete(self._table.c.hook==hook.lower()))
 
     def _reaction_get(self, hook):
         """Get the reaction to given hook.
@@ -125,7 +129,7 @@ class _Plugin(BasePlugin):
         res = sa.select(
                 columns=[self._table.c.reaction],
                 whereclause=sa.and_(
-                    self._table.c.hook==hook,
+                    self._table.c.hook==hook.lower(),
                     type_check),
                 from_obj=self._table
                 ).order_by(self._table.c.type.asc()).limit(1).execute()

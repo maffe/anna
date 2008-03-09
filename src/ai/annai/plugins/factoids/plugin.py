@@ -91,10 +91,15 @@ class _Plugin(BasePlugin):
             return None
 
     def _factoid_add(self, obj, defin):
-        """Set the definition of given factoid."""
+        """Set the definition of given factoid.
+        
+        Stores the object in lower-case to allow case-insensitive fetching.
+        
+        """
         if self._factoid_get(obj) is not None:
             raise FactoidExistsError, obj
-        ins = self._table.insert(values=dict(object=obj, definition=defin))
+        ins = self._table.insert(values=dict(object=obj.lower(),
+            definition=defin))
         conn = self._engine.connect()
         conn.execute(ins)
 
@@ -102,7 +107,7 @@ class _Plugin(BasePlugin):
         if self._factoid_get(obj) is None:
             raise NoSuchFactoidError, obj
         conn = self._engine.connect()
-        conn.execute(self._table.delete(self._table.c.object==obj))
+        conn.execute(self._table.delete(self._table.c.object==obj.lower()))
 
     def _factoid_get(self, obj):
         """Get the definition of given object.
@@ -118,7 +123,7 @@ class _Plugin(BasePlugin):
                 raise TypeError, "The argument must be a unicode object."
         res = sa.select(
                 columns=[self._table.c.definition],
-                whereclause=(self._table.c.object==obj),
+                whereclause=(self._table.c.object==obj.lower()),
                 from_obj=self._table
                 ).execute()
         row = res.fetchone()

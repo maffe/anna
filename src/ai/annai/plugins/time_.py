@@ -32,7 +32,7 @@ class _Plugin(BasePlugin):
         if message.lower().strip(" ?") in HOOKS:
             return (message, unicode(time.strftime(self._frmt)))
         elif message.startswith("timestr is "):
-            self._frmt = message[10:]
+            self._frmt = message[11:]
             return (message, u"k")
         else: 
             return (message, reply)
