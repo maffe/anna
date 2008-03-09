@@ -1,4 +1,8 @@
-"""Very much like the factoids plugin, but for reactions."""
+"""Very much like the factoids plugin, but for reactions.
+
+See U{https://0brg.net/anna/wiki/Reactions_plugin} for more information.
+
+"""
 
 # Throughout the code the following convention is used: a 'reaction' is yielded
 # whenever a 'hook' is encountered.
@@ -29,7 +33,6 @@ class _Plugin(BasePlugin):
 
     """
     def __init__(self, party, args):
-        self.party = party
         # Functions to apply to incoming messages subsequently.
         self._msg_parsers = (
                 self._handle_add,
@@ -162,8 +165,13 @@ class _Plugin(BasePlugin):
         not do anything (it acts like a "last resort" plugin, only for cases
         nothing else matched).
 
+        This ignores empty messages on purpose to prevent people
+        "ghost-spamming" a chatroom by setting an annoying reaction to empty
+        messages. These messages are not always very obvious and thus it might
+        seem the bot is going wild for no reason.
+
         """
-        if not reply is None:
+        if reply is not None or not message:
             return (message, reply)
 
         cleanmsg = message.strip()

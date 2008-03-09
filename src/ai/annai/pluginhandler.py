@@ -16,9 +16,11 @@ _name_map = dict(
         factoids=u"factoids",
         feedfetcher=u"feedfetcher",
         irrepressible_info=u"irrepressible.info",
+        reactions=u"reactions",
         sanna=u"sanna",
         spamblock=u"spamblock",
         test=u"test",
+        #time_=u"time",
         )
 #: Dictionary of references. Keys are pretty versions, values are references.
 _refs = {}
