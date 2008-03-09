@@ -12,8 +12,8 @@ import communication as c
 import config
 import frontends
 
-REQ_ADD = re.compile(u"(global )?reaction to (.*?) is (.*)", re.IGNORECASE)
-REQ_DEL = re.compile(u"forget (global )?reaction to (.*)", re.IGNORECASE)
+REQ_ADD = re.compile(u"(global )?reaction to (.*?) is (.*)", re.I | re.S)
+REQ_DEL = re.compile(u"forget (global )?reaction to (.*)", re.I | re.S)
 TYPE_DIRECT = 0
 TYPE_GLOBAL = 1
 
@@ -125,7 +125,9 @@ class _Plugin(BasePlugin):
                     self._table.c.hook==hook,
                     type_check),
                 from_obj=self._table
-                ).execute()
+                ).order_by(self._table.c.type.asc()).limit(1).execute()
+                # Ordering it by type selects the DIRECT reaction first if
+                # there are two available.
         row = res.fetchone()
         res.close()
         if row is None:
@@ -192,7 +194,7 @@ class OneOnOnePlugin(_Plugin):
             if reaction == existing:
                 return u"tell me something new"
             else:
-                return u"but.. when you say %s I say %s :s" % (hook, reaction)
+                return u"but.. when you say %s I say %s :s" % (hook, existing)
 
     def _handle_delete(self, message):
         hook = self._analyze_request_delete(message)
