@@ -20,7 +20,7 @@ _name_map = dict(
         sanna=u"sanna",
         spamblock=u"spamblock",
         test=u"test",
-        #time_=u"time",
+        time_=u"time",
         )
 #: Dictionary of references. Keys are pretty versions, values are references.
 _refs = {}

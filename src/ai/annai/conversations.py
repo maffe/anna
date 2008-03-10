@@ -48,20 +48,31 @@ def _mod_plugins(ai, party, message):
         if not (isinstance(party, frontends.BaseIndividual)
                 or isinstance(party, frontends.BaseGroup)):
             raise TypeError, "Second argument must be a frontend party."
+
+    # Load one plugin.
     if message.startswith("load plugin "):
-        cmd_str = message[len("load plugin "):].split()
-        plug_name = cmd_str[0]
+        argv = message[len("load plugin "):].split()
         try:
-            plug_cls = _get_plugin(ai, plug_name)
-        except pluginhandler.NoSuchPluginError, e:
-            return unicode(e)
-        try:
-            ai.plugins.append(plug_cls(party, cmd_str[1:]))
+            plug_cls = _get_plugin(ai, argv[0])
+            ai.plugins.append(plug_cls(party, argv[1:]))
             return u"k."
-        except plugins.PluginError, e:
+        except (pluginhandler.NoSuchPluginError, plugins.PluginError), e:
             return unicode(e)
 
-    if message.startswith("unload plugin "):
+    # Load multiple plugins at once.
+    elif message.startswith("load plugins "):
+        for argv_str in re.split(", ?", message[len("load plugins "):]):
+            argv = argv_str.split()
+            try:
+                plug_cls = _get_plugin(ai, argv[0])
+                ai.plugins.append(plug_cls(party, argv[1:]))
+            except (pluginhandler.NoSuchPluginError, plugins.PluginError), e:
+                msg = u"Stopped at plugin %s. Error: %s" % (argv[0], e)
+                return msg
+        return u"k."
+
+    # Unload a plugin.
+    elif message.startswith("unload plugin "):
         plug_name = message[len("unload plugin "):]
         try:
             return _del_numeric_plugin(ai, int(plug_name) - 1)
@@ -79,7 +90,8 @@ def _mod_plugins(ai, party, message):
                 valid_req = True
         return valid_req and u"k." or u"This plugin was not loaded."
 
-    if message.lower() == "list loaded plugins":
+    # List loaded.
+    elif message.lower() == "list loaded plugins":
         if ai.plugins:
             msg = [u"Loaded plugins:"]
             for num, plugin in enumerate(ai.plugins):
@@ -88,20 +100,23 @@ def _mod_plugins(ai, party, message):
         else:
             return u"no plugins loaded"
 
-    if message.lower() == "list available plugins":
+    # List available.
+    elif message.lower() == "list available plugins":
         return u",\n".join(pluginhandler.get_names())
 
-    if message.lower().startswith("about plugin "):
+    # About plugin.
+    elif message.lower().startswith("about plugin "):
         name = message[len("about plugin "):]
         try:
             return u"About %s: %s" % (name, pluginhandler.about(name))
         except pluginhandler.NoSuchPluginError, e:
             return unicode(e)
 
-    if message.lower() == "list plugins":
+    # List command fallback.
+    elif message.lower() == "list plugins":
         return u"Loaded or available plugins?"
 
-    # If it had nothing to do with moderating plugins, return None.
+    # It had nothing to do with moderating plugins.
     return None
 
 class OneOnOne(ai.BaseOneOnOne):
