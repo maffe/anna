@@ -7,7 +7,6 @@ without having to open the file every time.  The get_conf_copy function
 can be used to this end.
 
 """
-
 import os
 import sys
 import ConfigParser
@@ -39,9 +38,11 @@ class AnnaConfigParser(object):
     @raise ConfigParser.Error: The file is malformed.
 
     """
-    def __init__(self):
+    def __init__(self, conf_loc=None):
         """Take all needed actions to complete the configuration."""
-        self.parse_conf(self.get_conf_loc())
+        if not conf_loc:
+            conf_loc = self.get_conf_loc()
+        self.parse_conf(conf_loc)
 
     def create_first_conf(self, conf_loc):
         """Create a config file at the specified location."""
@@ -85,6 +86,8 @@ class AnnaConfigParser(object):
         p.read(conf_loc)
         for section in p.sections():
             vals[section] = {}
+            if section == "annai_plugins":
+                vals["annai_plugins"]["names"] = {}
             for (name, value) in p.items(section):
                 name, value = name.decode(ENC), value.decode(ENC)
                 # Hard-coded hacks.
@@ -92,15 +95,19 @@ class AnnaConfigParser(object):
                     user, node = value.split('@', 1)
                     vals["jabber"][u"user"] = user
                     vals["jabber"][u"server"] = node
-                elif name == "highlight":
+                elif section == "misc" and name == "highlight":
                     vals["misc"]["highlight"] = list(value)
+                elif section == "annai_plugins" and name.startswith("name_"):
+                    vals["annai_plugins"]["names"][name[len("name_"):]] = value
                 # Normal values.
                 else:
                     vals[section][name] = value
         self.vals = vals
 
-# Load and cache the configuration.
-c = AnnaConfigParser()
+def init(conf_loc=None):
+    """Load and cache the configuration."""
+    global c
+    c = AnnaConfigParser(conf_loc)
 
 def get_conf_copy():
     """Get a cached copy of the configuration."""

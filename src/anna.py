@@ -6,6 +6,8 @@ To kill the entire chatbot, use ctrl + C.
 
 """
 import imp
+import optparse
+import optparse
 import signal
 import sys
 try:
@@ -15,10 +17,11 @@ except ImportError:
 import time
 
 import communication as c
+import config
 import frontends
 
-USAGE = """Usage:
-    $ anna FRONTEND_NAME[, ...]
+USAGE = """
+    $ anna [options] FRONTEND_NAME[, ...]
     $ anna --list
 """
 
@@ -67,9 +70,9 @@ class Anna(object):
 
         """
         for thread in self.pool:
-            if not thread.isAlive():
-                return False
-        return True
+            if thread.isAlive():
+                return True
+        return False
 
     def start(self):
         """Start all frontend threads."""
@@ -83,6 +86,14 @@ class Anna(object):
             thread.join()
 
 @discard_args
+def print_frontends():
+    print "Available frontends:"
+    for frontend in frontends.__all__:
+        print "    - %s" % frontend
+    print
+    sys.exit()
+
+@discard_args
 def stop():
     """Stops the bot started by L{main}."""
     global bot
@@ -91,20 +102,20 @@ def stop():
 
 def main():
     """Start one instance of the Anna bot."""
-    print __doc__
-    if len(sys.argv) == 1:
-        print USAGE
-        sys.exit(1)
-    if sys.argv[1] in ("-list", "--list", "-l"):
-        print "Available frontends:"
-        for frontend in frontends.__all__:
-            print "    - %s" % frontend
-        print
-        sys.exit()
     global bot
+    print __doc__
+    p = optparse.OptionParser(USAGE)
+    p.add_option("-f", "--file", help="use specified configuration file "
+            "instead of default (~/.anna/config)")
+    p.add_option("-l", "--list", action="callback", callback=print_frontends,
+            help="print a list of available frontends")
+    (options, args) = p.parse_args()
+    if len(args) == 0:
+        p.error("You need to specify at least one frontend. See --list.")
+    config.init(options.file)
     c.start()
-    _import_frontends(sys.argv[1:])
-    bot = Anna(sys.argv[1:])
+    _import_frontends(args)
+    bot = Anna(args)
     bot.start()
     # time.sleep() is interrupted by signals, unlike threading.Thread.join().
     while bot.is_running():
