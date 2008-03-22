@@ -1,6 +1,8 @@
 """The time plugin tells you what time it is.
 
-Use "timestr is x" to change the output formatting.
+Use "timestr is x" to change the output formatting. More information on
+formatting time strings can be found on
+U{http://docs.python.org/lib/module-time.html#l2h-2826}.
 
 """
 import time
