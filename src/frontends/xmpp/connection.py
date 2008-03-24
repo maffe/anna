@@ -29,7 +29,7 @@ class Connection(px.jab.Client, _threading.Thread):
         _threading.Thread.__init__(self, name="xmpp frontend")
         self.conf = config.get_conf_copy()
         if "jid" not in kwargs:
-            jab_conf = self.conf.jabber
+            jab_conf = self.conf.xmpp
             args = (jab_conf["user"], jab_conf["server"], jab_conf["resource"])
             kwargs["jid"] = px.JID(*args)
         if "password" not in kwargs:
@@ -90,7 +90,7 @@ class Connection(px.jab.Client, _threading.Thread):
         @type jid: C{pyxmpp.jid.JID}
 
         """
-        passw = self.conf.jabber["password"]
+        passw = self.conf.xmpp["password"]
         if not passw:
             try:
                 msg = u"Please enter the password for %s: " % unicode(jid)
@@ -139,13 +139,13 @@ class Connection(px.jab.Client, _threading.Thread):
         @TODO: use a supplied password when joining the room.
 
         """
-        if __debug__:
-            c.stderr(u"DEBUG: xmpp: invited to %s\n" % message.get_from())
         ns_map = {"mu": "http://jabber.org/protocol/muc#user"}
         nick = self.conf.misc["bot_nickname"]
         if not message.xpath_eval("/ns:message/mu:x/mu:invite", ns_map):
             # This stanza is not an invitation to a MUC.
             return False
+        if __debug__:
+            c.stderr(u"DEBUG: xmpp: invited to %s\n" % message.get_from())
         try:
             room_jid = px.JID(message.get_from().bare())
         except px.JIDError, e:

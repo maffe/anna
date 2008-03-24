@@ -20,9 +20,9 @@ class AnnaConfig(object):
     creates a new key for every configuartion section. For example:
 
     >>> c = config.get_conf_copy()
-    >>> "jabber" in dir(c)
+    >>> "xmpp" in dir(c)
     True
-    >>> print c.jabber
+    >>> print c.xmpp
     {'password': 'secret', 'user': 'anna', 'server': 'example.net'}
 
     """
@@ -91,10 +91,10 @@ class AnnaConfigParser(object):
             for (name, value) in p.items(section):
                 name, value = name.decode(ENC), value.decode(ENC)
                 # Hard-coded hacks.
-                if section == "jabber" and name == "jid":
+                if section == "xmpp" and name == "jid":
                     user, node = value.split('@', 1)
-                    vals["jabber"][u"user"] = user
-                    vals["jabber"][u"server"] = node
+                    vals["xmpp"][u"user"] = user
+                    vals["xmpp"][u"server"] = node
                 elif section == "misc" and name == "highlight":
                     vals["misc"]["highlight"] = list(value)
                 elif section == "annai_plugins" and name.startswith("name_"):

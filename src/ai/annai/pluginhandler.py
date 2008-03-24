@@ -2,26 +2,20 @@
 """Handle storage of references to plugins.
 
 Works much like the L{aihandler} module in the root. For use inside the
-L{ai.annai} module only!
+L{ai.annai} module only! Before this module can be used you MUST call L{start}.
 
 """
 import imp
+try:
+    import threading as _threading
+except ImportError:
+    import dummy_threading as _threading
 
 from ai.annai.plugins import BasePlugin
+import config
 
-#: Dictionary mapping pretty names (vals) to real plugin module names (keys).
-_name_map = dict(
-        #annarithmetic=u"annarithmetic",
-        dump=u"dump",
-        factoids=u"factoids",
-        feedfetcher=u"feedfetcher",
-        irrepressible_info=u"irrepressible.info",
-        reactions=u"reactions",
-        sanna=u"sanna",
-        spamblock=u"spamblock",
-        test=u"test",
-        time_=u"time",
-        )
+#: Ensure that L{init} is only called once.
+_start_lock = _threading.Lock()
 #: Dictionary of references. Keys are pretty versions, values are references.
 _refs = {}
 
@@ -66,22 +60,25 @@ def get_manyonmany(plug_name):
     except KeyError:
         raise NoSuchPluginError, plug_name
 
-def _load_refs():
-    """Load and store the references to plugin modules.
+def start():
+    """Perform all actions needed to make the module ready for use.
+
+    Loads and stores the references to plugin modules and populates the
+    _name_map dictionary.
 
     Note; it is important not to catch any exceptions this function raises
     because it does not release the import lock when failing. Besides, failure
     of this function indicates something is terribly wrong anyway.
 
     """
-    global _refs
+    global _start_lock, _refs
+    if not _start_lock.acquire(False):
+        return False
     imp.acquire_lock()
-    _refs = {}
-    for name in [unicode(mod) for mod in _name_map]:
+    name_map = config.get_conf_copy().annai_plugins["names"]
+    for name in [unicode(mod) for mod in name_map]:
         assert(name not in _refs)
         path = "ai/annai/plugins"
         mod = imp.load_module(name, *imp.find_module(name, [path]))
-        _refs[_name_map[name]] = mod
+        _refs[name_map[name]] = mod
     imp.release_lock()
-
-_load_refs()

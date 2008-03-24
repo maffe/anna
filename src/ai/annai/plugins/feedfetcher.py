@@ -114,7 +114,7 @@ class _Plugin(BasePlugin):
         Does not do any harm if L{stop} has been called previously.
 
         """
-        c.stderr(u"All references to feedfetcher plugin deleted.\n")
+        c.stderr(u"DEBUG: All references to feedfetcher plugin deleted.\n")
         if self.error is None:
             _tickets.release()
             self.error = u"All references deleted."

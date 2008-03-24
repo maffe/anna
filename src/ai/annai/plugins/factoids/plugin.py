@@ -167,14 +167,15 @@ class _Plugin(BasePlugin):
         cleanmsg = message.strip()
         # State-machine :)
         self.highlight = highlight
+        self.sender = sender
         for parser in self._msg_parsers:
             result = parser(cleanmsg)
             if result is not None:
                 assert(isinstance(result, unicode))
-                del self.highlight
+                del self.highlight, self.sender
                 return (message, result)
         # None of the parsers felt the need to answer to this message.
-        del self.highlight
+        del self.highlight, self.sender
         return (message, reply)
 
 class OneOnOnePlugin(_Plugin):
@@ -244,6 +245,8 @@ class ManyOnManyPlugin(_Plugin):
         obj = self._analyze_request_fetch(message)
         if obj is None:
             return None
+        elif obj == "me":
+            obj = self.sender.nick
         definition = self._factoid_get(obj)
         if definition is not None:
             return definition

@@ -10,6 +10,8 @@ import aihandler
 import config
 import frontends
 
+pluginhandler.start()
+
 def _get_plugin(ai, plug_name):
     """Get a plugin for this AI (automatically deteremine plugin type)."""
     if isinstance(ai, OneOnOne):
@@ -102,7 +104,7 @@ def _mod_plugins(ai, party, message):
 
     # List available.
     elif message.lower() == "list available plugins":
-        return u",\n".join(pluginhandler.get_names())
+        return "Available:\n- " + u"\n- ".join(pluginhandler.get_names())
 
     # About plugin.
     elif message.lower().startswith("about plugin "):
@@ -238,7 +240,7 @@ class ManyOnMany(ai.BaseManyOnMany):
                 nick=self.room.get_mynick(),
                 )
 
-        if re.search(u"((please )?leave)|(exit)", message, re.I) is not None:
+        if re.match(u"((please )?leave)|(exit)$", message, re.I) is not None:
             self.room.send(u"... :'(")
             self.room.leave()
             return

@@ -33,6 +33,7 @@ class _Plugin(BasePlugin):
 
     """
     def __init__(self, party, args):
+        self._frmt = dict()
         # Functions to apply to incoming messages subsequently.
         self._msg_parsers = (
                 self._handle_add,
@@ -179,19 +180,24 @@ class _Plugin(BasePlugin):
             return (message, reply)
 
         cleanmsg = message.strip()
-        # State-machine for highlight status too.
+        # State-machine for highlight status and sendertoo.
         self.highlight = highlight
+        self.sender = sender
         for parser in self._msg_parsers:
             result = parser(cleanmsg)
             if result is not None:
                 assert(isinstance(result, unicode))
-                del self.highlight
+                del self.highlight, self.sender
                 return (message, result)
         # None of the parsers felt the need to answer to this message.
-        del self.highlight
+        del self.highlight, self.sender
         return (message, reply)
 
 class OneOnOnePlugin(_Plugin):
+    def __init__(self, peer, args):
+        _Plugin.__init__(self, peer, args)
+        self._frmt["user"] = unicode(peer)
+
     def _handle_add(self, message):
         result = self._analyze_request_add(message)
         if result is None:
@@ -223,6 +229,10 @@ class OneOnOnePlugin(_Plugin):
         return reaction is not None and reaction or None
 
 class ManyOnManyPlugin(_Plugin):
+    def __init__(self, room, args):
+        _Plugin.__init__(self, room, args)
+        self._frmt["room"] = unicode(room)
+
     def _handle_add(self, message):
         result = self._analyze_request_add(message)
         if result is None:
@@ -252,13 +262,25 @@ class ManyOnManyPlugin(_Plugin):
         """If highlighted ignore type, else only fetch global reactions."""
         self._type = not self.highlight and TYPE_GLOBAL or None
         reaction = self._reaction_get(message)
-        return reaction is not None and reaction or None
+        self._frmt["user"] = unicode(self.sender.nick)
+        if reaction is None:
+            return None
+        else:
+            try:
+                reaction = reaction % self._frmt
+            except (KeyError, TypeError, ValueError), e:
+                self._reaction_delete(message)
+                return u'This reaction was broken ("%r"). I deleted it.' % e
+            return reaction
 
 class ReactionExistsError(Exception):
     """Raised when an existing reaction is tried to be overwritten."""
     def __init__(self, hook):
         assert(isinstance(hook, unicode))
         self.hook = hook
+    def __str__(self):
+        return "There is already a reaction to '%s'." % \
+                                    self.hook.encode("ascii", "replace")
     def __unicode__(self):
         return u"There is already a reaction to '%s'." % self.hook
 
@@ -267,5 +289,7 @@ class NoSuchReactionError(Exception):
     def __init__(self, hook):
         assert(isinstance(hook, unicode))
         self.hook = hook
+    def __str__(self):
+        return "No reaction to '%s'." % self.hook.encode("ascii", "replace")
     def __unicode__(self):
         return u"No reaction to '%s'." % self.hook
