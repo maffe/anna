@@ -247,7 +247,7 @@ class ManyOnManyPlugin(_Plugin):
             if reaction == existing:
                 return u"tell me something new"
             else:
-                return u"but.. when you say %s I say %s :s" % (hook, reaction)
+                return u"but.. when you say %s I say %s :s" % (hook, existing)
 
     def _handle_delete(self, message):
         hook = self._analyze_request_delete(message)
