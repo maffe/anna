@@ -24,7 +24,7 @@ def _get_dump(party, id):
     """Get a dump with given id and send the contents to this peer."""
     _fetch_lock.acquire()
     h = httplib.HTTPConnection("b4.xs4all.nl")
-    h.request("GET", "/dump/%s?type=text" % id)
+    h.request("GET", "/dump/%s.txt" % id)
     response = h.getresponse()
     if response.status == 200:
         encoding = response.getheader("content-type").split("charset=")[1]
