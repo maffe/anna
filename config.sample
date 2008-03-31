@@ -25,6 +25,7 @@ name_dump = dump
 name_factoids = factoids
 name_feedfetcher = feedfetcher
 name_irrepressible_info = irrepressible.info
+name_k = k
 name_reactions = reactions
 name_sanna = sanna
 name_spamblock = spamblock
