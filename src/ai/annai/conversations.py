@@ -264,9 +264,13 @@ class ManyOnMany(ai.BaseManyOnMany):
                 self.plugins.remove(plugin)
 
         if reply:
-            # Pick a random highlighting char:
-            hlchar = random.choice(self.conf.misc["highlight"])
-            reply = u"%s%s %s" % (sender.nick, hlchar, reply)
+            # As IRC-customs dictate (yucky, frontend-dependent hacks): "/me "
+            # is a special action-prefix and should not be spoiled by
+            # highlighting.
+            if not reply.startswith("/me "):
+                # Pick a random highlighting char:
+                hlchar = random.choice(self.conf.misc["highlight"])
+                reply = u"%s%s %s" % (sender.nick, hlchar, reply)
             self.room.send(reply)
 
 def custom_replace(message, **replace):

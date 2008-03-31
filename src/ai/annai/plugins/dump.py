@@ -34,6 +34,7 @@ def _get_dump(party, id):
     _fetch_lock.release()
 
 class _Plugin(BasePlugin):
+    """Plugin compatible with ManyOnMany and OneOnOne API."""
     #: Regular expression used to search for dump requests.
     rex = re.compile(r"\bdump\W*?\#?(\d+|random)\b")
     # There is no word-boundary (\b) after "dump" to allow dump123.
@@ -55,10 +56,5 @@ class _Plugin(BasePlugin):
             _thread.start_new_thread(_get_dump, (self.party, dump_id))
             return (message, reply)
 
-class OneOnOnePlugin(_Plugin):
-    """ Dump plugin for OneOnOne conversations."""
-    pass
-
-class ManyOnManyPlugin(_Plugin):
-    """Dump plugin for many-on-many conversations."""
-    pass
+OneOnOnePlugin = _Plugin
+ManyOnManyPlugin = _Plugin
