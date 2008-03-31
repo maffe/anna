@@ -246,6 +246,7 @@ class ManyOnMany(ai.BaseManyOnMany):
             return
         elif message.startswith("change your nickname to "):
             self.room.set_mynick(message[len("change your nickname to "):])
+            reply = u"k."
         elif message.startswith("load module "):
             ai_name = message[len("load module "):]
             try:
