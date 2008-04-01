@@ -6,6 +6,10 @@ JID = anna@example.net
 password = secret
 resource = anna
 
+[agenda_plugin]
+
+db_uri = sqlite:///main.db
+
 [factoids_plugin]
 
 db_uri = sqlite:///main.db
@@ -20,6 +24,7 @@ db_uri = sqlite:///main.db
 # is the python name for the module (e.g.: irrepressible_info). The
 # value is the name users will see/use to (un)load the plugin. This list
 # is inclusive; what is not listed here is not available.
+name_agenda = agenda
 ;name_annarithmetic = annarithmetic
 name_dump = dump
 name_factoids = factoids
