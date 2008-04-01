@@ -86,7 +86,7 @@ class _Plugin(BasePlugin):
         @rtype: C{unicode} or C{None}
 
         """
-        match = self._rex_get.search(msg)
+        match = self._rex_get.search(msg.lower())
         if match is None:
             return None
         else:
@@ -95,9 +95,9 @@ class _Plugin(BasePlugin):
 
     def _factoid_add(self, obj, defin):
         """Set the definition of given factoid.
-        
+
         Stores the object in lower-case to allow case-insensitive fetching.
-        
+
         """
         if self._factoid_get(obj) is not None:
             raise FactoidExistsError, obj
