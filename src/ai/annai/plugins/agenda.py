@@ -10,7 +10,6 @@ For more information, see U{https://0brg.net/anna/wiki/Agenda_plugin}.
 """
 from datetime import datetime
 import re
-import sqlite3
 try:
     import thread as _thread
 except ImportError:

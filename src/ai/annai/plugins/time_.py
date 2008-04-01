@@ -7,8 +7,7 @@ U{https://0brg.net/anna/wiki/Time_plugin}.
 """
 import time
 
-from ai.annai.plugins import BasePlugin, PluginError
-import frontends
+from ai.annai.plugins import BasePlugin
 
 #: Either one of these messages (with or without questionmark) triggers.
 HOOKS = (
