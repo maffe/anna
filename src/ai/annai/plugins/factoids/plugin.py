@@ -7,6 +7,8 @@ immediately.
 See U{https://0brg.net/anna/wiki/Factoids_plugin} for more info.
 
 """
+import re
+
 import sqlalchemy as sa
 
 from ai.annai.plugins import BasePlugin, PluginError
@@ -18,6 +20,12 @@ db_uri = config.get_conf_copy().factoids_plugin["db_uri"]
 
 class _Plugin(BasePlugin):
     """Common functions for both the OneOnOne and ManyOnMany plugins."""
+    #: Regexp to match for factoid requests. The first non-empty group will be
+    #: taken as the requested object.
+    _rex_get = re.compile("|".join((
+        r"^(?:what|where|who)(?: i|')s (.*?)\?*$", # what/where/who is ...
+        r"^(.*?)\?+$" # Anything that ends with a question mark.
+        )))
     def __init__(self, party, args):
         self.party = party
         # Functions to apply to incoming messages subsequently.
@@ -78,17 +86,12 @@ class _Plugin(BasePlugin):
         @rtype: C{unicode} or C{None}
 
         """
-        if msg[:8].lower() == "what is ":
-            return msg[8:].rstrip(" ?")
-        elif msg[:7].lower() == "what's ":
-            return msg[7:].rstrip(" ?")
-        elif msg[:17].lower() == "do you know what " \
-                and msg.rstrip(" ?").endswith(" is"):
-            return msg.rstrip(" ?")[17:-3]
-        elif msg.endswith("?"):
-            return msg.rstrip(" ?")
-        else:
+        match = self._rex_get.search(msg)
+        if match is None:
             return None
+        else:
+            # Raises an IndexError if all groups are None. Should never happen.
+            return [g for g in match.groups() if g is not None][0].strip()
 
     def _factoid_add(self, obj, defin):
         """Set the definition of given factoid.
