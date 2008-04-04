@@ -1,9 +1,10 @@
 """Agenda plugin
 available commands:
     add event %EVENT DESCRIPTION% dd/mm/yyyy hh:mm
+    delete event %EVENT ID%
+    event %EVENT ID%
     list events
     next event
-    delete event %EVENT ID%
 
 For more information, see U{https://0brg.net/anna/wiki/Agenda_plugin}.
 
@@ -27,8 +28,10 @@ db_uri = config.get_conf_copy().agenda_plugin["db_uri"]
 _REX_ADD = r"^add event (.+) (\d{1,2}/\d{1,2}/\d{4})\s?(\d{1,2}:\d{1,2})?$"
 #: Case-insensitive regular expression for deleting events.
 _REX_DEL = r"^delete event (\d+)$"
-#: Output format of the next upcoming event.
-_NEXT_EVENT = u"""Next event:
+#: Case-insensitive regular expression for getting events.
+_REX_GET = r"^event (\d+)$"
+#: Detailed output format of an event.
+_EVENT = u"""Event %(id)s:
 %(date)s
 ------------------
 %(desc)s
@@ -42,6 +45,7 @@ class _Plugin(BasePlugin):
     #: Regular expression used to search for agenda requests.
     add_rex = re.compile(_REX_ADD, re.IGNORECASE)
     del_rex = re.compile(_REX_DEL, re.IGNORECASE)
+    get_rex = re.compile(_REX_GET, re.IGNORECASE)
     next_command = "next event"
     list_command = "list events"
 
@@ -97,9 +101,37 @@ class _Plugin(BasePlugin):
         res.close()
         return u"list of events:\n%s" % u"\n".join(events)
 
+    def _get_event(self, id):
+        res = sa.select(
+                columns=[self._table.c.id,
+                    self._table.c.date,
+                    self._table.c.event],
+                whereclause=(self._table.c.id==id),
+                from_obj=self._table
+                ).execute()
+        result = res.fetchone()
+        if result is None:
+            return u"Event %d not found........." % id
+
+        dif = result[1] - datetime.now()
+        try:
+            date = result[1].strftime("%A %d %B %Y (week %U)\n%H:%M")
+        except ValueError, e:
+            date = u"<%s>" % e
+        return _EVENT % dict(
+                id=result[0],
+                date=date,
+                desc=result[2],
+                days=dif.days,
+                hours=dif.seconds / 3600,
+                mins=(dif.seconds % 3600) / 60,
+                )
+
     def _next_event(self):
         res = sa.select(
-                columns=[self._table.c.date, self._table.c.event],
+                columns=[self._table.c.id,
+                    self._table.c.date,
+                    self._table.c.event],
                 whereclause=(sa.and_(
                     self._table.c.date>datetime.now(),
                     self._table.c.namespace==self.namespace.lower())),
@@ -110,14 +142,15 @@ class _Plugin(BasePlugin):
 
         if result is None:
             return u"Nothing to do........."
-        dif = result[0] - datetime.now()
+        dif = result[1] - datetime.now()
         try:
-            date = result[0].strftime("%A %d %B %Y (week %U)\n%H:%M")
+            date = result[1].strftime("%A %d %B %Y (week %U)\n%H:%M")
         except ValueError, e:
             date = u"<%s>" % e
-        return _NEXT_EVENT % dict(
+        return _EVENT % dict(
+                id=result[0],
                 date=date,
-                desc=result[1],
+                desc=result[2],
                 days=dif.days,
                 hours=dif.seconds / 3600,
                 mins=(dif.seconds % 3600) / 60,
@@ -159,6 +192,12 @@ class _Plugin(BasePlugin):
             # Remove the event with the given id.
             id = int(del_res.group(1))
             return (message, self._delete_event(id))
+
+        get_res = self.get_rex.search(message)
+        if get_res is not None:
+            # Show the event with the given id.
+            id = int(get_res.group(1))
+            return (message, self._get_event(id))
 
         if message.lower() == self.next_command:
             # Return the next event.
