@@ -265,7 +265,7 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
         try:
             self.room.get_participant(old_nick).nick = user.nick
         except parties.NoSuchParticipantError:
-            c.stderr(u"WARNING: unknown user %s entered %s.\n" %
+            c.stderr(u"WARNING: unknown user %s changed nick in %s (added)\n" %
                                (user.nick, self.room))
             self.room.add_participant(parties.GroupMember(self.room, user))
         return True

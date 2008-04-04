@@ -124,7 +124,10 @@ class Group(BaseGroup):
         self.ai = ai
 
     def set_mynick(self, nick):
-        self.mucstate.change_nick(nick)
+        try:
+            self.mucstate.change_nick(nick)
+        except px.pyxmpp.xmppstringprep.StringprepError, e:
+            self.send(u"Error changing nick: %s" % e)
 
     def send(self, message):
         if __debug__:
