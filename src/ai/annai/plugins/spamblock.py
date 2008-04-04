@@ -50,8 +50,5 @@ class _Plugin(BasePlugin):
         else:
             return (message, reply)
 
-class OneOnOnePlugin(_Plugin):
-    pass
-
-class ManyOnManyPlugin(_Plugin):
-    pass
+OneOnOnePlugin = _Plugin
+ManyOnManyPlugin = _Plugin

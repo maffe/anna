@@ -3,7 +3,6 @@
 See U{https://0brg.net/anna/wiki/Reactions_plugin} for more information.
 
 """
-
 # Throughout the code the following convention is used: a 'reaction' is yielded
 # whenever a 'hook' is encountered.
 
@@ -20,8 +19,6 @@ REQ_ADD = re.compile(u"(global )?reaction to (.*?) is (.*)", re.I | re.S)
 REQ_DEL = re.compile(u"forget (global )?reaction to (.*)", re.I | re.S)
 TYPE_DIRECT = 0
 TYPE_GLOBAL = 1
-
-db_uri = config.get_conf_copy().reactions_plugin["db_uri"]
 
 class _Plugin(BasePlugin):
     """Common functions for both the OneOnOne and ManyOnMany plugins.
@@ -41,6 +38,7 @@ class _Plugin(BasePlugin):
                 self._handle_react,
                 )
         # Create the database if it doesn't exist.
+        db_uri = config.get_conf_copy().reactions_plugin["db_uri"]
         self._engine = sa.create_engine(db_uri)#, echo=True)
         self._md = sa.MetaData()
         self._table = sa.Table("reaction", self._md, 
@@ -69,6 +67,7 @@ class _Plugin(BasePlugin):
         m = REQ_ADD.match(msg)
         if m is None:
             return None
+        # Watch out; this only works if TYPE_GLOBAL evaluates to True.
         self._type = m.group(1) is not None and TYPE_GLOBAL or TYPE_DIRECT
         return (m.group(2), m.group(3))
 
@@ -180,7 +179,7 @@ class _Plugin(BasePlugin):
             return (message, reply)
 
         cleanmsg = message.strip()
-        # State-machine for highlight status and sendertoo.
+        # State-machine for highlight status and sender.
         self.highlight = highlight
         self.sender = sender
         for parser in self._msg_parsers:

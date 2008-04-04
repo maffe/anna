@@ -1,10 +1,11 @@
-"""Agenda plugin
-available commands:
-    add event %EVENT DESCRIPTION% dd/mm/yyyy hh:mm
-    delete event %EVENT ID%
-    event %EVENT ID%
-    list events
-    next event
+"""The agenda plugin manages appointments for you.
+
+Available commands:
+  - add event EVENT_DESCRIPTION dd/mm/yyyy hh:mm
+  - delete event EVENT_ID
+  - event EVENT_ID
+  - list events
+  - next event
 
 For more information, see U{https://0brg.net/anna/wiki/Agenda_plugin}.
 
@@ -21,8 +22,6 @@ import sqlalchemy as sa
 from ai.annai.plugins import BasePlugin, PluginError
 import communication as c
 import config
-
-db_uri = config.get_conf_copy().agenda_plugin["db_uri"]
 
 #: Case-insensitive regular expression for adding events.
 _REX_ADD = r"^add event (.+) (\d{1,2}/\d{1,2}/\d{4})\s?(\d{1,2}:\d{1,2})?$"
@@ -53,6 +52,7 @@ class _Plugin(BasePlugin):
         if len(args) != 1:
             raise PluginError, u"Usage: load plugin agenda <namespace>"
         self.namespace = args[0].lower()
+        db_uri = config.get_conf_copy().agenda_plugin["db_uri"]
         self._engine = sa.create_engine(db_uri)
         self._md = sa.MetaData(self._engine)
         self._table = sa.Table("agenda", self._md, 
@@ -67,13 +67,7 @@ class _Plugin(BasePlugin):
         return u"agenda plugin <%s>" % self.namespace
 
     def _add_event(self, date, title):
-        # Adds an event to the database.
-        """conn = sqlite3.connect(db_uri, detect_types=sqlite3.PARSE_DECLTYPES)
-        cursor = conn.cursor()
-        cursor.execute('INSERT INTO agenda(date, event) VALUES(?, ?);',
-                (date, title))
-        conn.commit()
-        conn.close()"""
+        """Add an event to the database."""
         ins = self._table.insert(values=dict(date=date, event=title,
             namespace=self.namespace))
         conn = self._engine.connect()
@@ -81,7 +75,7 @@ class _Plugin(BasePlugin):
         return u"whokej"
 
     def _list_events(self):
-        #returns a list of events
+        """Return a list of events."""
         res = sa.select(
                 columns=[self._table.c.id,
                          self._table.c.date,
@@ -157,7 +151,7 @@ class _Plugin(BasePlugin):
                 )
 
     def _delete_event(self, id):
-        # remove the event with the given id
+        """Remove the event with the given id."""
         conn = self._engine.connect()
         conn.execute(self._table.delete(sa.and_(
             self._table.c.id==id,

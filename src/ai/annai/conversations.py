@@ -2,7 +2,10 @@
 
 import random
 import re
-import sys
+try:
+    import threading as _threading
+except ImportError:
+    import dummy_threading as _threading
 
 import ai
 from ai.annai import pluginhandler, plugins
@@ -10,7 +13,8 @@ import aihandler
 import config
 import frontends
 
-pluginhandler.start()
+#: The first time an AI instance is created, import all plugins.
+_plugins_import_lock = _threading.Lock()
 
 def _get_plugin(ai, plug_name):
     """Get a plugin for this AI (automatically deteremine plugin type)."""
@@ -121,8 +125,21 @@ def _mod_plugins(ai, party, message):
     # It had nothing to do with moderating plugins.
     return None
 
-class OneOnOne(ai.BaseOneOnOne):
+class _AnnaiBase(object):
+    """Base class for all annai AI classes.
+
+    Takes care of importing all needed plugins the first time an AI class is
+    instantiated so make sure to call L{__init__} from child-classes too!
+
+    """
+    def __init__(self):
+        global _plugins_import_lock
+        if _plugins_import_lock.acquire(False):
+            pluginhandler.start()
+
+class OneOnOne(_AnnaiBase, ai.BaseOneOnOne):
     def __init__(self, identity):
+        _AnnaiBase.__init__(self)
         if __debug__:
             if not isinstance(identity, frontends.BaseIndividual):
                 raise TypeError, "Identity must be an Individual."
@@ -175,8 +192,9 @@ class OneOnOne(ai.BaseOneOnOne):
 
         return _mod_plugins(self, self.ident, message)
 
-class ManyOnMany(ai.BaseManyOnMany):
+class ManyOnMany(_AnnaiBase, ai.BaseManyOnMany):
     def __init__(self, room):
+        _AnnaiBase.__init__(self)
         if __debug__:
             if not isinstance(room, frontends.BaseGroup):
                 raise TypeError, "Identity must be an Individual."

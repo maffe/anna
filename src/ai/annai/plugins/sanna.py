@@ -112,8 +112,5 @@ class _Plugin(BasePlugin):
         # if you haven't found anything there too return a sad message,
         return self.messages["WNOTFOUND"]
 
-class OneOnOnePlugin(_Plugin):
-    pass
-
-class ManyOnManyPlugin(_Plugin):
-    pass
+OneOnOnePlugin = _Plugin
+ManyOnManyPlugin = _Plugin

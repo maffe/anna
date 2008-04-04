@@ -16,8 +16,6 @@ import communication as c
 import config
 import frontends
 
-db_uri = config.get_conf_copy().factoids_plugin["db_uri"]
-
 class _Plugin(BasePlugin):
     """Common functions for both the OneOnOne and ManyOnMany plugins."""
     #: Regexp to match for factoid requests. The first non-empty group will be
@@ -35,6 +33,7 @@ class _Plugin(BasePlugin):
                 self._handle_delete,
                 )
         # Create the database if it doesn't exist.
+        db_uri = config.get_conf_copy().factoids_plugin["db_uri"]
         self._engine = sa.create_engine(db_uri)#, echo=True)
         self._md = sa.MetaData()
         self._table = sa.Table("factoid", self._md, 

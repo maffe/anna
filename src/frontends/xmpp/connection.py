@@ -77,8 +77,14 @@ class Connection(px.jab.Client, _threading.Thread):
         for room in self._rooms.rooms.values():
             self.leave_room(room)
         if not self.halt:
-            c.stderr(u"DEBUG: xmpp: disconnected, trying to reconnect\n")
-            px.jab.Client.connect(self)
+            while 1:
+                c.stderr(u"DEBUG: xmpp: disconnected, trying to reconnect\n")
+                try:
+                    px.jab.Client.connect(self)
+                    # If the reconnection was succesful, stop retrying.
+                    break
+                except socket_error, e:
+                    c.stderr(u"DEBUG: xmpp: error: %s, retrying\n" % e)
 
     def exit(self):
         """Disconnect and exit.""" 
@@ -191,8 +197,8 @@ class Connection(px.jab.Client, _threading.Thread):
                 self.stream.loop_iter(timeout=timeout)
                 self.idle()
         except socket_error, e:
-            c.stderr(u"DEBUG: Connection error: %s." % e)
-            c.stdout(u"WARNING: Connection error, trying to reconnect.")
+            c.stderr(u"DEBUG: Connection error: %s.\n" % e)
+            c.stdout(u"WARNING: Connection error, trying to reconnect.\n")
             self.disconnected()
 
     def run(self):

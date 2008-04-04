@@ -14,7 +14,7 @@ except ImportError:
 from ai.annai.plugins import BasePlugin
 import config
 
-#: Ensure that L{init} is only called once.
+#: Ensure that L{start} is only called once.
 _start_lock = _threading.Lock()
 #: Dictionary of references. Keys are pretty versions, values are references.
 _refs = {}

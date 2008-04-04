@@ -7,7 +7,6 @@ To kill the entire chatbot, use ctrl + C.
 """
 import imp
 import optparse
-import optparse
 import signal
 import sys
 try:
@@ -37,14 +36,14 @@ def discard_args(func):
         return func()
     return lonely_func
 
-def _import_frontends(frontends):
+def _import_frontends(frontend_names):
     """Import the supplied frontends (only imports once, NOP after that)."""
     global _frontends
     if not _frontends_imported.acquire(False):
         return
     imp.acquire_lock()
     _frontends = {}
-    for name in frontends:
+    for name in frontend_names:
         assert(name not in _frontends)
         mod = imp.load_module(name, *imp.find_module(name, ["frontends"]))
         _frontends[name] = mod

@@ -41,11 +41,8 @@ class _Plugin(BasePlugin):
         j.detachThreadFromJVM()
         return (message, result)
 
-class OneOnOnePlugin(_Plugin):
-    pass
-
-class ManyOnManyPlugin(_Plugin):
-    pass
+OneOnOnePlugin = _Plugin
+ManyOnManyPlugin = _Plugin
 
 if not j.isJVMStarted():
     relative = os.path.join("ai", "annai", "plugins", "annarithmetic")

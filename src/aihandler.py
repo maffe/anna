@@ -18,7 +18,7 @@ import ai
 import communication as c
 
 # Lock for ensuring the _load_refs() method is only run once. Never .release()!
-__refs_loaded = _threading.Lock()
+_refs_loaded = _threading.Lock()
 # Pre-fetch a reference to all classes. Case-sensitive.
 _refs = {}
 
@@ -28,8 +28,8 @@ def _load_refs():
     This routine can only be run once.
 
     """
-    global _refs
-    if not __refs_loaded.acquire(False):
+    global _refs, _refs_loaded
+    if not _refs_loaded.acquire(False):
         return
     imp.acquire_lock()
     _refs = {}
@@ -55,6 +55,7 @@ class NoSuchAIError(Exception):
 
 def get_names():
     """Return an iterator with the names of all available AI modules."""
+    _load_refs()
     return _refs.iterkeys()
 
 def get_manyonmany(name):
@@ -65,6 +66,7 @@ def get_manyonmany(name):
     @raise NoSuchAIError: The specified AI does not exist.
 
     """
+    _load_refs()
     if not isinstance(name, unicode):
         raise TypeError, "name argument must be a unicode object."
     try:
@@ -80,11 +82,10 @@ def get_oneonone(name):
     @raise NoSuchAIError: The specified AI does not exist.
 
     """
+    _load_refs()
     if not isinstance(name, unicode):
         raise TypeError, "name argument must be a unicode object."
     try:
         return _refs[name].OneOnOne
     except KeyError:
         raise NoSuchAIError, name
-
-_load_refs()

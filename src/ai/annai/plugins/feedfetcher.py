@@ -212,8 +212,5 @@ class _Plugin(BasePlugin):
         self.feed_url = u""
         c.stderr(u"NOTICE: feedfetcher.exit(%r)\n" % reason)
 
-class OneOnOnePlugin(_Plugin):
-    pass
-
-class ManyOnManyPlugin(_Plugin):
-    pass
+OneOnOnePlugin = _Plugin
+ManyOnManyPlugin = _Plugin
