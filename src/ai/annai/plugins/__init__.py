@@ -1,6 +1,10 @@
+import communication as c
+
 class BasePlugin(object):
     """The parent class of all plugins for the annai module."""
-    pass
+    def __del__(self):
+        if __debug__:
+            c.stderr(u"DEBUG: plugin %r garbage collected.\n" % (self,))
 
 class PluginError(Exception):
     """Raised by a plugin when it can not continue and should be unloaded.

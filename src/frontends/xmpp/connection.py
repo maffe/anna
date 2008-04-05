@@ -23,6 +23,9 @@ import config
 from frontends.xmpp import parties
 from frontends import BaseConnection
 
+#: Number of seconds to wait between reconnection attempts when disconnected.
+_RECONNECT_INTERVAL = 5
+
 class Connection(px.jab.Client, _threading.Thread):
     """Threaded connection to an XMPP server.
 
@@ -76,15 +79,15 @@ class Connection(px.jab.Client, _threading.Thread):
         """Try to reconnect to the xmpp network when disconnected."""
         for room in self._rooms.rooms.values():
             self.leave_room(room)
-        if not self.halt:
-            while 1:
-                c.stderr(u"DEBUG: xmpp: disconnected, trying to reconnect\n")
-                try:
-                    px.jab.Client.connect(self)
-                    # If the reconnection was succesful, stop retrying.
-                    break
-                except socket_error, e:
-                    c.stderr(u"DEBUG: xmpp: error: %s, retrying\n" % e)
+        while not self.halt:
+            c.stderr(u"DEBUG: xmpp: disconnected, trying to reconnect\n")
+            try:
+                px.jab.Client.connect(self)
+                # If the reconnection was succesful, stop retrying.
+                break
+            except socket_error, e:
+                c.stderr(u"DEBUG: xmpp: error: %s, retrying\n" % e)
+                time.sleep(_RECONNECT_INTERVAL)
 
     def exit(self):
         """Disconnect and exit.""" 

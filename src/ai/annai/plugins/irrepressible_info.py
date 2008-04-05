@@ -83,8 +83,5 @@ class _Plugin(BasePlugin):
         else:
             return (message, u"Fragment %s:\n\t%s\nfrom: <%s>" % frag)
 
-class OneOnOnePlugin(_Plugin):
-    pass
-
-class ManyOnManyPlugin(_Plugin):
-    pass
+OneOnOnePlugin = _Plugin
+ManyOnManyPlugin = _Plugin

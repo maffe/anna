@@ -1,5 +1,6 @@
 """Parent classes for AI modules."""
 
+import communication as c
 import frontends
 
 class BaseOneOnOne(object):
@@ -11,6 +12,10 @@ class BaseOneOnOne(object):
     """
     def __init__(self, individual):
         pass
+
+    def __del__(self):
+        if __debug__:
+            c.stderr(u"DEBUG: AI module %r garbage collected.\n" % (self,))
 
     def handle(self, message):
         """Process incoming message.
@@ -30,6 +35,9 @@ class BaseManyOnMany(object):
     """
     def __init__(self, room):
         pass
+
+    def __del__(self):
+        c.stderr(u"DEBUG: %r garbage collected.\n" % (self,))
 
     def handle(self, message, member):
         """Process incoming message.

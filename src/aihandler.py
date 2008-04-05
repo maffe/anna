@@ -1,9 +1,9 @@
 """Fetch ai classes by supplying the name as a string.
 
-When this module is imported it imports all AI modules and keeps a
-reference to them. Updating this list of references at runtime is
-possible. Fetching references using this module read-only operation and
-is threadsafe. Updating the list is not.
+When one of the three important functions defined in this module is
+called for the first time all AI modules are imported. Reloading them is
+impossible. Getting references using this module is a read-only
+operation and is thread-safe.
 
 The names are case-sensitive.
 
