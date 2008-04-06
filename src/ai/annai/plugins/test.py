@@ -8,7 +8,15 @@ plugin useful for checking any code that uses the plugins.
 from ai.annai.plugins import BasePlugin, PluginError
 import frontends
 
-class OneOnOnePlugin(BasePlugin):
+class _Plugin(BasePlugin):
+    """Base class for the test plugin."""
+    def __unicode__(self):
+        return u"test plugin."
+
+    def unloaded(self):
+        self.party.send(u"Test plugin unloaded.")
+
+class OneOnOnePlugin(_Plugin):
     """Plugin for test purposes.
 
     @param identity: The identity associated with this plugin.
@@ -19,9 +27,7 @@ class OneOnOnePlugin(BasePlugin):
         if __debug__:
             if not isinstance(identity, frontends.BaseIndividual):
                 raise TypeError, "Identity must be an Individual instance."
-
-    def __unicode__(self):
-        return u"test plugin."
+        self.party = identity
 
     def process(self, message, reply):
         """Do simple processing on the message (only useful for tests).
@@ -42,7 +48,7 @@ class OneOnOnePlugin(BasePlugin):
         else:
             return (message, u"%s - test plugin loaded" % reply)
 
-class ManyOnManyPlugin(BasePlugin):
+class ManyOnManyPlugin(_Plugin):
     """Test plugin for many-on-many conversations.
 
     @param room: The room the discussion is taking place in.
@@ -53,6 +59,7 @@ class ManyOnManyPlugin(BasePlugin):
         if __debug__:
             if not isinstance(room, frontends.BaseGroup):
                 raise TypeError, "Room must be a Group frontend instance."
+        self.party = room
 
     def __unicode__(self):
         return u"test plugin."

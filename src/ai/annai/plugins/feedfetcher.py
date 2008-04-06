@@ -104,25 +104,13 @@ class _Plugin(BasePlugin):
         self.prefix = "news "
         # Seconds between updates.
         self.update_interval = DEFAULT_INTERVAL
-        self.timer = _threading.Timer(0, self.check_feed)
+        self.timer = _threading.Timer(0, self._check_feed)
         self.timer.start()
-
-    def __del__(self):
-        """Release the thread ticket this instance consumed.
-
-        Just in case this instance is deleted without calling L{stop}.
-        Does not do any harm if L{stop} has been called previously.
-
-        """
-        c.stderr(u"DEBUG: All references to feedfetcher plugin deleted.\n")
-        if self.error is None:
-            _tickets.release()
-            self.error = u"All references deleted."
 
     def __unicode__(self):
         return u"feed parser plugin for <%s>" % self.feed_url
 
-    def check_feed(self):
+    def _check_feed(self):
         """Check the news feed and take action depending on updates.
         
         @TODO: Format-independent parsing.
@@ -136,10 +124,10 @@ class _Plugin(BasePlugin):
         self.timer.cancel()
         d = feedparser.parse(self.feed_url)
         if d["bozo"]:
-            self.stop(u"parsing feed failed, plugin can not continue.")
+            self._stop(u"parsing feed failed, plugin can not continue.")
             return
         if not d["version"] == "atom10":
-            self.stop(u"Only atom 1.0 is supported for now.")
+            self._stop(u"Only atom 1.0 is supported for now.")
             return
         # List of tuples: (title, content, url)
         new_entries = []
@@ -159,7 +147,7 @@ class _Plugin(BasePlugin):
                 # TODO: This belongs in a seperate routine.
                 self.latest_elem = clean["updated"]
                 self.timer = _threading.Timer(self.update_interval,
-                                                        self.check_feed)
+                                                        self._check_feed)
                 self.timer.setDaemon(True)
                 self.timer.start()
                 return
@@ -172,9 +160,25 @@ class _Plugin(BasePlugin):
             self.party.send(FORMAT % clean)
             # Update the value of the latest feed we checked out.
             self.latest_elem = clean["updated"]
-        self.timer = _threading.Timer(self.update_interval, self.check_feed)
+        self.timer = _threading.Timer(self.update_interval, self._check_feed)
         self.timer.setDaemon(True)
         self.timer.start()
+
+    def _stop(self, reason=u"Can not continue."):
+        """Called internally when the plugin can not continue operation.
+
+        Unloads the plugin on the next call to L{process} by raising a
+        PluginError with given reason.  This does /not/ release the semaphore
+        object: L{unloaded} is expected to do that.
+
+        @param reason: The error message.
+        @type reason: C{unicode}
+
+        """
+        assert(isinstance(reason, unicode))
+        self.error = u"%s exiting: %s" % (self, reason)
+        self.feed_url = u""
+        c.stderr(u"NOTICE: feedfetcher.exit(%r)\n" % reason)
 
     def process(self, message, reply, *args, **kwargs):
         if self.error is not None:
@@ -195,22 +199,10 @@ class _Plugin(BasePlugin):
                     return (message, u"Update interval for %s updated." % self)
         return (message, reply)
 
-    def stop(self, reason=u"Can not continue."):
-        """Called internally when the plugin can not continue operation.
-        
-        Stops refreshing the URL and unloads the plugin on the next call to
-        L{process} by raising a PluginError with given reason.
-
-        @param reason: The error message.
-        @type reason: C{unicode}
-        
-        """
-        assert(isinstance(reason, unicode))
+    def unloaded(self):
+        """Release the thread ticket this instance consumed."""
         self.timer.cancel()
         _tickets.release()
-        self.error = u"%s exiting: %s" % (self, reason)
-        self.feed_url = u""
-        c.stderr(u"NOTICE: feedfetcher.exit(%r)\n" % reason)
 
 OneOnOnePlugin = _Plugin
 ManyOnManyPlugin = _Plugin

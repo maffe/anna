@@ -88,13 +88,18 @@ def _mod_plugins(ai, party, message):
             except pluginhandler.NoSuchPluginError, e:
                 return unicode(e)
         valid_req = False
-        # Important: copy the list, don't modify it while looping over it!
-        for plugin in ai.plugins[:]:
-            # isinstance() also verifies subclasses whici is not good.
+        # Copy of the old plugin list without instances of given class.
+        filtered = []
+        for plugin in ai.plugins:
             if plugin.__class__ is plug_cls:
-                ai.plugins.remove(plugin)
-                valid_req = True
-        return valid_req and u"k." or u"This plugin was not loaded."
+                plugin.unload()
+            else:
+                filtered.append(plugin)
+        if len(filtered) == len(ai.plugins):
+            return u"This plugin was not loaded."
+        else:
+            ai.plugins = filtered
+            return u"k"
 
     # List loaded.
     elif message.lower() == "list loaded plugins":
@@ -136,6 +141,14 @@ class _AnnaiBase(object):
         global _plugins_import_lock
         if _plugins_import_lock.acquire(False):
             pluginhandler.start()
+        self.conf = config.get_conf_copy()
+        self.plugins = []
+
+    def _flush_plugins(self):
+        """Cleans up all loaded plugins."""
+        for plugin in self.plugins[:]:
+            self.plugins.remove(plugin)
+            plugin.unloaded()
 
 class OneOnOne(_AnnaiBase, ai.BaseOneOnOne):
     def __init__(self, identity):
@@ -143,32 +156,9 @@ class OneOnOne(_AnnaiBase, ai.BaseOneOnOne):
         if __debug__:
             if not isinstance(identity, frontends.BaseIndividual):
                 raise TypeError, "Identity must be an Individual."
-        self.conf = config.get_conf_copy()
         self.ident = identity
-        self.plugins = []
 
-    def handle(self, message):
-        """Call all plugins and send back an answer if appropriate."""
-        if __debug__:
-            if not isinstance(message, unicode):
-                raise TypeError, "Message must be a unicode object."
-        # Replace some stuff in the reply:
-        replacedict = dict(
-                user=self.ident.get_name(),
-                nick=self.conf.misc["bot_nickname"]
-                )
-        reply = self.general_reply(message)
-        for plugin in self.plugins:
-            try:
-                message, reply = plugin.process(message, reply)
-            except plugins.PluginError, e:
-                self.ident.send(unicode(e))
-                self.plugins.remove(plugin)
-
-        if reply is not None:
-            self.ident.send(custom_replace(reply, **replacedict))
-
-    def general_reply(self, message):
+    def _general_reply(self, message):
         """Tries to come up with a reply to this message without plugins.
 
         If no reply is found None is returned. Otherwise a unicode object is
@@ -186,11 +176,35 @@ class OneOnOne(_AnnaiBase, ai.BaseOneOnOne):
             ai_str = message[len("load module "):]
             try:
                 self.ident.set_AI(aihandler.get_oneonone(ai_str)(self.ident))
-                return u"Success!"
             except aihandler.NoSuchAIError, e:
                 return unicode(e)
+            else:
+                self._flush_plugins()
+                return u"Success!"
 
         return _mod_plugins(self, self.ident, message)
+
+    def handle(self, message):
+        """Call all plugins and send back an answer if appropriate."""
+        if __debug__:
+            if not isinstance(message, unicode):
+                raise TypeError, "Message must be a unicode object."
+        # Replace some stuff in the reply:
+        replacedict = dict(
+                user=self.ident.get_name(),
+                nick=self.conf.misc["bot_nickname"]
+                )
+        reply = self._general_reply(message)
+        for plugin in self.plugins[:]:
+            try:
+                message, reply = plugin.process(message, reply)
+            except plugins.PluginError, e:
+                self.ident.send(unicode(e))
+                self.plugins.remove(plugin)
+                plugin.unloaded()
+
+        if reply is not None:
+            self.ident.send(custom_replace(reply, **replacedict))
 
 class ManyOnMany(_AnnaiBase, ai.BaseManyOnMany):
     def __init__(self, room):
@@ -198,8 +212,6 @@ class ManyOnMany(_AnnaiBase, ai.BaseManyOnMany):
         if __debug__:
             if not isinstance(room, frontends.BaseGroup):
                 raise TypeError, "Identity must be an Individual."
-        self.conf = config.get_conf_copy()
-        self.plugins = []
         self.room = room
 
     def handle(self, message, sender):
@@ -225,12 +237,13 @@ class ManyOnMany(_AnnaiBase, ai.BaseManyOnMany):
                     msg = highlight[len(elem):].strip()
                     return self.highlight(msg, sender)
 
-        for plugin in self.plugins:
+        for plugin in self.plugins[:]:
             try:
                 message, reply = plugin.process(message, reply, sender, False)
             except plugins.PluginError, e:
                 self.room.send(unicode(e))
                 self.plugins.remove(plugin)
+                plugin.unloaded()
 
         if reply is not None:
             reply = custom_replace(reply, user=sender.nick, nick=mynick)
@@ -269,18 +282,21 @@ class ManyOnMany(_AnnaiBase, ai.BaseManyOnMany):
             ai_name = message[len("load module "):]
             try:
                 self.room.set_AI(aihandler.get_manyonmany(ai_name)(self.room))
-                reply = u"success!"
             except aihandler.NoSuchAIError, e:
                 reply = unicode(e)
+            else:
+                self._flush_plugins()
+                reply = u"success!"
         else:
             reply = _mod_plugins(self, self.room, message)
 
-        for plugin in self.plugins:
+        for plugin in self.plugins[:]:
             try:
                 message, reply = plugin.process(message, reply, sender, True)
             except plugins.PluginError, e:
                 self.room.send(unicode(e))
                 self.plugins.remove(plugin)
+                plugin.unloaded()
 
         if reply:
             # As IRC-customs dictate (yucky, frontend-dependent hacks): "/me "

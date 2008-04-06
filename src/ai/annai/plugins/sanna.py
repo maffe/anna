@@ -17,22 +17,22 @@ import frontends
 
 # Use a dictionary with keys 'lang' and 'q' to format this to a proper get
 # request for google webservers.
-#_wiki_get = "/search?hl=%(lang)s&sitesearch=%(lang)s.wikipedia.org&q=%(q)s"
+#_WIKI_GET = "/search?hl=%(lang)s&sitesearch=%(lang)s.wikipedia.org&q=%(q)s"
 
 # NEW! Use a dictionary with keys 'lang' and 'q' to format this to a proper get
 # request for dogpile webservers.
-_wiki_get = "".join(("/dogpile/ws/results/Web/%(q)s/1/485/TopNavigation/",
+_WIKI_GET = "".join(("/dogpile/ws/results/Web/%(q)s/1/485/TopNavigation/",
                     "Relevance/iq=true/zoom=off/_iceUrlFlag=7?_IceUrl=true",
                     "&adv=qall%%3d%(q)s%%26domaini%%3dinclude%%26domaint",
                     "%%3d%(lang)s.wikipedia.org"))
 
-_default_messages = dict(
+_DEFAULT_MESSAGES = dict(
         WNOTFOUND=u"whaddayamean?",
         WFOUND=u"i found your article! take a look at it..",
         WWEBFOUND=u"i searched the web for that.. is it this?",
         )
-_find_wiki_rex = "(?<=window\.status=\')http://%s.wikipedia.org/wiki/\S*(?=\';)"
-_default_http_headers = {"user-agent": 
+_FIND_WIKI_REX = "(?<=window\.status=\')http://%s.wikipedia.org/wiki/\S*(?=\';)"
+_DEFAULT_HTTP_HEADERS = {"user-agent": 
         "Mozilla/5.0 (compatible; Anna/1; +http://0brg.net/anna/)"}
 
 # Create a lock for fetching.
@@ -42,7 +42,7 @@ class _Plugin(BasePlugin):
     def __init__(self, peer, args):
         self.lang = u"en"
         # Use the global dictionary (no writing occurs so its thread-safe).
-        self.messages = _default_messages
+        self.messages = _DEFAULT_MESSAGES
         # The different search types.
         self._mods = {
                 u"w": self.wikipedia,
@@ -64,11 +64,10 @@ class _Plugin(BasePlugin):
             # AttributeError: There is no incoming message.
             # ValueError: There were no spaces in the message.
             return (message, reply)
-        try:
+        if cmd in self._mods:
             func = self._mods[cmd]
-        except KeyError:
-            # KeyError: the first word of the message is not a registered
-            # search type.
+        else:
+            # The first word of the message is not a registered search type.
             return (message, reply)
         if not _fetch_mutex.testandset():
             return (message, u"%s overloaded, please try again later." % self)
@@ -92,7 +91,7 @@ class _Plugin(BasePlugin):
         con = httplib.HTTPConnection("%s.wikipedia.org" % self.lang, 80)
         con.connect()
         con.request("GET", "/wiki/Special:Search?search=%s&go=Go" % tofind,
-                headers=_default_http_headers)
+                headers=_DEFAULT_HTTP_HEADERS)
         location = con.getresponse().getheader("location", 1)
         con.close()
 
@@ -101,11 +100,11 @@ class _Plugin(BasePlugin):
         # else search dogpile: "wikipedia %s" % tofind
         con = httplib.HTTPConnection("www.dogpile.com", 80)
         con.connect()
-        con.request("GET", _wiki_get % dict(lang=self.lang, q=tofind))
+        con.request("GET", _WIKI_GET % dict(lang=self.lang, q=tofind))
         response = con.getresponse().read()
         con.close()
 
-        regex = re.search(_find_wiki_rex % self.lang, response)
+        regex = re.search(_FIND_WIKI_REX % self.lang, response)
         if regex is not None:
             return u"%s\n%s" % (self.messages["WWEBFOUND"],
                     regex.group(0))
