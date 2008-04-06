@@ -92,7 +92,7 @@ def _mod_plugins(ai, party, message):
         filtered = []
         for plugin in ai.plugins:
             if plugin.__class__ is plug_cls:
-                plugin.unload()
+                plugin.unloaded()
             else:
                 filtered.append(plugin)
         if len(filtered) == len(ai.plugins):
