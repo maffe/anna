@@ -21,7 +21,7 @@ class _Plugin(BasePlugin):
     #: Regexp to match for factoid requests. The first non-empty group will be
     #: taken as the requested object.
     _rex_get = re.compile("|".join((
-        r"^(?:what|where|who)(?: i|')s (.*?)\?*$", # what/where/who is ...
+        ur"^(?:what|where|who)(?: i|['\u2019])s (.*?)\?*$", # what/where/who is
         r"^(.*?)\?+$" # Anything that ends with a question mark.
         )))
     def __init__(self, party, args):
