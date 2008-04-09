@@ -45,8 +45,8 @@ class _Plugin(BasePlugin):
         return u"dump plugin"
 
     def process(self, message, reply, *args, **kwargs):
-	res = self.rex.search(message.lower())
-	if res is None:
+        res = self.rex.search(message.lower())
+        if res is None:
             return (message, reply)
         dump_id = res.group(1)
         if not _fetch_mutex.testandset() or _fetch_lock.locked():
