@@ -207,6 +207,8 @@ class OneOnOne(_AnnaiBase, ai.BaseOneOnOne):
             self.ident.send(custom_replace(reply, **replacedict))
 
 class ManyOnMany(_AnnaiBase, ai.BaseManyOnMany):
+    _rex_nickchange = re.compile(u"change (y(our|a) )?(nick(name)?|name) to (.+)$")
+
     def __init__(self, room):
         _AnnaiBase.__init__(self)
         if __debug__:
@@ -271,13 +273,14 @@ class ManyOnMany(_AnnaiBase, ai.BaseManyOnMany):
                 nick=self.room.get_mynick(),
                 )
 
-        if re.match(u"((please )?leave)|(exit)$", message, re.I) is not None:
+        res = self._rex_nickchange.match(message)
+        if res is not None:
+            self.room.set_mynick(res.group(5))
+            reply = u"k."
+        elif re.match(u"((please )?leave)|(exit)$", message, re.I) is not None:
             self.room.send(u"... :'(")
             self.room.leave()
             return
-        elif message.startswith("change your nickname to "):
-            self.room.set_mynick(message[len("change your nickname to "):])
-            reply = u"k."
         elif message.startswith("load module "):
             ai_name = message[len("load module "):]
             try:
