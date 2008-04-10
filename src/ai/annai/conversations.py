@@ -207,7 +207,7 @@ class OneOnOne(_AnnaiBase, ai.BaseOneOnOne):
             self.ident.send(custom_replace(reply, **replacedict))
 
 class ManyOnMany(_AnnaiBase, ai.BaseManyOnMany):
-    _rex_nickchange = re.compile(u"change (y(our|a) )?(nick(name)?|name) to (.+)$")
+    _rex_nickchange = re.compile(u"change (?:y(?:our|a) )?(?:nick(?:name)?|name) to (.+)$")
 
     def __init__(self, room):
         _AnnaiBase.__init__(self)
@@ -275,7 +275,7 @@ class ManyOnMany(_AnnaiBase, ai.BaseManyOnMany):
 
         res = self._rex_nickchange.match(message)
         if res is not None:
-            self.room.set_mynick(res.group(5))
+            self.room.set_mynick(res.group(1))
             reply = u"k."
         elif re.match(u"((please )?leave)|(exit)$", message, re.I) is not None:
             self.room.send(u"... :'(")
