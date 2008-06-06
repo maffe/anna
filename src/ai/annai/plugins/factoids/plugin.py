@@ -7,14 +7,18 @@ immediately.
 See U{https://0brg.net/anna/wiki/Factoids_plugin} for more info.
 
 """
+import random
 import re
+try:
+    import threading as _threading
+except ImportError:
+    import dummy_threading as _threading
 
 import sqlalchemy as sa
 
 from ai.annai.plugins import BasePlugin, PluginError
 import communication as c
 import config
-import frontends
 
 class _Plugin(BasePlugin):
     """Common functions for both the OneOnOne and ManyOnMany plugins."""
@@ -25,9 +29,10 @@ class _Plugin(BasePlugin):
         r"^(.*?)\?+$" # Anything that ends with a question mark.
         )))
     def __init__(self, party, args):
-        self.party = party
+        self._party = party
         # Functions to apply to incoming messages subsequently.
         self._msg_parsers = (
+                self._handle_annoy,
                 self._handle_fetch,
                 self._handle_add,
                 self._handle_delete,
@@ -46,9 +51,38 @@ class _Plugin(BasePlugin):
                 )
         self._md.bind = self._engine
         self._md.create_all(self._engine)
+        # Seconds between subsequent calls to _annoy()
+        self._aintrv = 300
 
     def __unicode__(self):
         return u"factoids plugin"
+
+    def _annoy(self):
+        """Sends random factoid/definition pairs to the other party.
+
+        Selecting a random row from the table is currently done very
+        inefficiently. Portability amongst different DB engines is currently
+        considered more important than efficiency. The interval is the amount
+        of seconds to wait between subsequent sends, approximately (real
+        waiting time is between 80% and 120% of given interval).
+
+        """
+        res = sa.select(columns=[self._table.c.factoid_id]).execute()
+        rand_id = random.choice(res.fetchall())
+        res.close()
+        res = sa.select(
+                columns=[self._table.c.object, self._table.c.definition],
+                whereclause=(self._table.c.factoid_id==rand_id[0]),
+                from_obj=self._table
+                ).execute()
+        row = res.fetchone()
+        res.close()
+        self._party.send(u"%s is %s" % tuple(row))
+        # Create a random number close to the given interval.
+        intr = random.randint(int(self._aintrv * 0.8), int(self._aintrv * 1.2))
+        self._annoy_timer = _threading.Timer(intr, self._annoy)
+        self._annoy_timer.setDaemon(True)
+        self._annoy_timer.start()
 
     def _analyze_request_add(self, msg):
         """See if this message was meant to add a factoid.
@@ -135,15 +169,61 @@ class _Plugin(BasePlugin):
         else:
             return row[self._table.c.definition]
 
-    # These three methods must be overridden in subclasses!
-
-    def _handle_add(self, message):
-        """See if the sender wants to add a factoid."""
-        pass
+    def _handle_annoy(self, message):
+        """Interface for toggling annoying on/off."""
+        if not self.highlight:
+            return None
+        if message.lower() == "annoy":
+            self._annoy()
+            return u""
+        elif message.lower() == "stop annoying":
+            self._annoy_timer.cancel()
+            return u"k"
+        elif message.lower().startswith("annoy rate "):
+            try:
+                intrv = int(message[len("annoy rate "):].strip())
+            except ValueError:
+                return None
+            if intrv < 1:
+                return u"Interval too low."
+            else:
+                self._aintrv = intrv
+                self._annoy_timer.cancel()
+                self._annoy()
+                return u"Interval updated."
 
     def _handle_delete(self, message):
         """See if the sender wants to delete factoid."""
-        pass
+        if not self.highlight:
+            return None
+        obj = self._analyze_request_delete(message)
+        if obj is not None:
+            try:
+                self._factoid_delete(obj)
+                return u"k"
+            except NoSuchFactoidError:
+                return u"I don't even know what that means..."
+
+    def _handle_add(self, message):
+        """See if the sender wants to add a factoid."""
+        if not self.highlight:
+            return None
+        result = self._analyze_request_add(message)
+        if result is None:
+            return None
+        object_, definition = result
+        try:
+            self._factoid_add(object_, definition)
+            return u"k"
+        except FactoidExistsError:
+            existing = self._factoid_get(object_)
+            assert(existing is not None)
+            if definition == existing:
+                return u"I know"
+            else:
+                return u"but... but... %s is %s" % (object_, existing)
+
+    # This method should be overwritten.
 
     def _handle_fetch(self, message):
         """Determine if this message wants the definition of a factoid.
@@ -154,13 +234,17 @@ class _Plugin(BasePlugin):
         """
         pass
 
-    def process(self, message, reply, sender=None, highlight=None):
+    def process(self, message, reply, sender=None, highlight=True):
         """Determine if the message wants to know about or edit a factoid.
 
         Takes apropriate action in respective cases and returns a response. If
         a previous plugin already created any kind of answer this plugin does
         not do anything (it acts like a "last resort" plugin, only for cases
         nothing else matched).
+
+        The highlight keyword is kind of a hack: it is always either True or
+        False if this plugin is loaded as a ManyOnMany. If it's None that means
+        this plugin is a OneOnOne, thus we can act as if highlighted in a MUC.
 
         """
         if not reply is None:
@@ -181,31 +265,6 @@ class _Plugin(BasePlugin):
         return (message, reply)
 
 class OneOnOnePlugin(_Plugin):
-    def _handle_add(self, message):
-        result = self._analyze_request_add(message)
-        if result is None:
-            return None
-        object_, definition = result
-        try:
-            self._factoid_add(object_, definition)
-            return u"k"
-        except FactoidExistsError:
-            existing = self._factoid_get(object_)
-            assert(existing is not None)
-            if definition == existing:
-                return u"I know"
-            else:
-                return u"but... but... %s is %s" % (object_, existing)
-
-    def _handle_delete(self, message):
-        obj = self._analyze_request_delete(message)
-        if obj is not None:
-            try:
-                self._factoid_delete(obj)
-                return u"k"
-            except NoSuchFactoidError:
-                return u"I don't even know what that means..."
-
     def _handle_fetch(self, message):
         obj = self._analyze_request_fetch(message)
         if obj is None:
@@ -214,35 +273,6 @@ class OneOnOnePlugin(_Plugin):
         return definition is None and u"Idk.. can you tell me?" or definition
 
 class ManyOnManyPlugin(_Plugin):
-    def _handle_add(self, message):
-        if not self.highlight:
-            return None
-        result = self._analyze_request_add(message)
-        if result is None:
-            return None
-        object_, definition = result
-        try:
-            self._factoid_add(object_, definition)
-            return u"k"
-        except FactoidExistsError:
-            existing = self._factoid_get(object_)
-            assert(existing is not None)
-            if definition == existing:
-                return u"I know"
-            else:
-                return u"but... but... %s is %s" % (object_, existing)
-
-    def _handle_delete(self, message):
-        if not self.highlight:
-            return None
-        obj = self._analyze_request_delete(message)
-        if obj is not None:
-            try:
-                self._factoid_delete(obj)
-                return u"k"
-            except NoSuchFactoidError:
-                return u"I don't even know what that means..."
-
     def _handle_fetch(self, message):
         obj = self._analyze_request_fetch(message)
         if obj is None:

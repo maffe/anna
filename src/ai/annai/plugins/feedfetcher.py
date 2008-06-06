@@ -3,8 +3,6 @@
 @TODO: Currently only supports the atom 1.0 spefication.
 @TODO: Parse (x)html content; if a feed does not provide text/plain type
 content the output of this plugin is now unusable.
-@BUG: Plugin is not destroyed when unloaded. Probably due to the Timer object
-keeping a reference to it.
 
 """
 try:

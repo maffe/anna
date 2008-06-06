@@ -4,6 +4,8 @@ This is useful to prevent spamming in crowded rooms and loops with other
 bots.  To make full use of its protection, load this plugin as the last
 plugin in the list.
 
+See U{https://0brg.net/anna/wiki/Spamblock_plugin} for more information.
+
 """
 import time
 
