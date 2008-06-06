@@ -220,8 +220,17 @@ class Connection(px.jab.Client, _threading.Thread):
                 handler=self.handle_msg_unsup)
         #self.stream.set_iq_get_handler("query", "jabber:iq:version",
         #                            handler=self.handle_version)
+        # Accept all incoming presence subscription requests.
+        self.stream.set_presence_handler(typ="subscribe",
+                handler=lambda p: self.stream.send(p.make_accept_response()))
         self._rooms = px.jab.muc.MucRoomManager(self.stream)
         self._rooms.set_handlers(priority=40)
+        # RFC 3921 states: "The server MUST NOT send presence subscription
+        # requests or roster pushes to unavailable resources, nor to available
+        # resources that have not requested the roster." The bot must be able
+        # to receive subscription requests, so request roster.
+        self.request_roster()
+        self.stream.send(px.Presence(priority=20, show="chat"))
         c.stdout(u"NOTICE: xmpp: logged in as %s\n" % unicode(self.jid))
 
 class _MucEventHandler(px.jab.muc.MucRoomHandler):
