@@ -53,6 +53,8 @@ class _Plugin(BasePlugin):
         self._md.create_all(self._engine)
         # Seconds between subsequent calls to _annoy()
         self._aintrv = 300
+        # Lock must be acquired before manipulating the annoy timer.
+        self._annoy_lock = _threading.Lock()
 
     def __unicode__(self):
         return u"factoids plugin"
@@ -67,6 +69,9 @@ class _Plugin(BasePlugin):
         waiting time is between 80% and 120% of given interval).
 
         """
+        self._annoy_lock.acquire()
+        if hasattr(self, "_annoy_timer"):
+            self._annoy_timer.cancel()
         res = sa.select(columns=[self._table.c.factoid_id]).execute()
         rand_id = random.choice(res.fetchall())
         res.close()
@@ -77,12 +82,13 @@ class _Plugin(BasePlugin):
                 ).execute()
         row = res.fetchone()
         res.close()
-        self._party.send(u"%s is %s" % tuple(row))
+        self._party.send(u" is ".join(row))
         # Create a random number close to the given interval.
         intr = random.randint(int(self._aintrv * 0.8), int(self._aintrv * 1.2))
         self._annoy_timer = _threading.Timer(intr, self._annoy)
         self._annoy_timer.setDaemon(True)
         self._annoy_timer.start()
+        self._annoy_lock.release()
 
     def _analyze_request_add(self, msg):
         """See if this message was meant to add a factoid.
@@ -173,12 +179,19 @@ class _Plugin(BasePlugin):
         """Interface for toggling annoying on/off."""
         if not self.highlight:
             return None
-        if message.lower() == "annoy":
+        elif message.lower() == "annoy":
             self._annoy()
             return u""
         elif message.lower() == "stop annoying":
-            self._annoy_timer.cancel()
-            return u"k"
+            try:
+                self._annoy_lock.acquire()
+                self._annoy_timer.cancel()
+                del self._annoy_timer
+                self._annoy_lock.release()
+                return u"k"
+            except AttributeError:
+                self._annoy_lock.release()
+                return u"I wasn't doing anything.."
         elif message.lower().startswith("annoy rate "):
             try:
                 intrv = int(message[len("annoy rate "):].strip())
@@ -186,11 +199,9 @@ class _Plugin(BasePlugin):
                 return None
             if intrv < 1:
                 return u"Interval too low."
-            else:
-                self._aintrv = intrv
-                self._annoy_timer.cancel()
-                self._annoy()
-                return u"Interval updated."
+            self._aintrv = intrv
+            self._annoy()
+            return u"Interval updated."
 
     def _handle_delete(self, message):
         """See if the sender wants to delete factoid."""

@@ -120,6 +120,11 @@ class Connection(px.jab.Client, _threading.Thread):
 
     def handle_msg_chat(self, message):
         text = message.get_body()
+        if text is None:
+            # If there is no body do nothing at all (don't even call other
+            # handlers). These messages are usually "... is typing"
+            # notifications.
+            return True
         sender = px.JID(message.get_from())
         if __debug__:
             c.stderr(u"DEBUG: xmpp: pm: '%s' from '%s'\n" % (text, sender))
