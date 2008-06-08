@@ -16,14 +16,6 @@ import frontends
 #: The first time an AI instance is created, import all plugins.
 _plugins_import_lock = _threading.Lock()
 
-def _get_plugin(ai, plug_name):
-    """Get a plugin for this AI (automatically deteremine plugin type)."""
-    if isinstance(ai, OneOnOne):
-        return pluginhandler.get_oneonone(plug_name)
-    elif isinstance(ai, ManyOnMany):
-        return pluginhandler.get_manyonmany(plug_name)
-    else:
-        raise TypeError, "First argument must be an AI instance."
 
 def _del_numeric_plugin(ai, num):
     """Delete a plugin with this number from this ai instance."""
@@ -32,6 +24,15 @@ def _del_numeric_plugin(ai, num):
         return u"k."
     except IndexError:
         return u"No plugin with that number."
+
+def _get_plugin(ai, plug_name):
+    """Get a plugin for this AI (automatically deteremine plugin type)."""
+    if isinstance(ai, OneOnOne):
+        return pluginhandler.get_oneonone(plug_name)
+    elif isinstance(ai, ManyOnMany):
+        return pluginhandler.get_manyonmany(plug_name)
+    else:
+        raise TypeError, "First argument must be an AI instance."
 
 def _mod_plugins(ai, party, message):
     """Checks if the message wants to modify plugin settings.
@@ -151,12 +152,12 @@ class _AnnaiBase(object):
             plugin.unloaded()
 
 class OneOnOne(_AnnaiBase, ai.BaseOneOnOne):
-    def __init__(self, identity):
+    def __init__(self, party):
         _AnnaiBase.__init__(self)
         if __debug__:
-            if not isinstance(identity, frontends.BaseIndividual):
+            if not isinstance(party, frontends.BaseIndividual):
                 raise TypeError, "Identity must be an Individual."
-        self.ident = identity
+        self.party = party
 
     def _general_reply(self, message):
         """Tries to come up with a reply to this message without plugins.
@@ -168,47 +169,40 @@ class OneOnOne(_AnnaiBase, ai.BaseOneOnOne):
         if __debug__:
             if not isinstance(message, unicode):
                 raise TypeError, "Message must be a unicode object."
-        identity = self.ident
-        reply = None
         message = message.strip()
 
         if message.startswith("load module "):
             ai_str = message[len("load module "):]
             try:
-                self.ident.set_AI(aihandler.get_oneonone(ai_str)(self.ident))
+                self.party.set_AI(aihandler.get_oneonone(ai_str)(self.party))
             except aihandler.NoSuchAIError, e:
                 return unicode(e)
             else:
                 self._flush_plugins()
                 return u"Success!"
 
-        return _mod_plugins(self, self.ident, message)
+        return _mod_plugins(self, self.party, message)
 
     def handle(self, message):
         """Call all plugins and send back an answer if appropriate."""
         if __debug__:
             if not isinstance(message, unicode):
                 raise TypeError, "Message must be a unicode object."
-        # Replace some stuff in the reply:
-        replacedict = dict(
-                user=self.ident.get_name(),
-                nick=self.conf.misc["bot_nickname"]
-                )
         reply = self._general_reply(message)
         for plugin in self.plugins[:]:
             try:
                 message, reply = plugin.process(message, reply)
             except plugins.PluginError, e:
-                self.ident.send(unicode(e))
+                self.party.send(unicode(e))
                 self.plugins.remove(plugin)
                 plugin.unloaded()
 
         if reply is not None:
-            self.ident.send(custom_replace(reply, **replacedict))
+            self.party.send(reply)
 
 class ManyOnMany(_AnnaiBase, ai.BaseManyOnMany):
-    _rex_nickchange = re.compile(u"change (?:y(?:our|a) )?(?:nick(?:name)?|name) to (.+)$")
-
+    _rex_nickchange = re.compile(
+            u"change (?:y(?:our|a) )?(?:nick(?:name)?|name) to (.+)$")
     def __init__(self, room):
         _AnnaiBase.__init__(self)
         if __debug__:
@@ -234,10 +228,10 @@ class ManyOnMany(_AnnaiBase, ai.BaseManyOnMany):
         if message.lower().startswith(mynick):
             highlight = message[len(mynick):]
             for elem in self.conf.misc["highlight"]:
-                # Check if we have nickanme + one hlchar.
+                # Check if we have nickname + one hlchar.
                 if highlight.startswith(elem):
                     msg = highlight[len(elem):].strip()
-                    return self.highlight(msg, sender)
+                    return self._highlight(msg, sender)
 
         for plugin in self.plugins[:]:
             try:
@@ -248,11 +242,9 @@ class ManyOnMany(_AnnaiBase, ai.BaseManyOnMany):
                 plugin.unloaded()
 
         if reply is not None:
-            reply = custom_replace(reply, user=sender.nick, nick=mynick)
             self.room.send(reply)
-        return
 
-    def highlight(self, message, sender):
+    def _highlight(self, message, sender):
         """This is for when highlighted in a groupchat.
 
         @param message: The received message (without highlight-prefix).
@@ -267,11 +259,6 @@ class ManyOnMany(_AnnaiBase, ai.BaseManyOnMany):
             if not isinstance(sender, frontends.BaseGroupMember):
                 raise TypeError, "Sender must be a GroupMember."
         reply = None
-        # Replace dictionary.
-        replace = dict(
-                user=sender.nick,
-                nick=self.room.get_mynick(),
-                )
 
         res = self._rex_nickchange.match(message)
         if res is not None:
@@ -310,20 +297,3 @@ class ManyOnMany(_AnnaiBase, ai.BaseManyOnMany):
                 hlchar = random.choice(self.conf.misc["highlight"])
                 reply = u"%s%s %s" % (sender.nick, hlchar, reply)
             self.room.send(reply)
-
-def custom_replace(message, **replace):
-    """This function replaces the message with elements from the dict.
-
-    If an error occurs (eg.: due to wrong formatting of the message) it is
-    catched and an appropriate message is returned.
-
-    """
-    try:
-        # Keep original %'s in message intact.
-        return message.replace("%", "%%") % replace
-    except KeyError, e:
-        return ''.join(('I was told to say "%s" now but I don\'t know what to',
-                        ' replace %%(%s)s with.')) % (message, e[0])
-    except StandardError, e:
-        return ''.join(('I was taught to say "%s" now, but there seems to be'
-                        ' something wrong with that..')) % message
