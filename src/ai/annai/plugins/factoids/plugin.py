@@ -275,6 +275,12 @@ class _Plugin(BasePlugin):
         del self.highlight, self.sender
         return (message, reply)
 
+    def unloaded(self):
+        self._annoy_lock.acquire()
+        if hasattr(self, "_annoy_timer"):
+            self._annoy_timer.cancel()
+        self._annoy_lock.release()
+
 class OneOnOnePlugin(_Plugin):
     def _handle_fetch(self, message):
         obj = self._analyze_request_fetch(message)
