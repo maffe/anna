@@ -19,7 +19,7 @@ HOOKS = (
 
 class _Plugin(BasePlugin):
     def __init__(self, identity, args):
-        self._frmt = "%c"
+        self._frmt = "%c %Z"
 
     def __unicode__(self):
         return u"time plugin"
@@ -28,7 +28,8 @@ class _Plugin(BasePlugin):
         if message.lower().rstrip(" ?") in HOOKS:
             return (message, unicode(time.strftime(self._frmt)))
         elif message.startswith("timestr is "):
-            self._frmt = message[11:]
+            # Will probably be fixed in py3k, no need for fallback now.
+            self._frmt = message[11:].encode("us-ascii", "replace")
             return (message, u"k")
         else: 
             return (message, reply)
