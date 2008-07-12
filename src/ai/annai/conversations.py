@@ -50,7 +50,7 @@ def _mod_plugins(ai, party, message):
 
     """
     if __debug__:
-        if not (isinstance(ai, OneOnOne) or isinstance(ai, ManyOnMany)):
+        if not isinstance(ai, _AnnaiBase):
             raise TypeError, "First argument must be an AI instance."
         if not (isinstance(party, frontends.BaseIndividual)
                 or isinstance(party, frontends.BaseGroup)):
@@ -68,8 +68,8 @@ def _mod_plugins(ai, party, message):
 
     # Load multiple plugins at once.
     elif message.startswith("load plugins "):
-        for argv_str in re.split(", ?", message[len("load plugins "):]):
-            argv = argv_str.split()
+        for argv_str in message[len("load plugins "):].split(","):
+            argv = argv_str.strip().split()
             try:
                 plug_cls = _get_plugin(ai, argv[0])
                 ai.plugins.append(plug_cls(party, argv[1:]))
@@ -88,7 +88,6 @@ def _mod_plugins(ai, party, message):
                 plug_cls = _get_plugin(ai, plug_name)
             except pluginhandler.NoSuchPluginError, e:
                 return unicode(e)
-        valid_req = False
         # Copy of the old plugin list without instances of given class.
         filtered = []
         for plugin in ai.plugins:
@@ -138,12 +137,15 @@ class _AnnaiBase(object):
     instantiated so make sure to call L{__init__} from child-classes too!
 
     """
-    def __init__(self):
+    def __init__(self, party):
         global _plugins_import_lock
         if _plugins_import_lock.acquire(False):
             pluginhandler.start()
         self.conf = config.get_conf_copy()
         self.plugins = []
+        # Hack to automatically load the default plugins.
+        _mod_plugins(self, party, "load plugins " +
+                self.conf.annai_plugins["default"])
 
     def _flush_plugins(self):
         """Cleans up all loaded plugins."""
@@ -153,7 +155,7 @@ class _AnnaiBase(object):
 
 class OneOnOne(_AnnaiBase, ai.BaseOneOnOne):
     def __init__(self, party):
-        _AnnaiBase.__init__(self)
+        super(OneOnOne, self).__init__(party)
         if __debug__:
             if not isinstance(party, frontends.BaseIndividual):
                 raise TypeError, "Identity must be an Individual."
@@ -204,7 +206,7 @@ class ManyOnMany(_AnnaiBase, ai.BaseManyOnMany):
     _rex_nickchange = re.compile(
             u"(?:change (?:y(?:our|a) )?(?:nick(?:name)?|name) to|/nick) (.+)$")
     def __init__(self, room):
-        _AnnaiBase.__init__(self)
+        super(ManyOnMany, self).__init__(room)
         if __debug__:
             if not isinstance(room, frontends.BaseGroup):
                 raise TypeError, "Identity must be an Individual."

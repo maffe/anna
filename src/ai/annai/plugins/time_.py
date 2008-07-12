@@ -1,7 +1,7 @@
 """The time plugin tells you what time it is.
 
 Use "timestr is x" to change the output formatting. The default timestr
-is '%c'. More information can be found on this plugin's wiki page:
+is '%c %Z'. More information can be found on this plugin's wiki page:
 U{https://0brg.net/anna/wiki/Time_plugin}.
 
 """

@@ -22,6 +22,7 @@ import frontends
 USAGE = """
     $ anna [options] FRONTEND_NAME[, ...]
     $ anna --list
+    $ anna --help
 """
 
 # Lock for ensuring the _import_frontends() method is only run once. Never

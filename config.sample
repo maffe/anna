@@ -37,6 +37,13 @@ name_spamblock = spamblock
 name_test = test
 name_time_ = time
 
+# List of default plugins to load (in that order) at the start of a
+# conversation. Be careful of which plugins you list here: they are
+# loaded during the initialization of an AI module so they must be built
+# accordingly. The default list is always alright. If unsure: try and
+# see.
+default = k, irrepressible.info, time, reactiosn, factoids, spamblock
+
 [misc]
 
 default_ai = echo

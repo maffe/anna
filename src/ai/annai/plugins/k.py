@@ -1,7 +1,6 @@
 """This plugin sends "k" after two other people did."""
 
 from ai.annai.plugins import BasePlugin
-import frontends
 
 class _Plugin(BasePlugin):
     def __init__(self, identity, args):
