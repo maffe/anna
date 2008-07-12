@@ -11,6 +11,7 @@ import os
 import sys
 import ConfigParser
 
+CONF_DIR = os.path.expanduser("~/.anna")
 ENC = "utf8"
 
 class AnnaConfig(object):
@@ -42,13 +43,12 @@ class AnnaConfigParser(object):
         """Take all needed actions to complete the configuration."""
         if not conf_loc:
             conf_loc = self.get_conf_loc()
-        self.parse_conf(conf_loc)
+        self.vals = self.parse_conf(conf_loc)
 
     def create_first_conf(self, conf_loc):
         """Create a config file at the specified location."""
         # find out where the sample configuration file is (TODO: hack hack)
-        script_dir = os.path.abspath(os.path.join(os.path.pardir))
-        conf_sample = os.path.join(script_dir, 'config.sample')
+        conf_sample = os.path.join(os.path.pardir, 'sample.conf')
 
         # copy the sample configuration to the config file
         f_sample = open(conf_sample)
@@ -64,16 +64,22 @@ class AnnaConfigParser(object):
         ~/.anna/config.
 
         """
-        conf_dir = os.path.expanduser("~/.anna")
-        if not os.path.isdir(conf_dir):
-            print >> sys.stderr, "Creating personal directory: %s" % conf_dir
-            os.mkdir(conf_dir, 0700)
-        conf_loc = os.path.join(conf_dir, "config")
+        if not os.path.isdir(CONF_DIR):
+            print >> sys.stderr, "Creating personal directory: %s" % CONF_DIR
+            os.mkdir(CONF_DIR, 0700)
+        conf_loc = os.path.join(CONF_DIR, "anna.conf")
         if not os.path.isfile(conf_loc):
             self.create_first_conf(conf_loc)
             sys.exit("Edit %s and run this script again." % conf_loc)
         else:
             return conf_loc
+
+    def get_fullpath(self, filename):
+        """Get the absolute path of a config file with this name."""
+        filename = os.path.expanduser(filename)
+        if not os.path.isabs(filename):
+            filename = os.path.join(CONF_DIR, filename)
+        return filename
 
     def parse_conf(self, conf_loc):
         """Parse the configuration file and set the appropriate values.
@@ -99,10 +105,12 @@ class AnnaConfigParser(object):
                     vals["misc"]["highlight"] = list(value)
                 elif section == "annai_plugins" and name.startswith("name_"):
                     vals["annai_plugins"]["names"][name[len("name_"):]] = value
+                elif name == "include":
+                    vals.update(self.parse_conf(self.get_fullpath(value)))
                 # Normal values.
                 else:
                     vals[section][name] = value
-        self.vals = vals
+        return vals
 
 def init(conf_loc=None):
     """Load and cache the configuration."""
