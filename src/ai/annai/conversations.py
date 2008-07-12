@@ -227,13 +227,16 @@ class ManyOnMany(_AnnaiBase, ai.BaseManyOnMany):
         reply = None
 
         mynick = self.room.get_mynick().lower()
-        if message.lower().startswith(mynick):
-            highlight = message[len(mynick):]
-            for elem in self.conf.misc["highlight"]:
-                # Check if we have nickname + one hlchar.
-                if highlight.startswith(elem):
-                    msg = highlight[len(elem):].strip()
-                    return self._highlight(msg, sender)
+        # React to "anna: x" as well as "mynick: x".
+        for hook in (mynick, "anna"):
+            if message.lower().startswith(hook):
+                highlight = message[len(hook):]
+                # Match against every known highlight character.
+                for elem in self.conf.misc["highlight"]:
+                    # Check if we have nickname + one hlchar.
+                    if highlight.startswith(elem):
+                        msg = highlight[len(elem):].strip()
+                        return self._highlight(msg, sender)
 
         for plugin in self.plugins[:]:
             try:
