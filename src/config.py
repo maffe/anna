@@ -99,14 +99,20 @@ class AnnaConfigParser(object):
                 # Hard-coded hacks.
                 if section == "xmpp" and name == "jid":
                     user, node = value.split('@', 1)
-                    vals["xmpp"][u"user"] = user
-                    vals["xmpp"][u"server"] = node
+                    vals["xmpp"]["user"] = user
+                    vals["xmpp"]["server"] = node
                 elif section == "misc" and name == "highlight":
                     vals["misc"]["highlight"] = list(value)
                 elif section == "annai_plugins" and name.startswith("name_"):
                     vals["annai_plugins"]["names"][name[len("name_"):]] = value
                 elif name == "include":
-                    vals.update(self.parse_conf(self.get_fullpath(value)))
+                    inc_conf = self.parse_conf(self.get_fullpath(value))
+                    for inc_section, inc_value in inc_conf.iteritems():
+                        if inc_section in vals:
+                            vals[inc_section].update(inc_conf[inc_section])
+                        else:
+                            # New section in included config file.
+                            vals[inc_section] = inc_conf[inc_section]
                 # Normal values.
                 else:
                     vals[section][name] = value

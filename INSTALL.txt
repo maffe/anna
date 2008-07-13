@@ -36,7 +36,7 @@ should do this for you automatically. Try running this first:
   $ ./anna console
 
 If an error occured, create a directory called ".anna" in your home
-directory and copy the config.sample file to it. Rename it to "config"
+directory and copy the sample.conf file to it. Rename it to "anna.conf"
 and edit the values as appropriate.
 
 

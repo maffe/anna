@@ -1,6 +1,10 @@
 """Connect to the xmpp network and define connection handlers.
 
 @TODO: Display better error message when connection/auth fails.
+@var _RECONNECT_INTERVAL: Number of seconds to wait between reconnection
+attempts when disconnected.
+@var _config: Copy of the program's configuration settings from the L{config}
+module.
 
 """
 from socket import error as socket_error
@@ -22,8 +26,6 @@ import config
 from frontends.xmpp import parties
 from frontends import BaseConnection
 
-#: Number of seconds to wait between reconnection attempts when disconnected.
-_RECONNECT_INTERVAL = 5
 #: Standard reply to all incoming messages of unsupported type.
 UNSUPPORTED_TYPE = u"Sorry, this type of messages is not supported."""
 
@@ -38,9 +40,8 @@ class Connection(px.jab.Client, _threading.Thread):
     """
     def __init__(self, **kwargs):
         _threading.Thread.__init__(self, name="xmpp frontend")
-        self.conf = config.get_conf_copy()
         if "jid" not in kwargs:
-            jab_conf = self.conf.xmpp
+            jab_conf = _conf.xmpp
             args = (jab_conf["user"], jab_conf["server"], jab_conf["resource"])
             kwargs["jid"] = px.JID(*args)
         if "password" not in kwargs:
@@ -70,18 +71,51 @@ class Connection(px.jab.Client, _threading.Thread):
         """Overrides C{pyxmpp.jabber.Client.connect} for the sake of API."""
         self.start()
 
+    def connect_xmpp(self):
+        """Agressively try to connect to the XMPP server.
+
+        Only stops when the connection has been established.
+
+        """
+        self.lock.acquire()
+        try:
+            while self.get_stream() is None and not self.halt:
+                try:
+                    px.jab.Client.connect(self)
+                except socket_error, e:
+                    c.stderr(u"DEBUG: xmpp: Connection failed: %s\n" % e)
+                    time.sleep(_RECONNECT_INTERVAL)
+                time.sleep(1)
+        finally:
+            self.lock.release()
+        c.stderr(u"DEBUG: xmpp: Connected.\n")
+
     def disconnect(self):
         """Overrides C{pyxmpp.jabber.Client.disconnect} for the sake of API."""
         self.halt = True
 
+    def disconnected(self):
+        c.stdout(u"INFO: xmpp: Disconnected, trying to reconnect...\n")
+        self.lock.acquire()
+        try:
+            # Clean up resources (delete all room instances etc).
+            self.finish()
+            self.connect_xmpp()
+        finally:
+            self.lock.release()
+
     def finish(self):
         """Release all allocated resources and close all open connections.""" 
+        for room in self._rooms.rooms:
+            self.leave_room(room)
         if self.stream:
             self.lock.acquire()
-            px.jab.Client.disconnect(self)
-            self.stream.close()
-            self.stream = None
-            self.lock.release()
+            try:
+                px.jab.Client.disconnect(self)
+                self.stream.close()
+                self.stream = None
+            finally:
+                self.lock.release()
             time.sleep(1)
         if __debug__:
             c.stderr(u"DEBUG: xmpp: finished.\n")
@@ -93,7 +127,7 @@ class Connection(px.jab.Client, _threading.Thread):
         @type jid: C{pyxmpp.jid.JID}
 
         """
-        passw = self.conf.xmpp["password"]
+        passw = _conf.xmpp["password"]
         if not passw:
             try:
                 msg = u"Please enter the password for %s: " % unicode(jid)
@@ -119,7 +153,7 @@ class Connection(px.jab.Client, _threading.Thread):
             # This is the first message from this peer.
             peer = parties.Individual(sender, self.stream)
             self._parties[sender] = peer
-            def_AI = self.conf.misc["default_ai"]
+            def_AI = _conf.misc["default_ai"]
             peer.set_AI(aihandler.get_oneonone(def_AI)(peer))
         peer.get_AI().handle(text)
         return True
@@ -147,7 +181,7 @@ class Connection(px.jab.Client, _threading.Thread):
 
         """
         ns_map = {"mu": "http://jabber.org/protocol/muc#user"}
-        nick = self.conf.misc["bot_nickname"]
+        nick = _conf.misc["bot_nickname"]
         if not message.xpath_eval("/ns:message/mu:x/mu:invite", ns_map):
             # This stanza is not an invitation to a MUC.
             return False
@@ -165,7 +199,7 @@ class Connection(px.jab.Client, _threading.Thread):
         handler = _MucEventHandler(self, room)
         self._rooms.join(room_jid, nick, handler, history_maxstanzas=0)
         room.mucstate = self._rooms.rooms[unicode(room_jid)]
-        def_AI = self.conf.misc["default_ai"]
+        def_AI = _conf.misc["default_ai"]
         room.set_AI(aihandler.get_manyonmany(def_AI)(room))
         room.send(u"Hi, I am a chatbot. Thanks for inviting me here.")
         return True
@@ -184,32 +218,37 @@ class Connection(px.jab.Client, _threading.Thread):
         self._rooms.forget(room)
 
     def loop(self, timeout=1):
-        """Simple looping that stops when self.halt is False."""
+        """Loop that handles everything while the bot is connected.
+
+        This loop does not connect or disconnect: that is left to the
+        disconnect handler and the function calling this loop.
+
+        """
         while not self.halt:
             self.lock.acquire()
             try:
                 stream = self.get_stream()
                 if stream is None:
-                    # Not connected.
-                    c.stderr("DEBUG: xmpp: Connecting...\n")
-                    px.jab.Client.connect(self)
+                    # Wait till the connection is re-established.
+                    c.stderr(u"DEBUG: xmpp: Not connected, waiting...\n")
+                    time.sleep(_RECONNECT_INTERVAL)
                     continue
                 try:
                     stream.loop_iter(timeout=timeout)
+                    self.idle()
                 except px.streamtls.TLSError, e:
                     c.stderr_block(u"ERROR: %s\n" % unicode(e))
                     if c.stdin("Continue? [y/N] ").lower() not in ("y", "yes"):
                         break
-                except socket_error, e:
+                except (socket_error, px.FatalStreamError, px.ClientError), e:
                     c.stderr(u"DEBUG: xmpp: Connection error: %s.\n" % e)
-                    c.stdout(u"WARNING: xmpp: Error, trying to reconnect.\n")
-                    px.jab.Client.disconnect(self)
-                else:
-                    self.idle()
+                    c.stdout(u"DEBUG: xmpp: Reconnecting...\n")
+                    self.finish()
             finally:
                 self.lock.release()
 
     def run(self):
+        self.connect_xmpp()
         self.loop()
         self.finish()
 
@@ -310,3 +349,11 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
         if __debug__:
             c.stderr(u"DEBUG: %s left %s.\n" % (user.nick, self.room))
     user_left.__doc__ = px.jab.muc.MucRoomHandler.user_left.__doc__
+
+def init():
+    """Make this module ready for use."""
+    global _conf, _RECONNECT_INTERVAL
+    _conf = config.get_conf_copy()
+    _RECONNECT_INTERVAL = _conf.xmpp["reconnect_interval"]
+
+init()
