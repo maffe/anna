@@ -10,12 +10,11 @@ except ImportError:
     import dummy_threading as _threading
 import time
 
-import pyxmpp.all as px
-import pyxmpp.jabber.all as pxj
-import pyxmpp.jabber.muc as pxjm
-px.jab = pxj
-px.jab.muc = pxjm
-del pxj, pxjm
+import pyxmpp.all
+import pyxmpp.jabber.all
+import pyxmpp.jabber.muc
+px = pyxmpp
+px.jab = pyxmpp.jabber
 
 import aihandler
 import communication as c
@@ -25,6 +24,8 @@ from frontends import BaseConnection
 
 #: Number of seconds to wait between reconnection attempts when disconnected.
 _RECONNECT_INTERVAL = 5
+#: Standard reply to all incoming messages of unsupported type.
+UNSUPPORTED_TYPE = u"Sorry, this type of messages is not supported."""
 
 class Connection(px.jab.Client, _threading.Thread):
     """Threaded connection to an XMPP server.
@@ -35,8 +36,6 @@ class Connection(px.jab.Client, _threading.Thread):
     @type _parties: C{dict}
 
     """
-    #: Standard reply to all incoming messages of unsupported type.
-    UNSUPPORTED_TYPE = u"Sorry, this type of messages is not supported."""
     def __init__(self, **kwargs):
         _threading.Thread.__init__(self, name="xmpp frontend")
         self.conf = config.get_conf_copy()
@@ -75,31 +74,17 @@ class Connection(px.jab.Client, _threading.Thread):
         """Overrides C{pyxmpp.jabber.Client.disconnect} for the sake of API."""
         self.halt = True
 
-    def disconnected(self):
-        """Try to reconnect to the xmpp network when disconnected."""
-        for room in self._rooms.rooms.values():
-            self.leave_room(room)
-        while not self.halt:
-            c.stderr(u"DEBUG: xmpp: disconnected, trying to reconnect\n")
-            try:
-                px.jab.Client.connect(self)
-                # If the reconnection was succesful, stop retrying.
-                break
-            except socket_error, e:
-                c.stderr(u"DEBUG: xmpp: error: %s, retrying\n" % e)
-                time.sleep(_RECONNECT_INTERVAL)
-
-    def exit(self):
-        """Disconnect and exit.""" 
+    def finish(self):
+        """Release all allocated resources and close all open connections.""" 
         if self.stream:
             self.lock.acquire()
-            self.stream.disconnect()
+            px.jab.Client.disconnect(self)
             self.stream.close()
             self.stream = None
             self.lock.release()
             time.sleep(1)
         if __debug__:
-            c.stderr(u"DEBUG: xmpp.Connection.exit called\n")
+            c.stderr(u"DEBUG: xmpp: finished.\n")
 
     def get_passwd(self, jid):
         """Get the password from the config or user.
@@ -145,7 +130,7 @@ class Connection(px.jab.Client, _threading.Thread):
         @TODO: handle error messages.
 
         """
-        self._send(to_jid=message.get_from(), body=self.UNSUPPORTED_TYPE,
+        self._send(to_jid=message.get_from(), body=UNSUPPORTED_TYPE,
                 stanza_type=message.get_type())
         if __debug__:
             msg = u"DEBUG: xmpp: unhandled: %s\n"
@@ -200,19 +185,33 @@ class Connection(px.jab.Client, _threading.Thread):
 
     def loop(self, timeout=1):
         """Simple looping that stops when self.halt is False."""
-        try:
-            while not self.halt:
-                self.stream.loop_iter(timeout=timeout)
-                self.idle()
-        except socket_error, e:
-            c.stderr(u"DEBUG: Connection error: %s.\n" % e)
-            c.stdout(u"WARNING: Connection error, trying to reconnect.\n")
-            self.disconnected()
+        while not self.halt:
+            self.lock.acquire()
+            try:
+                stream = self.get_stream()
+                if stream is None:
+                    # Not connected.
+                    c.stderr("DEBUG: xmpp: Connecting...\n")
+                    px.jab.Client.connect(self)
+                    continue
+                try:
+                    stream.loop_iter(timeout=timeout)
+                except px.streamtls.TLSError, e:
+                    c.stderr_block(u"ERROR: %s\n" % unicode(e))
+                    if c.stdin("Continue? [y/N] ").lower() not in ("y", "yes"):
+                        break
+                except socket_error, e:
+                    c.stderr(u"DEBUG: xmpp: Connection error: %s.\n" % e)
+                    c.stdout(u"WARNING: xmpp: Error, trying to reconnect.\n")
+                    px.jab.Client.disconnect(self)
+                else:
+                    self.idle()
+            finally:
+                self.lock.release()
 
     def run(self):
-        px.jab.Client.connect(self)
         self.loop()
-        self.exit()
+        self.finish()
 
     def session_started(self):
         """Called by pyxmpp when the session has succesfully started."""
