@@ -1,10 +1,9 @@
 """Get the data from the configuration file located at ~/.anna/config.
 
-See config.example for more details.  If the file doesn't exist, create
-it and sys.exit().  When this module is imported the configuration is
-loaded and stored once so other modules can use the configuration
-without having to open the file every time.  The get_conf_copy function
-can be used to this end.
+See sample.conf for more details.  If the file doesn't exist, create it and
+C{sys.exit()}.  When this module is imported the configuration is loaded and
+stored once so other modules can use the configuration without having to open
+the file every time.  The L{get_conf_copy} function can be used to this end.
 
 """
 import os
@@ -17,7 +16,7 @@ ENC = "utf8"
 class AnnaConfig(object):
     """Used to communicate configuration values with other modules.
 
-    get_conf_copy() updates this instance's __dict__ attribute and
+    L{get_conf_copy} updates this instance's __dict__ attribute and
     creates a new key for every configuartion section. For example:
 
     >>> c = config.get_conf_copy()
@@ -94,6 +93,8 @@ class AnnaConfigParser(object):
             vals[section] = {}
             if section == "annai_plugins":
                 vals["annai_plugins"]["names"] = {}
+            elif section == "xmpp":
+                vals["xmpp"]["tls_settings"] = {}
             for (name, value) in p.items(section):
                 name, value = name.decode(ENC), value.decode(ENC)
                 # Hard-coded hacks.
@@ -101,9 +102,19 @@ class AnnaConfigParser(object):
                     user, node = value.split('@', 1)
                     vals["xmpp"]["user"] = user
                     vals["xmpp"]["server"] = node
+                elif section == "xmpp" and name == "reconnect_interval":
+                    vals[section][name] = p.getint(section, name)
+                elif section == "xmpp_tls":
+                    # Only because python 2.x doesn't like unicode keywords.
+                    name = name.encode(ENC)
+                    if name in ("verify_peer", "require"):
+                        vals[section][name] = p.getboolean(section, name)
+                    else:
+                        vals[section][name] = value
                 elif section == "misc" and name == "highlight":
-                    vals["misc"]["highlight"] = list(value)
+                    vals[section][name] = list(value)
                 elif section == "annai_plugins" and name.startswith("name_"):
+                    # Make a dict of the human-friendly names of all plugins.
                     vals["annai_plugins"]["names"][name[len("name_"):]] = value
                 elif name == "include":
                     inc_conf = self.parse_conf(self.get_fullpath(value))

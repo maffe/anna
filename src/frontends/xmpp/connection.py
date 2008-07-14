@@ -46,7 +46,8 @@ class Connection(px.jab.Client, _threading.Thread):
             kwargs["jid"] = px.JID(*args)
         if "password" not in kwargs:
             kwargs["password"] = self.get_passwd(kwargs["jid"])
-        px.jab.Client.__init__(self, **kwargs)
+        tls_settings = px.TLSSettings(**_conf.xmpp_tls)
+        px.jab.Client.__init__(self, tls_settings=tls_settings, **kwargs)
 
         # List of party instances known to the bot. Maps JIDs to Identities.
         self._parties = {}
@@ -106,9 +107,9 @@ class Connection(px.jab.Client, _threading.Thread):
 
     def finish(self):
         """Release all allocated resources and close all open connections.""" 
-        for room in self._rooms.rooms:
-            self.leave_room(room)
         if self.stream:
+            for room in self._rooms.rooms:
+                self.leave_room(room)
             self.lock.acquire()
             try:
                 px.jab.Client.disconnect(self)
@@ -237,13 +238,12 @@ class Connection(px.jab.Client, _threading.Thread):
                     stream.loop_iter(timeout=timeout)
                     self.idle()
                 except px.streamtls.TLSError, e:
-                    c.stderr_block(u"ERROR: %s\n" % unicode(e))
+                    c.stderr_block(u"ERROR: xmpp: %s\n" % unicode(e))
                     if c.stdin("Continue? [y/N] ").lower() not in ("y", "yes"):
                         break
                 except (socket_error, px.FatalStreamError, px.ClientError), e:
                     c.stderr(u"DEBUG: xmpp: Connection error: %s.\n" % e)
                     c.stdout(u"DEBUG: xmpp: Reconnecting...\n")
-                    self.finish()
             finally:
                 self.lock.release()
 
