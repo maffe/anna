@@ -112,7 +112,7 @@ def main():
     (options, args) = p.parse_args()
     if len(args) == 0:
         p.error("You need to specify at least one frontend. See --list.")
-    config.init(options.file)
+    config.load_conf(options.file)
     c.start()
     _import_frontends(args)
     bot = Anna(args)

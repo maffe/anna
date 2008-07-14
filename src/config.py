@@ -118,12 +118,27 @@ class AnnaConfigParser(object):
                     vals[section][name] = value
         return vals
 
-def init(conf_loc=None):
-    """Load and cache the configuration."""
+def load_conf(conf_loc=None):
+    """Load the configuartion at given location and cache.
+
+    Only run this function once, and never after already having run
+    L{get_conf_copy}.
+
+    """
     global c
+    assert("c" not in globals())
     c = AnnaConfigParser(conf_loc)
 
 def get_conf_copy():
-    """Get a cached copy of the configuration."""
+    """Get a cached copy of the configuration.
+
+    If this function is run before L{load_conf} is ever run that function is
+    called to parse the configuration at the default location.
+
+    """
+    global c
+    if 'c' not in globals():
+        # First time running this function: read and parse config.
+        load_conf()
     n = AnnaConfig(c.vals)
     return n

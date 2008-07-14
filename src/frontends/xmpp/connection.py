@@ -3,7 +3,7 @@
 @TODO: Display better error message when connection/auth fails.
 @var _RECONNECT_INTERVAL: Number of seconds to wait between reconnection
 attempts when disconnected.
-@var _config: Copy of the program's configuration settings from the L{config}
+@var _conf: Copy of the program's configuration settings from the L{config}
 module.
 
 """
