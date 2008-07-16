@@ -5,8 +5,8 @@ and stdout but lacks certain functionality for obvious reasons (such as
 group-chat support).
 
 """
+import getpass
 import os
-import pwd #password database, for system uid <--> username lookup
 try:
     import threading as _threading
 except ImportError:
@@ -31,8 +31,7 @@ frontends produce lots of output.
 class Connection(BaseConnection, _threading.Thread):
     def __init__(self):
         _threading.Thread.__init__(self, name="console frontend")
-        username = pwd.getpwuid(os.getuid())[0]
-        self.idnty = Individual(username)
+        self.idnty = Individual(getpass.getuser())
         self.def_AI = config.get_conf_copy().misc["default_ai"]
 
     def connect(self):
