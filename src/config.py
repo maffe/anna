@@ -10,6 +10,8 @@ import os
 import sys
 import ConfigParser
 
+import communication as c
+
 CONF_DIR = os.path.expanduser("~/.anna")
 ENC = "utf8"
 
@@ -64,7 +66,7 @@ class AnnaConfigParser(object):
 
         """
         if not os.path.isdir(CONF_DIR):
-            print >> sys.stderr, "Creating personal directory: %s" % CONF_DIR
+            c.stdout(u"INFO: Creating personal directory: %s\n" % CONF_DIR)
             os.mkdir(CONF_DIR, 0700)
         conf_loc = os.path.join(CONF_DIR, "anna.conf")
         if not os.path.isfile(conf_loc):
@@ -104,13 +106,11 @@ class AnnaConfigParser(object):
                     vals["xmpp"]["server"] = node
                 elif section == "xmpp" and name == "reconnect_interval":
                     vals[section][name] = p.getint(section, name)
-                elif section == "xmpp_tls":
+                elif section == "xmpp_tls" and name in ("verify_peer",
+                                                                "require"):
                     # Only because python 2.x doesn't like unicode keywords.
                     name = name.encode(ENC)
-                    if name in ("verify_peer", "require"):
-                        vals[section][name] = p.getboolean(section, name)
-                    else:
-                        vals[section][name] = value
+                    vals[section][name] = p.getboolean(section, name)
                 elif section == "misc" and name == "highlight":
                     vals[section][name] = list(value)
                 elif section == "annai_plugins" and name.startswith("name_"):
@@ -136,9 +136,10 @@ def load_conf(conf_loc=None):
     L{get_conf_copy}.
 
     """
-    global c
-    assert("c" not in globals())
-    c = AnnaConfigParser(conf_loc)
+    global conf
+    if "conf" not in globals():
+        # First time running this function: read and parse config.
+        conf = AnnaConfigParser(conf_loc)
 
 def get_conf_copy():
     """Get a cached copy of the configuration.
@@ -147,9 +148,7 @@ def get_conf_copy():
     called to parse the configuration at the default location.
 
     """
-    global c
-    if 'c' not in globals():
-        # First time running this function: read and parse config.
-        load_conf()
-    n = AnnaConfig(c.vals)
+    global conf
+    load_conf()
+    n = AnnaConfig(conf.vals)
     return n

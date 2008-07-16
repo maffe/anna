@@ -74,7 +74,7 @@ class _Plugin(BasePlugin):
         # The lock has been acquired. It will be released after a timeout.
 
         if __debug__:
-            c.stderr(u"NOTICE: %s: %s(%r).\n" % (self, cmd, arg))
+            c.stderr(u"INFO: %s: %s(%r).\n" % (self, cmd, arg))
         return (message, func(arg))
 
     def wikipedia(self, tofind):

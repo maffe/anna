@@ -132,7 +132,7 @@ class _Plugin(BasePlugin):
         for entry in d["entries"]:
             clean = unpack_entry(entry)
             if clean is None:
-                c.stderr(u"NOTICE: Incompatible feed entry: %s\n" % entry)
+                c.stderr(u"INFO: Incompatible feed entry: %s\n" % entry)
                 continue
             try:
                 if clean["updated"] <= self.latest_elem:
@@ -176,7 +176,7 @@ class _Plugin(BasePlugin):
         assert(isinstance(reason, unicode))
         self.error = u"%s exiting: %s" % (self, reason)
         self.feed_url = u""
-        c.stderr(u"NOTICE: feedfetcher.exit(%r)\n" % reason)
+        c.stderr(u"INFO: feedfetcher.exit(%r)\n" % reason)
 
     def process(self, message, reply, *args, **kwargs):
         if self.error is not None:

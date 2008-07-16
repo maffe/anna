@@ -244,6 +244,7 @@ class Connection(px.jab.Client, _threading.Thread):
                 except (socket_error, px.FatalStreamError, px.ClientError), e:
                     c.stderr(u"DEBUG: xmpp: Connection error: %s.\n" % e)
                     c.stdout(u"DEBUG: xmpp: Reconnecting...\n")
+                    px.jab.Client.disconnect(self)
             finally:
                 self.lock.release()
 
@@ -274,7 +275,7 @@ class Connection(px.jab.Client, _threading.Thread):
         # to receive subscription requests, so request roster.
         self.request_roster()
         self.stream.send(px.Presence(priority=20, show="chat"))
-        c.stdout(u"NOTICE: xmpp: logged in as %s\n" % unicode(self.jid))
+        c.stdout(u"INFO: xmpp: logged in as %s\n" % unicode(self.jid))
 
 class _MucEventHandler(px.jab.muc.MucRoomHandler):
     """Define handlers for events from MUC rooms.
@@ -315,7 +316,7 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
         try:
             member = self.room.get_participant(sender.nick)
         except parties.NoSuchParticipantError, e:
-            c.stderr(u"NOTICE: xmpp: muc: ignoring: %s\n" % e)
+            c.stderr(u"INFO: xmpp: muc: ignoring: %s\n" % e)
         else:
             ai.handle(text, member)
         return True
@@ -345,7 +346,7 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
         try:
             self.room.del_participant(parties.GroupMember(self.room, user))
         except parties.NoSuchParticipantError, e:
-            c.stderr(u"NOTICE: xmpp: muc: unknown prtcipant leaving: %s\n" % e)
+            c.stderr(u"INFO: xmpp: muc: unknown prtcipant leaving: %s\n" % e)
         if __debug__:
             c.stderr(u"DEBUG: %s left %s.\n" % (user.nick, self.room))
     user_left.__doc__ = px.jab.muc.MucRoomHandler.user_left.__doc__

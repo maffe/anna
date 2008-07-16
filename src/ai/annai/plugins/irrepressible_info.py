@@ -74,7 +74,7 @@ class _Plugin(BasePlugin):
         # The lock has been acquired. It will be released after a timeout.
 
         if __debug__:
-            c.stderr(u"NOTICE: %s: fetching fragment.\n" % self)
+            c.stderr(u"INFO: %s: fetching fragment.\n" % self)
         try:
             frag = get_ii_fragment()
         except (IOError, xml.parsers.expat.ExpatError), e:
