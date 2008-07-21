@@ -108,7 +108,9 @@ class Connection(px.jab.Client, _threading.Thread):
     def finish(self):
         """Release all allocated resources and close all open connections.""" 
         if self.stream:
-            for room in self._rooms.rooms:
+            # Can not use the iterator .itervalues() because self.leave_room
+            # modifies the self._rooms dictionary.
+            for room in self._rooms.rooms.values():
                 self.leave_room(room)
             self.lock.acquire()
             try:
