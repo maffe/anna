@@ -1,4 +1,4 @@
-"""Plugin for U{http://dump.0brg.net/dump/}.
+"""Plugin for U{http://dump.0brg.net/}.
 
 See U{https://0brg.net/anna/wiki/Dump_plugin} for more information.
 
