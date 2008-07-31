@@ -1,4 +1,4 @@
-"""Plugin for U{http://b4.xs4all.nl/dump/}.
+"""Plugin for U{http://dump.0brg.net/dump/}.
 
 See U{https://0brg.net/anna/wiki/Dump_plugin} for more information.
 
@@ -23,7 +23,7 @@ _fetch_lock = _thread.allocate_lock()
 def _get_dump(party, id):
     """Get a dump with given id and send the contents to this peer."""
     _fetch_lock.acquire()
-    u = urllib.urlopen("http://b4.xs4all.nl/dump/%s.txt" % id)
+    u = urllib.urlopen("http://dump.0brg.net/%s.txt" % id)
     encoding = u.info().getheader("content-type").split("charset=")[1]
     content = u.read().decode(encoding, "replace").strip()
     party.send(u"Dump #%s:\n\n%s" % (id, content))
