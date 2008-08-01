@@ -94,13 +94,16 @@ class _Plugin(BasePlugin):
         """See if this message was meant to add a factoid.
 
         @return: The factoid and its definition, or None if not applicable.
-        @rtype: C{list} or C{None}
+        @rtype: C{tuple} or C{None}
 
         """
         if " is " not in msg:
             return None
         else:
-            return [e.strip() for e in msg.split(" is ", 1)]
+            object_, definition = (e.strip() for e in msg.split(" is ", 1))
+            if object_.lower().startswith(u"no, "):
+                object_ = object_[len(u"no, "):]
+            return (object_, definition)
 
     def _analyze_request_delete(self, msg):
         """See if this message was meant to delete a factoid.
@@ -207,10 +210,10 @@ class _Plugin(BasePlugin):
         """See if the sender wants to delete factoid."""
         if not self.highlight:
             return None
-        obj = self._analyze_request_delete(message)
-        if obj is not None:
+        object_ = self._analyze_request_delete(message)
+        if object_ is not None:
             try:
-                self._factoid_delete(obj)
+                self._factoid_delete(object_)
                 return u"k"
             except NoSuchFactoidError:
                 return u"I don't even know what that means..."
@@ -223,6 +226,12 @@ class _Plugin(BasePlugin):
         if result is None:
             return None
         object_, definition = result
+        if message.lower().startswith(u"no, "):
+            # Sender wants to overwrite meaning of this object.
+            try:
+                self._factoid_delete(object_)
+            except NoSuchFactoidError, e:
+                pass
         try:
             self._factoid_add(object_, definition)
             return u"k"
@@ -238,6 +247,8 @@ class _Plugin(BasePlugin):
 
     def _handle_fetch(self, message):
         """Determine if this message wants the definition of a factoid.
+
+        Should be overwritten by child classes.
 
         @return: The definition of the factoid that was requested.
         @rtype: C{unicode} or C{None}
@@ -291,6 +302,7 @@ class OneOnOnePlugin(_Plugin):
 
 class ManyOnManyPlugin(_Plugin):
     def _handle_fetch(self, message):
+        assert(self.sender is not None)
         obj = self._analyze_request_fetch(message)
         if obj is None:
             return None
