@@ -90,7 +90,7 @@ class OneOnOne(ai.BaseOneOnOne):
                 self.ident.set_AI(new_ai)
                 self.ident.send("Great success!")
             return
-        self.ident.send("Sorry, PMs are not (yet) supported.")
+        self.ident.send(u"Sorry, PMs are not (yet) supported.")
 
 class ManyOnMany(ai.BaseManyOnMany):
     def __init__(self, room):
@@ -101,9 +101,6 @@ class ManyOnMany(ai.BaseManyOnMany):
     def handle(self, message, sender):
         if message == "fishbot, part":
             self.room.leave()
-            return
-        elif message == "fishbot, where are you?":
-            #self.room.send(u"TODO: get room-name")
             return
         elif message == "fishbot, uptime":
             diff = stats.uptimeSecs()
