@@ -26,8 +26,9 @@ class _Plugin(BasePlugin):
     #: taken as the requested object.
     _rex_get = re.compile("|".join((
         ur"^(?:what|where|who)(?: i|['\u2019])s (.*?)\?*$", # what/where/who is
+        r"^do you know what (.*) is\?*$",
         r"^(.*?)\?+$" # Anything that ends with a question mark.
-        )))
+        )), re.IGNORECASE)
     def __init__(self, party, args):
         self._party = party
         # Functions to apply to incoming messages subsequently.
@@ -128,12 +129,12 @@ class _Plugin(BasePlugin):
         @rtype: C{unicode} or C{None}
 
         """
-        match = self._rex_get.search(msg.lower())
+        match = self._rex_get.search(msg)
         if match is None:
             return None
         else:
             # Raises an IndexError if all groups are None. Should never happen.
-            return [g for g in match.groups() if g is not None][0].strip()
+            return (g for g in match.groups() if g is not None).next().strip()
 
     def _factoid_add(self, obj, defin):
         """Set the definition of given factoid.

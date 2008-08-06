@@ -47,7 +47,7 @@ raw = {
     u"^fishbot[\?]*$": u"Yes?",
     u"^what is the matrix\?$": u"No-one can be told what the matrix is. You have to see it for yourself.",
     u"^what do you need\?$": u"Guns. Lots of guns.",
-    u"^I know Kungfu$": u"Show me.",
+    u"^I know Kung ?fu\.?$": u"Show me.",
     u"^cake$": u"fish",
     u"^trout go m[oO0]{2,}$": u"Aye, that\u2019s cos they\u2019re fish.",
     u"^Kangaroo$": u"The kangaroo is a four winged stinging insect.",
@@ -76,8 +76,6 @@ compiled = []
 
 class OneOnOne(ai.BaseOneOnOne):
     def __init__(self, identity):
-        if not isinstance(identity, frontends.BaseIndividual):
-            raise TypeError, "You can only use a OneOnOne AI for Individuals."
         self.ident = identity
 
     def handle(self, message):
@@ -139,9 +137,12 @@ class ManyOnMany(ai.BaseManyOnMany):
                 self.room.send(msg)
                 return
 
-def compile_regex():
-    for of, to in raw.items():
-        regex = re.compile(of, re.IGNORECASE | re.UNICODE)
-        compiled.append((regex, to))
+def _compile_regex():
+    """Compile all regular expressions and store them in a global list once."""
+    global compiled
+    if not compiled:
+        for of, to in raw.items():
+            regex = re.compile(of, re.IGNORECASE | re.UNICODE)
+            compiled.append((regex, to))
 
-compile_regex()
+_compile_regex()

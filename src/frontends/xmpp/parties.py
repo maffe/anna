@@ -55,9 +55,12 @@ class Individual(BaseIndividual):
         self.stream.send(message)
 
 class Group(BaseGroup):
-    """The mucstate variable is a px.jab.muc.MucRoomState instance.
-
-    It must be set before it can be used.
+    """XMPP MUC room binding for the Anna bot.
+    
+    @ivar mucstate: Must be set before this instance can be used.
+    @type mucstate: C{pyxmpp.jabber.muc.MucRoomState}
+    @ivar members: All members of this group chat.
+    @type members: [L{GroupMember}, ...]
 
     """
     mucstate = None

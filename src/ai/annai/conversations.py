@@ -137,11 +137,11 @@ class _AnnaiBase(object):
     instantiated so make sure to call L{__init__} from child-classes too!
 
     """
+    conf = config.get_conf_copy()
     def __init__(self, party):
         global _plugins_import_lock
         if _plugins_import_lock.acquire(False):
             pluginhandler.start()
-        self.conf = config.get_conf_copy()
         self.plugins = []
         # Hack to automatically load the default plugins.
         _mod_plugins(self, party, "load plugins " +
@@ -227,8 +227,9 @@ class ManyOnMany(_AnnaiBase, ai.BaseManyOnMany):
         reply = None
 
         mynick = self.room.get_mynick().lower()
-        # React to "anna: x" as well as "mynick: x".
-        for hook in (mynick, "anna"):
+        # React to "anna: x" (or whatever the configured nickname is) as well
+        # as "mynick: x".
+        for hook in (mynick, self.conf.misc["bot_nickname"]):
             if message.lower().startswith(hook):
                 highlight = message[len(hook):]
                 # Match against every known highlight character.

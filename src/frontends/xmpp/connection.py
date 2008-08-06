@@ -110,12 +110,16 @@ class Connection(px.jab.Client, _threading.Thread):
         if self.stream:
             # Can not use the iterator .itervalues() because self.leave_room
             # modifies the self._rooms dictionary.
-            for room in self._rooms.rooms.values():
-                self.leave_room(room)
+            if hasattr(self, "_rooms"):
+                for room in self._rooms.rooms.values():
+                    self.leave_room(room)
             self.lock.acquire()
             try:
-                px.jab.Client.disconnect(self)
-                self.stream.close()
+                try:
+                    px.jab.Client.disconnect(self)
+                    self.stream.close()
+                except (socket_error, px.FatalStreamError, px.ClientError):
+                    pass
                 self.stream = None
             finally:
                 self.lock.release()
@@ -239,14 +243,10 @@ class Connection(px.jab.Client, _threading.Thread):
                 try:
                     stream.loop_iter(timeout=timeout)
                     self.idle()
-                except px.streamtls.TLSError, e:
-                    c.stderr_block(u"ERROR: xmpp: %s\n" % unicode(e))
-                    if c.stdin("Continue? [y/N] ").lower() not in ("y", "yes"):
-                        break
                 except (socket_error, px.FatalStreamError, px.ClientError), e:
                     c.stderr(u"DEBUG: xmpp: Connection error: %s.\n" % e)
                     c.stdout(u"DEBUG: xmpp: Reconnecting...\n")
-                    px.jab.Client.disconnect(self)
+                    self.disconnected()
             finally:
                 self.lock.release()
 
@@ -289,6 +289,8 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
     @param connection: The xmpp connection that uses this handler.
     @type connection: L{Connection}
     @param room: The room this handler is instantiated for.
+    @type room: L{parties.Group}
+    @ivar room: The room these handlers apply to.
     @type room: L{parties.Group}
 
     """
@@ -345,12 +347,16 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
     def user_left(self, user, stanza):
         if user.same_as(self.room.mucstate.me):
             self.conn.leave_room(self.room.mucstate)
-        try:
-            self.room.del_participant(parties.GroupMember(self.room, user))
-        except parties.NoSuchParticipantError, e:
-            c.stderr(u"INFO: xmpp: muc: unknown prtcipant leaving: %s\n" % e)
-        if __debug__:
-            c.stderr(u"DEBUG: %s left %s.\n" % (user.nick, self.room))
+            if __debug__:
+                c.stderr(u"DEBUG: left %s\n" % self.room)
+        else:
+            try:
+                self.room.del_participant(parties.GroupMember(self.room, user))
+            except parties.NoSuchParticipantError, e:
+                c.stderr(u"INFO: xmpp: muc: unknown participant leaving: "
+                        "%s\n" % e)
+            if __debug__:
+                c.stderr(u"DEBUG: %s left %s.\n" % (user.nick, self.room))
     user_left.__doc__ = px.jab.muc.MucRoomHandler.user_left.__doc__
 
 def init():
