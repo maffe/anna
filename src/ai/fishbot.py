@@ -84,11 +84,11 @@ class OneOnOne(ai.BaseOneOnOne):
             try:
                 ai_class = aihandler.get_oneonone(ai_str)
             except aihandler.NoSuchAIError, e:
-                self.ident.send("Failed to load module %s: %s" % (ai_str, e))
+                self.ident.send(u"Failed to load module %s: %s" % (ai_str, e))
             else:
                 new_ai = ai_class(self.ident)
                 self.ident.set_AI(new_ai)
-                self.ident.send("Great success!")
+                self.ident.send(u"Great success!")
             return
         self.ident.send(u"Sorry, PMs are not (yet) supported.")
 

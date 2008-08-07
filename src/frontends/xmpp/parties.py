@@ -21,114 +21,116 @@ from frontends import BaseIndividual, BaseGroup, BaseGroupMember
 class Individual(BaseIndividual):
     def __init__(self, jid, stream):
         c.stderr(u"DEBUG: xmpp: Individual %s instantiated.\n" % jid)
-        self.jid = jid
-        self.name = jid.node
-        self.stream = stream
+        self._jid = jid
+        self._name = jid.node
+        self._stream = stream
 
     def __str__(self):
-        return "xmpp:%s" % self.jid
+        return "xmpp:%s" % self._jid
 
     def __unicode__(self):
-        return u"xmpp:%s" % unicode(self.jid)
+        return u"xmpp:%s" % unicode(self._jid)
 
     def get_AI(self):
-        return self.ai
+        return self._ai
 
     def get_name(self):
-        return self.name
+        return self._name
 
     def get_type(self):
         return "xmpp"
 
     def set_AI(self, ai):
-        self.ai = ai
+        self._ai = ai
 
     def set_name(self, name):
-        self.name = name
+        self._name = name
 
     def send(self, message):
         if __debug__:
             if not isinstance(message, unicode):
                 raise TypeError, "Message must be a unicode object."
-        message = px.Message(to_jid=self.jid, body=message,
+        message = px.Message(to_jid=self._jid, body=message,
                 stanza_type="chat")
-        self.stream.send(message)
+        self._stream.send(message)
 
 class Group(BaseGroup):
     """XMPP MUC room binding for the Anna bot.
     
-    @ivar mucstate: Must be set before this instance can be used.
-    @type mucstate: C{pyxmpp.jabber.muc.MucRoomState}
-    @ivar members: All members of this group chat.
-    @type members: [L{GroupMember}, ...]
+    @ivar _mucstate: Must be set before this instance can be used.
+    @type _mucstate: C{pyxmpp.jabber.muc.MucRoomState}
+    @ivar _members: All members of this group chat.
+    @type _members: C{[L{GroupMember}, ...]}
+    @ivar _jid: JID of this room.
+    @type _jid: C{pyxmpp.jid.JID}
 
     """
-    mucstate = None
+    _mucstate = None
     def __init__(self, jid, stream):
         c.stderr(u"DEBUG: xmpp: Group %s instantiated.\n" % jid)
         assert(isinstance(jid, px.JID))
-        self.jid = jid
-        self.members = []
+        self._jid = jid
+        self._members = []
 
     def __str__(self):
-        return "xmpp:%s" % self.jid
+        return "xmpp:%s" % self._jid
 
     def __unicode__(self):
-        return u"xmpp:%s" % unicode(self.jid)
+        return u"xmpp:%s" % unicode(self._jid)
 
     def add_participant(self, participant):
         if not isinstance(participant, GroupMember):
             raise TypeError, "Participants must be GroupMember instances."
-        self.members.append(participant)
+        self._members.append(participant)
 
     def del_participant(self, participant):
         if __debug__:
             if not isinstance(participant, GroupMember):
                 raise TypeError, "Participants must be GroupMember instances."
         try:
-            self.members.remove(participant)
+            self._members.remove(participant)
         except ValueError:
             raise NoSuchParticipantError, participant.nick
 
     def get_AI(self):
-        return self.ai
+        return self._ai
 
     def get_mynick(self):
-        return self.mucstate.get_nick()
+        return self._mucstate.get_nick()
 
     def get_participant(self, name):
         assert(isinstance(name, unicode))
-        for part in self.members:
+        for part in self._members:
             if name == part.nick:
                 return part
         raise NoSuchParticipantError, name
 
     def get_participants(self):
         """Get an iterable with all the participants."""
-        return tuple(self.members)
+        return tuple(self._members)
 
     def get_type(self):
         return "xmpp"
 
-    def is_active(self):
-        return self.mucstate.joined
+    def is_joined(self):
+        return self._mucstate.joined
 
     def join(self):
         if __debug__:
             c.stderr(u"DEBUG: join %s\n" % self)
-        self.mucstate.join(history_maxstanzas=0)
+        self._mucstate.join(history_maxstanzas=0)
 
     def leave(self):
         if __debug__:
             c.stderr(u"DEBUG: leaving %s\n" % self)
-        self.mucstate.leave()
+        self._mucstate.leave()
 
     def set_AI(self, ai):
-        self.ai = ai
+        self._ai = ai
 
     def set_mynick(self, nick):
         try:
-            self.mucstate.change_nick(nick)
+            self._mucstate.change_nick(nick)
         except px.pyxmpp.xmppstringprep.StringprepError, e:
             self.send(u"Error changing nick: %s" % e)
 
@@ -136,7 +138,7 @@ class Group(BaseGroup):
         if __debug__:
             if not isinstance(message, unicode):
                 raise TypeError, "Message must be a unicode object."
-        self.mucstate.send_message(message)
+        self._mucstate.send_message(message)
 
 class GroupMember(px.jab.muc.MucRoomUser, BaseGroupMember):
     def __init__(self, room, *args):
@@ -147,7 +149,7 @@ class GroupMember(px.jab.muc.MucRoomUser, BaseGroupMember):
 
         """
         px.jab.muc.MucRoomUser.__init__(self, *args)
-        self.room = room
+        self._room = room
 
     def __eq__(self, y):
         if not isinstance(y, GroupMember):

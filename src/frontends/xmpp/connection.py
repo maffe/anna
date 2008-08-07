@@ -151,17 +151,17 @@ class Connection(px.jab.Client, _threading.Thread):
             # handlers). These messages are usually "... is typing"
             # notifications.
             return True
-        sender = px.JID(message.get_from())
+        sender = message.get_from()
         if __debug__:
             c.stderr(u"DEBUG: xmpp: pm: '%s' from '%s'\n" % (text, sender))
-        try:
+        if sender in self._parties:
             peer = self._parties[sender]
-        except KeyError:
+        else:
             # This is the first message from this peer.
             peer = parties.Individual(sender, self.stream)
-            self._parties[sender] = peer
             def_AI = _conf.misc["default_ai"]
             peer.set_AI(aihandler.get_oneonone(def_AI)(peer))
+            self._parties[sender] = peer
         peer.get_AI().handle(text)
         return True
 
@@ -205,7 +205,7 @@ class Connection(px.jab.Client, _threading.Thread):
         room = parties.Group(room_jid, self.stream)
         handler = _MucEventHandler(self, room)
         self._rooms.join(room_jid, nick, handler, history_maxstanzas=0)
-        room.mucstate = self._rooms.rooms[unicode(room_jid)]
+        room._mucstate = self._rooms.rooms[unicode(room_jid)]
         def_AI = _conf.misc["default_ai"]
         room.set_AI(aihandler.get_manyonmany(def_AI)(room))
         room.send(u"Hi, I am a chatbot. Thanks for inviting me here.")
@@ -286,11 +286,13 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
     this class implements some hacks that make it virtually unsusable anywhere
     outside this module. Doing so is discouraged.
 
-    @param connection: The xmpp connection that uses this handler.
+    @param connection: The XMPP connection that uses this handler.
     @type connection: L{Connection}
+    @ivar conn: The XMPP connection that uses this handler.
+    @type conn: L{Connection}
     @param room: The room this handler is instantiated for.
     @type room: L{parties.Group}
-    @ivar room: The room these handlers apply to.
+    @ivar room: The room this handler is instantiated for.
     @type room: L{parties.Group}
 
     """
@@ -309,7 +311,7 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
         except JIDError, e:
             c.stderr(u"WARNING: xmpp: malformed muc JID: %s\n" % e)
             return False
-        if sender is None or sender.same_as(self.room.mucstate.me):
+        if sender is None or sender.same_as(self.room._mucstate.me):
             # Ignore messages from the conference server and this bot.
             return True
         text = message.get_body()
@@ -329,11 +331,25 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
 
     def nick_changed(self, user, old_nick, stanza):
         try:
-            self.room.get_participant(old_nick).nick = user.nick
+            part = self.room.get_participant(old_nick)
         except parties.NoSuchParticipantError:
             c.stderr(u"WARNING: unknown user %s changed nick in %s (added)\n" %
                                (user.nick, self.room))
             self.room.add_participant(parties.GroupMember(self.room, user))
+        else:
+            old_jid = part.room_jid
+            part.update_presence(stanza); assert(part.same_as(user))
+            new_jid = part.room_jid
+            if old_jid in self.conn._parties:
+                # If this user previously sent a direct message to the bot an
+                # AI instance has been created for that peer. After the name
+                # change the JID changes and new messages would be seen as
+                # coming from different peers, creating a new AI instance and
+                # forgetting about the old one. This code fixes that behaviour.
+                peer = self.conn._parties[old_jid]
+                peer._jid, peer._name = new_jid, new_jid.node
+                self.conn._parties[new_jid] = peer
+                del self.conn._parties[old_jid]
         return True
     nick_changed.__doc__ = px.jab.muc.MucRoomHandler.nick_changed.__doc__
 
