@@ -17,6 +17,7 @@ del pxj, pxjm, pxjmc
 
 import communication as c
 from frontends import BaseIndividual, BaseGroup, BaseGroupMember
+from frontends import NoSuchParticipantError
 
 class Individual(BaseIndividual):
     def __init__(self, jid, stream):
@@ -166,12 +167,3 @@ class GroupMember(px.jab.muc.MucRoomUser, BaseGroupMember):
 
     def __unicode__(self):
         return u"xmpp:%s" % unicode(self.room_jid)
-
-class NoSuchParticipantError(Exception):
-    """Raised when an unknown GroupMember is adressed."""
-    def __init__(self, name):
-        Exception.__init__(self, name)
-        self.name = name
-    def __repr__(self):
-        return "Participant %s does not exist." % self.name
-    __str__ = __repr__

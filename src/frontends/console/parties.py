@@ -14,17 +14,11 @@ class Individual(BaseIndividual):
     def __str__(self):
         return self.party
 
-    def get_AI(self):
-        return self.ai
-
     def get_name(self):
         return self.party
 
     def get_type(self):
         return u"console"
-
-    def set_AI(self, ai):
-        self.ai = ai
 
     def set_name(self, name):
         if __debug__:
