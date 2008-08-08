@@ -361,8 +361,8 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
     user_joined.__doc__ = px.jab.muc.MucRoomHandler.user_joined.__doc__
 
     def user_left(self, user, stanza):
-        if user.same_as(self.room.mucstate.me):
-            self.conn.leave_room(self.room.mucstate)
+        if user.same_as(self.room._mucstate.me):
+            self.conn.leave_room(self.room._mucstate)
             if __debug__:
                 c.stderr(u"DEBUG: left %s\n" % self.room)
         else:
