@@ -113,7 +113,12 @@ def _mod_plugins(ai, party, message):
 
     # List available.
     elif message.lower() == "list available plugins":
-        return "Available:\n- " + u"\n- ".join(pluginhandler.get_names())
+        return u"Available:\n" \
+                    u"- " + u"\n- ".join(pluginhandler.get_names()) + u"\n" \
+                    u"\n" \
+                    u"For more information about a specific plugin, say " \
+                    u"\u201cabout plugin x\u201d (with highlight in " \
+                    u"groupchats)."
 
     # About plugin.
     elif message.lower().startswith("about plugin "):
