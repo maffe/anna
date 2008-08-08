@@ -1,5 +1,11 @@
 class BasePlugin(object):
     """The parent class of all plugins for the annai module."""
+    def __init__(self, party, args):
+        pass
+    def process(self, message, reply, sender=None, highlight=None):
+        if not (isinstance(message, unicode) or message is None) or \
+                not (isinstance(reply, unicode) or reply is None):
+            raise TypeError
     def unloaded(self):
         pass
 
