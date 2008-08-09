@@ -10,3 +10,7 @@ $(TESTFILE):
 
 .PHONY: test
 test: $(TESTFILE)
+
+.PHONY: clean
+clean:
+	-\rm -f *.pyc *.pyo
