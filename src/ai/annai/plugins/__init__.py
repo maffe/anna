@@ -1,14 +1,3 @@
-class BasePlugin(object):
-    """The parent class of all plugins for the annai module."""
-    def __init__(self, party, args):
-        pass
-    def process(self, message, reply, sender=None, highlight=None):
-        if not (isinstance(message, unicode) or message is None) or \
-                not (isinstance(reply, unicode) or reply is None):
-            raise TypeError
-    def unloaded(self):
-        pass
-
 class PluginError(Exception):
     """Raised by a plugin when it can not continue and should be unloaded.
 
@@ -23,3 +12,15 @@ class PluginError(Exception):
         self._msg = msg
     def __unicode__(self):
         return unicode(self._msg)
+
+class BasePlugin(object):
+    """The parent class of all plugins for the annai module."""
+    def __init__(self, party, args):
+        if args:
+            raise PluginError, u"%s does not accept arguments." % self
+    def process(self, message, reply, sender=None, highlight=None):
+        if not (isinstance(message, unicode) or message is None) or \
+                not (isinstance(reply, unicode) or reply is None):
+            raise TypeError
+    def unloaded(self):
+        pass
