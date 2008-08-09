@@ -9,7 +9,7 @@ be tested. For example, you can use it like this:
 >>> exec open("_ai.py").read()
 >>> # Customize if wanted...
 ...
->>> main()
+>>> unittest.main()
 
 """
 import unittest
@@ -51,5 +51,5 @@ class OneOnOneHandle(unittest.TestCase):
         ooo = _makeOOO()
         ooo.handle(u"x")
 
-def main():
+if __name__ == "__main__":
     unittest.main()
