@@ -74,11 +74,8 @@ def start():
     global _start_lock, _refs
     if not _start_lock.acquire(False):
         return False
-    imp.acquire_lock()
     name_map = config.get_conf_copy().annai_plugins["names"]
-    for name in [unicode(mod) for mod in name_map]:
+    for name in name_map:
         assert(name not in _refs)
-        path = "ai/annai/plugins"
-        mod = imp.load_module(name, *imp.find_module(name, [path]))
-        _refs[name_map[name]] = mod
-    imp.release_lock()
+        _refs[name_map[name]] = getattr(__import__("ai.annai.plugins",
+            globals(), locals(), fromlist=[name.encode("us-ascii")]), name)

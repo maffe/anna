@@ -270,7 +270,7 @@ class _Plugin(BasePlugin):
         this plugin is a OneOnOne, thus we can act as if highlighted in a MUC.
 
         """
-        if not reply is None:
+        if not reply is None or message is None:
             return (message, reply)
 
         cleanmsg = message.strip()
