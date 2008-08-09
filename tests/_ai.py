@@ -64,6 +64,3 @@ class ManyOnManyAPI(unittest.TestCase):
         """OneOnOne must have a handler for incoming messages."""
         mom = _makeMOM()
         self.assert_(hasattr(mom, "handle"))
-
-if __name__ == "__main__":
-    unittest.main()

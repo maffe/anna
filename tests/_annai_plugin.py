@@ -44,14 +44,14 @@ def _makeMOMP():
 
 class TestOneOnOnePlugin(unittest.TestCase):
     def testAPI(self):
-        """Plugins must have a set of methods available."""
+        """OneOnOnePlugins must have a set of methods available."""
         ooop = _makeOOOP()
         self.assert_(callable(ooop.__unicode__))
         self.assert_(callable(ooop.process))
         self.assert_(callable(ooop.unloaded))
 
     def testProcessTypes(self):
-        """Message processor must accept None and unicode values."""
+        """OneOnOnePlugin processor must accept None and unicode values."""
         ooop = _makeOOOP()
         self.assert_(isinstance(ooop.process(None, None), tuple))
         self.assert_(isinstance(ooop.process(u"", None), tuple))
@@ -59,31 +59,28 @@ class TestOneOnOnePlugin(unittest.TestCase):
         self.assert_(isinstance(ooop.process(u"", u""), tuple))
 
     def testProcessInput(self):
-        """Plugins are not expected to fail with odd input."""
+        """OneOnOnePlugins are not expected to fail with odd input."""
         ooop = _makeOOOP()
         for msg in MESSAGES:
             self.assert_(isinstance(ooop.process(msg, None), tuple))
 
 class TestManyOnManyPlugin(unittest.TestCase):
     def testAPI(self):
-        """Plugins must have a set of methods available."""
+        """ManyOnManyPlugins must have a set of methods available."""
         momp = _makeMOMP()
         self.assert_(callable(momp.__unicode__))
         self.assert_(callable(momp.process))
         self.assert_(callable(momp.unloaded))
 
     def testProcessTypes(self):
-        """Message processor must accept None and unicode values."""
-        ooop = _makeOOOP()
+        """ManyOnManyPlugin processor must accept None and unicode values."""
+        momp = _makeMOMP()
         s = frontends.BaseGroupMember(u"Anonymous")
-        self.assert_(isinstance(ooop.process(None, None, s, False), tuple))
-        self.assert_(isinstance(ooop.process(None, None, s, True), tuple))
-        self.assert_(isinstance(ooop.process(u"", None, s, False), tuple))
-        self.assert_(isinstance(ooop.process(u"", None, s, True), tuple))
-        self.assert_(isinstance(ooop.process(None, u"", s, False), tuple))
-        self.assert_(isinstance(ooop.process(None, u"", s, True), tuple))
-        self.assert_(isinstance(ooop.process(u"", u"", s, False), tuple))
-        self.assert_(isinstance(ooop.process(u"", u"", s, True), tuple))
-
-if __name__ == "__main__":
-    unittest.main()
+        self.assert_(isinstance(momp.process(None, None, s, False), tuple))
+        self.assert_(isinstance(momp.process(None, None, s, True), tuple))
+        self.assert_(isinstance(momp.process(u"", None, s, False), tuple))
+        self.assert_(isinstance(momp.process(u"", None, s, True), tuple))
+        self.assert_(isinstance(momp.process(None, u"", s, False), tuple))
+        self.assert_(isinstance(momp.process(None, u"", s, True), tuple))
+        self.assert_(isinstance(momp.process(u"", u"", s, False), tuple))
+        self.assert_(isinstance(momp.process(u"", u"", s, True), tuple))
