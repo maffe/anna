@@ -3,12 +3,10 @@
 The API is descirbed on U{https://0brg.net/anna/wiki/AI_modules_API.
 
 This module is intended to be copy/pasted for every AI module that must
-be tested. Ideally, use it as follows:
+be tested. For example, you can use it like this:
 
->>> from ai import x
->>> import _ai
->>> _ai.mod = x
->>> from _ai import *
+>>> from ai import x as mod
+>>> exec open("_ai.py").read()
 >>> # Customize if wanted...
 ...
 >>> main()

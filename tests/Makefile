@@ -1,13 +1,12 @@
-PYTHONPATH := ../src/:$(PYTHONPATH)
+PYTHONPATH := ../src:$(PYTHONPATH)
 PYTHON = python
 PYTHONARGS = -tt
-TESTARGS = -q
-# Files starting with _ are not considered tests.
-TESTS = $(addprefix test_, $(basename $(wildcard [^_]*.py)))
+TESTARGS = 
+TESTFILE = testall.py
+
+.PHONY: $(TESTFILE)
+$(TESTFILE):
+	$(PYTHON) $(PYTHONARGS) $(TESTFILE) $(TESTARGS)
 
 .PHONY: test
-test: $(TESTS)
-
-.PHONY: $(TESTS)
-$(TESTS):
-	$(PYTHON) $(PYTHONARGS) $(subst test_, , $@).py $(TESTARGS)
+test: $(TESTFILE)
