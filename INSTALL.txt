@@ -9,7 +9,7 @@ help you get started.
 
 Dependencies:
 
-- Python: 2.4 compatible release (2.4 <= 2.x < 3.0). [1]
+- Python: 2.5 compatible release (2.5 <= 2.x < 3.0). [1]
 - Sqlalchemy 0.4.5 is known to work. Needed for the agenda, factoids and
   reactions plugin. [2]
 - PyXMPP 1.0.0 is known to work. Needed for the XMPP frontend. [3]

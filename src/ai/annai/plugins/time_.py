@@ -25,6 +25,8 @@ class _Plugin(BasePlugin):
         return u"time plugin"
 
     def process(self, message, reply, *args):
+        if message is None:
+            return (message, reply)
         if message.lower().rstrip(" ?") in HOOKS:
             return (message, unicode(time.strftime(self._frmt)))
         elif message.startswith("timestr is "):

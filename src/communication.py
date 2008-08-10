@@ -109,7 +109,7 @@ def stdout(msg, encoding=None):
     If the message is a unicode object the proper encoding is determined in the
     following order:
         1. The supplied encoding.
-        2. The auto-detected encoding of stdin, if available.
+        2. The auto-detected encoding of stdout, if available.
         3. Defaults to UTF-8.
     Characters that can not be encoded are replaced by question marks.
 

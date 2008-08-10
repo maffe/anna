@@ -160,6 +160,8 @@ class _Plugin(BasePlugin):
 
     def process(self, message, reply, sender=None, highlight=None):
         """Overrides any outgoing message constructed up to here."""
+        if message is None:
+            return (message, reply)
         add_res = self.add_rex.search(message)
         if add_res is not None:
             # Insert given date and event string into database.

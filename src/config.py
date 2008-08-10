@@ -95,8 +95,6 @@ class AnnaConfigParser(object):
             vals[section] = {}
             if section == "annai_plugins":
                 vals["annai_plugins"]["names"] = {}
-            elif section == "xmpp":
-                vals["xmpp"]["tls_settings"] = {}
             for (name, value) in p.items(section):
                 name, value = name.decode(ENC), value.decode(ENC)
                 # Hard-coded hacks.
@@ -106,11 +104,8 @@ class AnnaConfigParser(object):
                     vals["xmpp"]["server"] = node
                 elif section == "xmpp" and name == "reconnect_interval":
                     vals[section][name] = p.getint(section, name)
-                elif section == "xmpp_tls" and name in ("verify_peer",
-                                                                "require"):
-                    # Only because python 2.x doesn't like unicode keywords.
-                    name = name.encode(ENC)
-                    vals[section][name] = p.getboolean(section, name)
+                elif section == "xmpp_tls":
+                    vals[section][name.encode("us-ascii")] = eval(value)
                 elif section == "misc" and name == "highlight":
                     vals[section][name] = list(value)
                 elif section == "annai_plugins" and name.startswith("name_"):
