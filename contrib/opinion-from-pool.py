@@ -18,7 +18,7 @@ class _Plugin(BasePlugin):
         return u"opinion plugin"
 
     def process(self, message, reply, *args):
-        if message == None:
+        if message is None:
             return (message, reply)
         stripped = self.regex_strip.match(message).group(1)
         for pool in self.words:
