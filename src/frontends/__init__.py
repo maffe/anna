@@ -4,7 +4,7 @@ More information on frontends (including the API) can be found on the
 U{wiki <https://0brg.net/anna/wiki/Frontends>}.
 
 """
-__all__ = ["xmpp", "console"]
+__all__ = ["xmpp", "console", "irc"]
 
 class NoSuchParticipantError(Exception):
     """Raised when an unknown GroupMember is adressed."""
