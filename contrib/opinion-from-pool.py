@@ -12,12 +12,14 @@ class _Plugin(BasePlugin):
         #(u"k"), # emulate the famous "k" plugin
         (u"ja", u"nein"), # German
         )
-    regex_strip = re.compile(u"^(.*?)[.!?]*$")
+    regex_strip = re.compile(u"^(.*?)[.!?]*$", re.DOTALL)
 
     def __unicode__(self):
         return u"opinion plugin"
 
     def process(self, message, reply, *args):
+        if message = None:
+            return (message, reply)
         stripped = self.regex_strip.match(message).group(1)
         for pool in self.words:
             if stripped in pool:
