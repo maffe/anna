@@ -105,9 +105,16 @@ class AnnaConfigParser(object):
                 elif section == "xmpp" and name == "reconnect_interval":
                     vals[section][name] = p.getint(section, name)
                 elif section == "xmpp_tls":
-                    vals[section][name.encode("us-ascii")] = eval(value)
+                    vals[section][name.encode(ENC)] = eval(value)
+                elif section == "irc_servers":
+                    server_name, key = name.encode(ENC).split("_", 1)
+                    d = vals["irc_servers"].setdefault(server_name, {})
+                    if key == "channels":
+                        d["channels"] = [e.strip() for e in value.split(",")]
+                    else:
+                        d[key] = value
                 elif section == "misc" and name == "highlight":
-                    vals[section][name] = list(value)
+                    vals["misc"]["highlight"] = list(value)
                 elif section == "annai_plugins" and name.startswith("name_"):
                     # Make a dict of the human-friendly names of all plugins.
                     vals["annai_plugins"]["names"][name[len("name_"):]] = value
