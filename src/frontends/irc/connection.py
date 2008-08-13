@@ -144,7 +144,7 @@ class Connection(BaseConnection, _threading.Thread):
 
     def run(self):
         bots = []
-        for server, kwargs in _conf.irc_servers.iteritems():
+        for server, kwargs in _conf.irc_networks.iteritems():
             kwargs.setdefault("nick", _conf.misc["bot_nickname"])
             bot = _ServerBot(server, **kwargs)
             bot._connect()
