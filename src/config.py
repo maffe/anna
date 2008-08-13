@@ -107,8 +107,8 @@ class AnnaConfigParser(object):
                 elif section == "xmpp_tls":
                     vals[section][name.encode(ENC)] = eval(value)
                 elif section == "irc_servers":
-                    server_name, key = name.encode(ENC).split("_", 1)
-                    d = vals["irc_servers"].setdefault(server_name, {})
+                    network_name, key = name.encode(ENC).split("_", 1)
+                    d = vals["irc_networks"].setdefault(network_name, {})
                     if key == "channels":
                         d["channels"] = [e.strip() for e in value.split(",")]
                     else:
