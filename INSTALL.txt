@@ -15,6 +15,7 @@ Dependencies:
 - PyXMPP 1.0.0 is known to work. Needed for the XMPP frontend. [3]
 - Java runtime environment [6] and JPype [7] needed for the
   annarithmetic plugin.
+- Python IRC library [8] 0.4.6 needed for the IRC frontend.
 
 
    ## 1) DOWNLOAD ##
@@ -97,3 +98,4 @@ Good luck =]
 [5] https://0brg.net/anna/wiki/Install
 [6] http://java.com/
 [7] http://jpype.sourceforge.net/
+[8] http://python-irclib.sourceforge.net/
