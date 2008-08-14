@@ -13,6 +13,14 @@ from frontends import NoSuchParticipantError
 import connection
 
 class _IRCParty(object):
+    """Common functionality for IRC communication parties.
+
+    @arg conn: Connection instance.
+    @type conn: C{irclib.ServerConnection}
+    @arg encoding: Encoding used by the server.
+    @type encoding: C{str}
+
+    """
     def __init__(self, conn, name, encoding="us-ascii"):
         assert(isinstance(conn, irclib.ServerConnection))
         assert(isinstance(name, unicode))
@@ -29,11 +37,16 @@ class _IRCParty(object):
         return u"IRC"
 
     def send(self, message):
+        if message.startswith("/me "):
+            f = self._conn.action
+            message = message[len("/me "):]
+        else:
+            f = self._conn.privmsg
         if __debug__:
             if not isinstance(message, unicode):
                 raise TypeError, "Message must be a unicode object."
         for line in message.split("\n"):
-            self._conn.privmsg(self._name_enc, line.encode(self._enc))
+            f(self._name_enc, line.encode(self._enc))
 
 class Individual(_IRCParty, BaseIndividual):
     def get_name(self):
