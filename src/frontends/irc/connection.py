@@ -13,7 +13,6 @@ import time
 
 import ircbot
 import irclib
-irclib.DEBUG = 1
 
 import aihandler
 import communication as c
@@ -46,6 +45,10 @@ class _ServerBot(ircbot.SingleServerIRCBot):
         self.individuals = ircbot.IRCDict()
         self.connection.add_global_handler("join", self.late_on_join, 20)
 
+    def on_invite(self, conn, ev):
+        """Join a channel when invited."""
+        conn.join(ev.arguments()[0])
+
     def late_on_join(self, conn, ev):
         """Just like an on_join handler but with higher priority number.
 
@@ -60,6 +63,8 @@ class _ServerBot(ircbot.SingleServerIRCBot):
             group = Group(conn, name=chan_name, encoding=self._enc)
             group.set_AI(_def_ai_mom(group))
             self.channels[chan_name_enc]._annagroup = group
+            group.send(u"Hi, I am a chatbot. Thanks for inviting me here.")
+            c.stderr(u"DEBUG: irc: Joined %s.\n" % chan_name)
 
     def on_namreply(self, conn, ev):
         names_enc = ev.arguments()[2].split()
