@@ -89,7 +89,7 @@ class _ServerBot(ircbot.SingleServerIRCBot):
         if _irc_nameq(to_enc, conn.get_nickname()):
             # Ignore incoming NICKs indicating nickchange of the bot itself.
             return
-        for group in (chan._annagroup for chan in self.channels):
+        for group in (chan._annagroup for chan in self.channels.values()):
             try:
                 gmem = group.get_participant(from_)
                 gmem.nick = to
@@ -115,8 +115,8 @@ class _ServerBot(ircbot.SingleServerIRCBot):
         sender_name = irclib.nm_to_n(ev.source().decode(self._enc))
         chan_name_enc = ev.target()
         chan_name = ev.target().decode(self._enc)
-        c.stderr(u"DEBUG: irc: PRIVMSG (pub) from %s: %s\n" % (sender_name,
-            msg))
+        c.stderr(u"DEBUG: irc: PRIVMSG (%s) from %s: %s\n" % (chan_name,
+            sender_name, msg))
         group = self.channels[chan_name_enc]._annagroup
         try:
             part = group.get_participant(sender_name)
