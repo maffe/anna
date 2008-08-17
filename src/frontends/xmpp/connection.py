@@ -30,7 +30,7 @@ from frontends import BaseConnection
 #: Standard reply to all incoming messages of unsupported type.
 UNSUPPORTED_TYPE = u"Sorry, this type of messages is not supported."""
 
-_logger = logging.getLogger(__name__)
+_logger = logging.getLogger("anna." + __name__)
 
 class Connection(px.jab.Client, _threading.Thread):
     """Threaded connection to an XMPP server.

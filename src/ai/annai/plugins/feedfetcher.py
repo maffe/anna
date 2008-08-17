@@ -33,7 +33,7 @@ FORMAT = u"""New feed message for %(feed_url)s:
 
 - <%(url)s>"""
 
-_logger = logging.getLogger(__name__)
+_logger = logging.getLogger("anna." + __name__)
 #: Semaphore for keeping track of concurrent feedfetcher threads.
 _tickets = _threading.Semaphore(MAX_CONCURRENT_THREADS)
 

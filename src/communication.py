@@ -17,7 +17,7 @@ import Queue
 
 # The lock for the stdout.
 _lock = _threading.RLock()
-_logger = logging.getLogger(__name__)
+_logger = logging.getLogger("anna." + __name__)
 #: Whether or not the stderr should wait for the stdout.
 combined_out_err = True
 

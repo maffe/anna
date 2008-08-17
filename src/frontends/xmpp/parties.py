@@ -18,7 +18,7 @@ del pxj, pxjm, pxjmc
 from frontends import BaseIndividual, BaseGroup, BaseGroupMember
 from frontends import NoSuchParticipantError
 
-_logger = logging.getLogger(__name__)
+_logger = logging.getLogger("anna." + __name__)
 
 class Individual(BaseIndividual):
     def __init__(self, jid, stream):

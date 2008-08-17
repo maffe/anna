@@ -5,7 +5,6 @@ Copyright (c) 2006, 2007, 2008 Hraban Luyat.
 To kill the entire chatbot, use ctrl + C.
 
 """
-import imp
 import logging
 import optparse
 import signal
@@ -34,7 +33,7 @@ _frontends_imported = _threading.Lock()
 # Dictionary of references to imported frontends.
 _frontends = {}
 # Main anna logger.
-_logger = logging.getLogger(__name__)
+_logger = logging.getLogger("anna." + __name__)
 
 def discard_args(func):
     """Decorator that discards all arguments to a function."""
@@ -44,16 +43,13 @@ def discard_args(func):
 
 def _import_frontends(frontend_names):
     """Import the supplied frontends (only imports once, NOP after that)."""
+    # No duplicates.
+    assert(len(set(frontend_names)) == len(frontend_names))
     global _frontends
     if not _frontends_imported.acquire(False):
         return
-    imp.acquire_lock()
-    _frontends = {}
-    for name in frontend_names:
-        assert(name not in _frontends)
-        mod = imp.load_module(name, *imp.find_module(name, ["frontends"]))
-        _frontends[name] = mod
-    imp.release_lock()
+    fends = __import__("frontends", globals(), locals(), frontend_names)
+    _frontends = dict((n, getattr(fends, n)) for n in frontend_names)
 
 class Anna(object):
     """The Anna bot.

@@ -24,7 +24,7 @@ from parties import Individual, Group, GroupMember
 _conf = config.get_conf_copy()
 _def_ai_mom = aihandler.get_manyonmany(_conf.misc["default_ai"])
 _def_ai_ooo = aihandler.get_oneonone(_conf.misc["default_ai"])
-_logger = logging.getLogger(__name__)
+_logger = logging.getLogger("anna." + __name__)
 
 def _irc_nameq(x, y):
     """Returns True if two names are considered equal according to the RFC."""

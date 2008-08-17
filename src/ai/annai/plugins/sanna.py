@@ -38,7 +38,7 @@ _DEFAULT_HTTP_HEADERS = {"user-agent":
 
 # Create a lock for fetching.
 _fetch_mutex = c.TimedMutex(5)
-_logger = logging.getLogger(__name__)
+_logger = logging.getLogger("anna." + __name__)
 
 class _Plugin(BasePlugin):
     def __init__(self, peer, args):

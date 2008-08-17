@@ -28,7 +28,7 @@ FETCH_ERROR = u"An error occurred while fetching a fragment from \
 irrepressible.info. If the error persists, please tell us about it on \
 the wiki <https://0brg.net/anna/wiki/Annawiki_talk:Community_Portal>."
 
-_logger = logging.getLogger(__name__)
+_logger = logging.getLogger("anna." + __name__)
 # Create a lock for fetching.
 _fetch_mutex = c.TimedMutex(10)
 

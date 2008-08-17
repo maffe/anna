@@ -6,7 +6,7 @@ import ai
 import aihandler
 import frontends
 
-_logger = logging.getLogger(__name__)
+_logger = logging.getLogger("anna." + __name__)
 
 class OneOnOne(ai.BaseOneOnOne):
     def __init__(self, identity):

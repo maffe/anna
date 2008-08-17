@@ -14,7 +14,7 @@ import ConfigParser
 CONF_DIR = os.path.expanduser("~/.anna")
 ENC = "utf8"
 
-_logger = logging.getLogger(__name__)
+_logger = logging.getLogger("anna." + __name__)
 
 class AnnaConfig(object):
     """Used to communicate configuration values with other modules.
