@@ -1,9 +1,12 @@
 """The conversation classes for the echo AI module."""
 
+import logging
+
 import ai
 import aihandler
-import communication as c
 import frontends
+
+_logger = logging.getLogger(__name__)
 
 class OneOnOne(ai.BaseOneOnOne):
     def __init__(self, identity):
@@ -34,7 +37,7 @@ class ManyOnMany(ai.BaseManyOnMany):
 
     def handle(self, message, sender):
         if sender.nick.lower() == self.room.get_mynick().lower():
-            c.stderr("WARNING: interpreting messages from myself.\n")
+            _logger.warning("Interpreting messages from myself.")
             return
         if message.startswith("load module "):
             ai_str = message[len("load module "):]

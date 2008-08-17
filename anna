@@ -1,10 +1,4 @@
 #!/usr/bin/env bash
 
 cd "`dirname $0`/src"
-
-if [ ! -f anna.pyo ]
-then
-	python -O -c "`echo -e "import py_compile\npy_compile.compile('anna.py')"`"
-fi
-
-python -O anna.pyo $@
+python -O anna.py $@

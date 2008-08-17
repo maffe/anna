@@ -5,6 +5,7 @@ Currently only implements searching the english wikipedia.
 
 """
 import httplib
+import logging
 import re
 import urllib
 
@@ -37,6 +38,7 @@ _DEFAULT_HTTP_HEADERS = {"user-agent":
 
 # Create a lock for fetching.
 _fetch_mutex = c.TimedMutex(5)
+_logger = logging.getLogger(__name__)
 
 class _Plugin(BasePlugin):
     def __init__(self, peer, args):
@@ -73,8 +75,7 @@ class _Plugin(BasePlugin):
             return (message, u"%s overloaded, please try again later." % self)
         # The lock has been acquired. It will be released after a timeout.
 
-        if __debug__:
-            c.stderr(u"INFO: %s: %s(%r).\n" % (self, cmd, arg))
+        _logger.debug(u"%s(%r)", self, cmd)
         return (message, func(arg))
 
     def wikipedia(self, tofind):

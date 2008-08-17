@@ -7,6 +7,7 @@ attempts when disconnected.
 module.
 
 """
+import logging
 from socket import error as socket_error
 try:
     import threading as _threading
@@ -28,6 +29,8 @@ from frontends import BaseConnection
 
 #: Standard reply to all incoming messages of unsupported type.
 UNSUPPORTED_TYPE = u"Sorry, this type of messages is not supported."""
+
+_logger = logging.getLogger(__name__)
 
 class Connection(px.jab.Client, _threading.Thread):
     """Threaded connection to an XMPP server.
@@ -64,9 +67,8 @@ class Connection(px.jab.Client, _threading.Thread):
         """
         message = px.Message(*args, **kwargs)
         self.stream.send(message)
-        if __debug__:
-            marsh = message.serialize().decode("utf-8") # unicode object.
-            c.stderr(u"DEBUG: xmpp: sending '%s'\n" % marsh)
+        marsh = message.serialize().decode("utf-8") # unicode object.
+        _logger.debug(u"Sending '%s'.", marsh)
 
     def connect(self):
         """Overrides C{pyxmpp.jabber.Client.connect} for the sake of API."""
@@ -84,19 +86,19 @@ class Connection(px.jab.Client, _threading.Thread):
                 try:
                     px.jab.Client.connect(self)
                 except socket_error, e:
-                    c.stderr(u"DEBUG: xmpp: Connection failed: %s\n" % e)
+                    _logger.debug("Connection failed: %s.", e)
                     time.sleep(_RECONNECT_INTERVAL)
                 time.sleep(1)
         finally:
             self.lock.release()
-        c.stderr(u"DEBUG: xmpp: Connected.\n")
+        _logger.debug("Connected.")
 
     def disconnect(self):
         """Overrides C{pyxmpp.jabber.Client.disconnect} for the sake of API."""
         self.halt = True
 
     def disconnected(self):
-        c.stdout(u"INFO: xmpp: Disconnected, trying to reconnect...\n")
+        _logger.info("Disconnected, trying to reconnect...")
         self.lock.acquire()
         try:
             # Clean up resources (delete all room instances etc).
@@ -124,8 +126,7 @@ class Connection(px.jab.Client, _threading.Thread):
             finally:
                 self.lock.release()
             time.sleep(1)
-        if __debug__:
-            c.stderr(u"DEBUG: xmpp: finished.\n")
+        _logger.debug("Finished.")
 
     def get_passwd(self, jid):
         """Get the password from the config or user.
@@ -152,8 +153,7 @@ class Connection(px.jab.Client, _threading.Thread):
             # notifications.
             return True
         sender = message.get_from()
-        if __debug__:
-            c.stderr(u"DEBUG: xmpp: pm: '%s' from '%s'\n" % (text, sender))
+        _logger.debug(u"pm: '%s' from '%s'", text, sender)
         if sender in self._parties:
             peer = self._parties[sender]
         else:
@@ -173,9 +173,8 @@ class Connection(px.jab.Client, _threading.Thread):
         """
         self._send(to_jid=message.get_from(), body=UNSUPPORTED_TYPE,
                 stanza_type=message.get_type())
-        if __debug__:
-            msg = u"DEBUG: xmpp: unhandled: %s\n"
-            c.stderr(msg % message.serialize().decode("utf-8"))
+        marsh = message.serialize().decode("utf-8")
+        _logger.debug(u"Unhandled: %s.", marsh)
         return True
 
     def handle_mucinvite(self, message):
@@ -192,15 +191,14 @@ class Connection(px.jab.Client, _threading.Thread):
         if not message.xpath_eval("/ns:message/mu:x/mu:invite", ns_map):
             # This stanza is not an invitation to a MUC.
             return False
-        if __debug__:
-            c.stderr(u"DEBUG: xmpp: invited to %s\n" % message.get_from())
+        _logger.debug(u"Invited to %s.", message.get_from())
         try:
             room_jid = message.get_from().bare()
         except px.JIDError, e:
-            c.stderr(u"WARNING: handle_mucinvite: %s\n" % unicode(e))
+            _logger.warning(u"handle_mucinvite: %s", unicode(e))
             return True
         if unicode(room_jid) in self._rooms.rooms:
-            c.stderr(u"WARNING: already in %s\n" % unicode(room_jid))
+            _logger.warning(u"Already in %s", unicode(room_jid))
             return True
         room = parties.Group(room_jid, self.stream)
         handler = _MucEventHandler(self, room)
@@ -237,15 +235,15 @@ class Connection(px.jab.Client, _threading.Thread):
                 stream = self.get_stream()
                 if stream is None:
                     # Wait till the connection is re-established.
-                    c.stderr(u"DEBUG: xmpp: Not connected, waiting...\n")
+                    _logger.debug("Not connected, waiting...")
                     time.sleep(_RECONNECT_INTERVAL)
                     continue
                 try:
                     stream.loop_iter(timeout=timeout)
                     self.idle()
                 except (socket_error, px.FatalStreamError, px.ClientError), e:
-                    c.stderr(u"DEBUG: xmpp: Connection error: %s.\n" % e)
-                    c.stdout(u"DEBUG: xmpp: Reconnecting...\n")
+                    _logger.debug(u"Connection error: %s.", e)
+                    _logger.debug("Reconnecting...")
                     self.disconnected()
             finally:
                 self.lock.release()
@@ -277,7 +275,7 @@ class Connection(px.jab.Client, _threading.Thread):
         # to receive subscription requests, so request roster.
         self.request_roster()
         self.stream.send(px.Presence(priority=20, show="chat"))
-        c.stdout(u"INFO: xmpp: logged in as %s\n" % unicode(self.jid))
+        _logger.info(u"Logged in as %s", self.jid)
 
 class _MucEventHandler(px.jab.muc.MucRoomHandler):
     """Define handlers for events from MUC rooms.
@@ -309,20 +307,18 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
         try:
             room_jid = px.JID(message.get_from()).bare()
         except JIDError, e:
-            c.stderr(u"WARNING: xmpp: malformed muc JID: %s\n" % e)
+            _logger.warning(u"Malformed muc JID: %s", e)
             return False
         if sender is None or sender.same_as(self.room._mucstate.me):
             # Ignore messages from the conference server and this bot.
             return True
         text = message.get_body()
-        if __debug__:
-            c.stderr(u"DEBUG: xmpp: muc: %s: '%s'\n" %
-                            (message.get_from(), text))
+        _logger.debug(u"muc: %s: '%s'", message.get_from(), text)
         ai = self.room.get_AI()
         try:
             member = self.room.get_participant(sender.nick)
         except parties.NoSuchParticipantError, e:
-            c.stderr(u"INFO: xmpp: muc: ignoring: %s\n" % e)
+            _logger.info(u"muc: ignoring: %s", e)
         else:
             ai.handle(text, member)
         return True
@@ -333,8 +329,8 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
         try:
             part = self.room.get_participant(old_nick)
         except parties.NoSuchParticipantError:
-            c.stderr(u"WARNING: unknown user %s changed nick in %s (added)\n" %
-                               (user.nick, self.room))
+            _logger.warning(u"Unknown user %s changed nick in %s (added).",
+                    user.nick, self.room)
             self.room.add_participant(parties.GroupMember(self.room, user))
         else:
             old_jid = part.room_jid
@@ -355,24 +351,21 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
 
     def user_joined(self, user, stanza):
         self.room.add_participant(parties.GroupMember(self.room, user))
-        if __debug__:
-            c.stderr(u"DEBUG: %s entered %s.\n" % (user.nick, self.room))
+        _logger.debug(u"%s entered %s.", user.nick, self.room)
         return True
     user_joined.__doc__ = px.jab.muc.MucRoomHandler.user_joined.__doc__
 
     def user_left(self, user, stanza):
         if user.same_as(self.room._mucstate.me):
             self.conn.leave_room(self.room._mucstate)
-            if __debug__:
-                c.stderr(u"DEBUG: left %s\n" % self.room)
+            _logger.debug(u"Left %s.", self.room)
         else:
             try:
                 self.room.del_participant(parties.GroupMember(self.room, user))
             except parties.NoSuchParticipantError, e:
-                c.stderr(u"INFO: xmpp: muc: unknown participant leaving: "
-                        "%s\n" % e)
-            if __debug__:
-                c.stderr(u"DEBUG: %s left %s.\n" % (user.nick, self.room))
+                _logger.info(u"unknown participant %s left %s.", e, self.room)
+            else:
+                _logger.debug(u"%s left %s.", user.nick, self.room)
     user_left.__doc__ = px.jab.muc.MucRoomHandler.user_left.__doc__
 
 def init():

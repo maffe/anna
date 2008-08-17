@@ -17,7 +17,6 @@ except ImportError:
 import sqlalchemy as sa
 
 from ai.annai.plugins import BasePlugin, PluginError
-import communication as c
 import config
 
 class _Plugin(BasePlugin):

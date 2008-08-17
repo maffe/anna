@@ -23,7 +23,7 @@ Dependencies:
 Currently the source-code is only available through subversion. To
 download the latest trunk, execute the following command:
 
-  $ svn co svn://0brg.net/anna/trunk
+  $ svn checkout https://0brg.net/svn/anna/trunk
 
 If you don't have a subversion client you can get the official client
 [4], or search the web for another one.

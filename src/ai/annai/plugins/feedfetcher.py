@@ -5,6 +5,7 @@
 content the output of this plugin is now unusable.
 
 """
+import logging
 try:
     import threading as _threading
 except ImportError:
@@ -13,7 +14,6 @@ import time
 
 import ai.annai
 from ai.annai.plugins import BasePlugin, PluginError
-import communication as c
 import frontends
 
 # A local import ('import _feedparser') would make more sense but for some
@@ -33,6 +33,7 @@ FORMAT = u"""New feed message for %(feed_url)s:
 
 - <%(url)s>"""
 
+_logger = logging.getLogger(__name__)
 #: Semaphore for keeping track of concurrent feedfetcher threads.
 _tickets = _threading.Semaphore(MAX_CONCURRENT_THREADS)
 
@@ -117,7 +118,7 @@ class _Plugin(BasePlugin):
         """
         if self.error is not None:
             return
-        c.stderr(u"DEBUG: feedfetcher: checking %s\n" % self.feed_url)
+        _logger.debug(u"Feedfetcher: checking %s.", self.feed_url)
         # If this function was not called by the timer it's still running.
         self.timer.cancel()
         d = feedparser.parse(self.feed_url)
@@ -132,7 +133,7 @@ class _Plugin(BasePlugin):
         for entry in d["entries"]:
             clean = unpack_entry(entry)
             if clean is None:
-                c.stderr(u"INFO: Incompatible feed entry: %s\n" % entry)
+                _logger.info(u"Incompatible feed entry: %s.", entry)
                 continue
             try:
                 if clean["updated"] <= self.latest_elem:
@@ -176,7 +177,7 @@ class _Plugin(BasePlugin):
         assert(isinstance(reason, unicode))
         self.error = u"%s exiting: %s" % (self, reason)
         self.feed_url = u""
-        c.stderr(u"INFO: feedfetcher.exit(%r)\n" % reason)
+        _logger.info(u"feedfetcher.exit(%r)", reason)
 
     def process(self, message, reply, *args, **kwargs):
         if self.error is not None:

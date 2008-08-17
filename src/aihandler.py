@@ -15,7 +15,6 @@ except ImportError:
     import dummy_threading as _threading
 
 import ai
-import communication as c
 
 # Lock for ensuring the _load_refs() method is only run once. Never .release()!
 _refs_loaded = _threading.Lock()
@@ -37,10 +36,6 @@ def _load_refs():
         assert(name not in _refs)
         mod = imp.load_module(name, *imp.find_module(name, ["ai"]))
         _refs[name] = mod
-        if __debug__:
-            if not ("ManyOnMany" in dir(mod) and "OneOnOne" in dir(mod)):
-                c.stderr(u"AI module %s does not comply with the API." % name)
-                c.stderr(u"\nDEBUG: %r\n", dir(mod))
     imp.release_lock()
 
 class NoSuchAIError(Exception):

@@ -10,6 +10,7 @@ U{https://0brg.net/anna/wiki/Irrepressible.info_plugin}.
 non-blocking way.
 
 """
+import logging
 try:
     import threading as _threading
 except ImportError:
@@ -27,6 +28,7 @@ FETCH_ERROR = u"An error occurred while fetching a fragment from \
 irrepressible.info. If the error persists, please tell us about it on \
 the wiki <https://0brg.net/anna/wiki/Annawiki_talk:Community_Portal>."
 
+_logger = logging.getLogger(__name__)
 # Create a lock for fetching.
 _fetch_mutex = c.TimedMutex(10)
 
@@ -73,12 +75,11 @@ class _Plugin(BasePlugin):
             return (message, u"%s overloaded, please try again later." % self)
         # The lock has been acquired. It will be released after a timeout.
 
-        if __debug__:
-            c.stderr(u"INFO: %s: fetching fragment.\n" % self)
+        _logger.info(u"Fetching fragment.")
         try:
             frag = get_ii_fragment()
         except (IOError, xml.parsers.expat.ExpatError), e:
-            c.stderr(e)
+            _logger.warning(e)
             return (message, FETCH_ERROR)
         else:
             return (message, u"Fragment %s:\n\t%s\nfrom: <%s>" % frag)

@@ -1,6 +1,6 @@
 """Conversation-party definitions for the xmpp frontend."""
 
-import sys
+import logging
 try:
     import threading as _threading
 except ImportError:
@@ -15,13 +15,14 @@ px.jab.muc = pxjm
 px.jab.muccore = pxjmc
 del pxj, pxjm, pxjmc
 
-import communication as c
 from frontends import BaseIndividual, BaseGroup, BaseGroupMember
 from frontends import NoSuchParticipantError
 
+_logger = logging.getLogger(__name__)
+
 class Individual(BaseIndividual):
     def __init__(self, jid, stream):
-        c.stderr(u"DEBUG: xmpp: Individual %s instantiated.\n" % jid)
+        _logger.debug(u"Individual %s instantiated.", jid)
         self._jid = jid
         self._name = jid.node
         self._stream = stream
@@ -68,7 +69,7 @@ class Group(BaseGroup):
     """
     _mucstate = None
     def __init__(self, jid, stream):
-        c.stderr(u"DEBUG: xmpp: Group %s instantiated.\n" % jid)
+        _logger.debug(u"Group %s instantiated.", jid)
         assert(isinstance(jid, px.JID))
         self._jid = jid
         self._members = []
@@ -117,13 +118,11 @@ class Group(BaseGroup):
         return self._mucstate.joined
 
     def join(self):
-        if __debug__:
-            c.stderr(u"DEBUG: join %s\n" % self)
+        _logger.debug(u"Join %s.", self)
         self._mucstate.join(history_maxstanzas=0)
 
     def leave(self):
-        if __debug__:
-            c.stderr(u"DEBUG: leaving %s\n" % self)
+        _logger.debug(u"Leave %s.", self)
         self._mucstate.leave()
 
     def set_AI(self, ai):

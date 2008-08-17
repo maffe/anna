@@ -6,6 +6,7 @@ exiting your program to kill the two threads polling for messages.
 
 """
 import getpass as _getpass_mod
+import logging
 import mutex
 import sys
 try:
@@ -16,6 +17,7 @@ import Queue
 
 # The lock for the stdout.
 _lock = _threading.RLock()
+_logger = logging.getLogger(__name__)
 #: Whether or not the stderr should wait for the stdout.
 combined_out_err = True
 
@@ -126,8 +128,7 @@ def stdout(msg, encoding=None):
     """
     if isinstance(msg, unicode):
         msg = _encode(msg, encoding)
-    elif __debug__:
-        stderr(u"WARNING: passing non-unicode object to stdout().")
+    _logger.warning("Passing non-unicode object to stdout().")
     _poller_out.queue.put(msg)
 
 def stdout_block(msg, encoding=None):

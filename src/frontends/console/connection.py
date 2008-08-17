@@ -18,8 +18,9 @@ import config
 from frontends import BaseConnection
 from frontends.console.parties import Individual
 
-USAGE = u"""Welcome to the interactive Anna shell.  Just type a message
-as you normally would.
+USAGE = u"""\
+Welcome to the interactive Anna shell.  Just type a message as you
+normally would.
 
 WARNING: this frontend blocks the stdout on every prompt. To prevent the
 output buffer from growing too big, it should only be used alone or at

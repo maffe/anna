@@ -6,6 +6,7 @@ To kill the entire chatbot, use ctrl + C.
 
 """
 import imp
+import logging
 import optparse
 import signal
 import sys
@@ -24,12 +25,16 @@ USAGE = """
     $ anna --list
     $ anna --help
 """
+LOGFORMAT = "%(asctime)s%(name)s: %(levelname)s: %(message)s"
+LOGDATEFMT = "%c "
 
 # Lock for ensuring the _import_frontends() method is only run once. Never
 # .release()!
 _frontends_imported = _threading.Lock()
 # Dictionary of references to imported frontends.
 _frontends = {}
+# Main anna logger.
+_logger = logging.getLogger(__name__)
 
 def discard_args(func):
     """Decorator that discards all arguments to a function."""
@@ -88,8 +93,7 @@ class Anna(object):
 @discard_args
 def print_frontends():
     print "Available frontends:"
-    for frontend in frontends.__all__:
-        print "    - %s" % frontend
+    print "\n".join("    - " + f for f in frontends.__all__)
     print
     sys.exit()
 
@@ -97,7 +101,7 @@ def print_frontends():
 def stop():
     """Stops the bot started by L{main}."""
     global bot
-    c.stderr(u"Stopping the bot...\n")
+    _logger.info("Stopping the bot...")
     bot.stop()
 
 def main():
@@ -105,13 +109,22 @@ def main():
     global bot
     print __doc__
     p = optparse.OptionParser(USAGE)
+    p.set_defaults(loglevel=logging.WARNING)
     p.add_option("-f", "--file", help="use specified configuration file "
             "instead of default (~/.anna/config)")
     p.add_option("-l", "--list", action="callback", callback=print_frontends,
             help="print a list of available frontends")
+    p.add_option("-q", "--quiet", action="store_const", const=logging.ERROR,
+            dest="loglevel", help="Only report severe errors.")
+    p.add_option("-v", "--verbose", action="store_const", const=logging.INFO,
+            dest="loglevel", help="Report informational messages.")
+    p.add_option("-d", "--debug", action="store_const", const=logging.DEBUG,
+            dest="loglevel", help="Report debugging info.")
     (options, args) = p.parse_args()
     if len(args) == 0:
         p.error("You need to specify at least one frontend. See --list.")
+    logging.basicConfig(level=options.loglevel, format=LOGFORMAT,
+            datefmt=LOGDATEFMT)
     config.load_conf(options.file)
     c.start()
     _import_frontends(args)
@@ -121,6 +134,7 @@ def main():
     while bot.is_running():
         time.sleep(3)
     c.stop()
+    _logger.info("Bot stopped.")
 
 if __name__ == "__main__":
     main()

@@ -6,14 +6,15 @@ stored once so other modules can use the configuration without having to open
 the file every time.  The L{get_conf_copy} function can be used to this end.
 
 """
+import logging
 import os
 import sys
 import ConfigParser
 
-import communication as c
-
 CONF_DIR = os.path.expanduser("~/.anna")
 ENC = "utf8"
+
+_logger = logging.getLogger(__name__)
 
 class AnnaConfig(object):
     """Used to communicate configuration values with other modules.
@@ -66,7 +67,7 @@ class AnnaConfigParser(object):
 
         """
         if not os.path.isdir(CONF_DIR):
-            c.stdout(u"INFO: Creating personal directory: %s\n" % CONF_DIR)
+            _logger.info("Creating personal directory: %s", CONF_DIR)
             os.mkdir(CONF_DIR, 0700)
         conf_loc = os.path.join(CONF_DIR, "anna.conf")
         if not os.path.isfile(conf_loc):

@@ -5,6 +5,7 @@ _MyClient instance. All L{Individual}s and {Group}s use this client to
 communicate with respective entities on said server.
 
 """
+import logging
 try:
     import threading as _threading
 except ImportError:
@@ -15,7 +16,6 @@ import ircbot
 import irclib
 
 import aihandler
-import communication as c
 import config
 from frontends import BaseConnection, NoSuchParticipantError
 
@@ -24,6 +24,7 @@ from parties import Individual, Group, GroupMember
 _conf = config.get_conf_copy()
 _def_ai_mom = aihandler.get_manyonmany(_conf.misc["default_ai"])
 _def_ai_ooo = aihandler.get_oneonone(_conf.misc["default_ai"])
+_logger = logging.getLogger(__name__)
 
 def _irc_nameq(x, y):
     """Returns True if two names are considered equal according to the RFC."""
@@ -64,7 +65,7 @@ class _ServerBot(ircbot.SingleServerIRCBot):
             group.set_AI(_def_ai_mom(group))
             self.channels[chan_name_enc]._annagroup = group
             group.send(u"Hi, I am a chatbot. Thanks for inviting me here.")
-            c.stderr(u"DEBUG: irc: Joined %s.\n" % chan_name)
+            _logger.debug(u"Joined %s.", chan_name)
 
     def on_namreply(self, conn, ev):
         names_enc = ev.arguments()[2].split()
@@ -103,7 +104,7 @@ class _ServerBot(ircbot.SingleServerIRCBot):
         msg = ev.arguments()[0].decode(self._enc, "replace")
         sender_name_enc = irclib.nm_to_n(ev.source())
         sender_name = sender_name_enc.decoder(self._enc)
-        c.stderr(u"DEBUG: irc: PRIVMSG from %s: %s\n" % (sender, msg))
+        _logger.debug(u"PRIVMSG from %s: %s", sender, msg)
         if sender not in self.individuals:
             sender = Individual(conn, name=sender_name, encoding=self._enc)
             sender.set_AI(_def_ai_ooo(sender))
@@ -115,8 +116,7 @@ class _ServerBot(ircbot.SingleServerIRCBot):
         sender_name = irclib.nm_to_n(ev.source().decode(self._enc))
         chan_name_enc = ev.target()
         chan_name = ev.target().decode(self._enc)
-        c.stderr(u"DEBUG: irc: PRIVMSG (%s) from %s: %s\n" % (chan_name,
-            sender_name, msg))
+        _logger.debug(u"PRIVMSG (%s) from %s: %s", chan_name, sender_name, msg)
         group = self.channels[chan_name_enc]._annagroup
         try:
             part = group.get_participant(sender_name)
@@ -128,10 +128,10 @@ class _ServerBot(ircbot.SingleServerIRCBot):
 
     def on_welcome(self, conn, ev):
         try:
-            c.stderr(u"INFO: irc: %s\n" % ev.arguments()[0].decode(self._enc))
+            _logger.info(ev.arguments()[0].decode(self._enc))
         except UnicodeDecodeError:
-            c.stderr(u"WARNING: irc: Failed to parse the welcome message from"
-                    " %s.\n" % SERVER)
+            _logger.warning("Failed to parse the welcome message from"
+                    " %s.", SERVER)
         for chan_name in self._chan_names:
             conn.join(chan_name.encode(self._enc))
 
@@ -154,11 +154,11 @@ class Connection(BaseConnection, _threading.Thread):
             bot = _ServerBot(server, **kwargs)
             bot._connect()
             bots.append(bot)
-            c.stderr(u"DEBUG: irc: %s Connected.\n" % server)
+            _logger.debug("Connected to %s.", server)
         while not self.halt:
             for bot in bots:
                 bot.ircobj.process_once(0)
             time.sleep(0.5)
         for bot in bots:
             bot.disconnect()
-        c.stderr(u"DEBUG: irc: finished.\n")
+        _logger.debug("Finished.")

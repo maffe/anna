@@ -4,13 +4,8 @@ import sys
 
 import irclib
 
-import aihandler
-import communication as c
-import config
 from frontends import BaseIndividual, BaseGroup, BaseGroupMember
 from frontends import NoSuchParticipantError
-
-import connection
 
 class _IRCParty(object):
     """Common functionality for IRC communication parties.
