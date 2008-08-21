@@ -9,6 +9,8 @@ joins groupname foo and then MUC B joins groupname foo too, they will
 see eachothers messages. Individual C, though, who joins groupname bar,
 will not.
 
+You can see the list of participants by saying "names".
+
 More information on U{the wiki
 <https://0brg.net/anna/wiki/Mucproxy_plugin>}.
 
@@ -41,13 +43,15 @@ class _Plugin(BasePlugin):
         _room_lock.acquire()
         try:
             if args[0] in _rooms:
-                if any(map(lambda x: x[0] == identity, _rooms[args[0]])):
-                    raise PluginError(u"You can not join the same room twice.")
-                if any(map(lambda x: x[1] == args[1], _rooms[args[0]])):
+                if any(map(lambda x: x[0] == args[1], _rooms[args[0]])):
                     raise PluginError(u"Name is taken.")
-                _rooms[args[0]].append((identity, args[1]))
+                if any(map(lambda x: x[1] == identity, _rooms[args[0]])):
+                    raise PluginError(u"You can not join the same room twice.")
+                _rooms[args[0]].append((args[1], identity))
+                identity.send(u"Joined %s." % args[0])
             else:
-                _rooms[args[0]] = [(identity, args[1])]
+                _rooms[args[0]] = [(args[1], identity)]
+                identity.send(u"Created new room %s." % args[0])
         finally:
             _room_lock.release()
 
@@ -60,7 +64,7 @@ class _Plugin(BasePlugin):
         assert(isinstance(sender, unicode))
         _room_lock.acquire()
         try:
-            for identity, name in _rooms[self._mucname]:
+            for name, identity in _rooms[self._mucname]:
                 if name != self._peername:
                     identity.send(u"<%s> %s" % (sender, msg))
         finally:
@@ -70,8 +74,11 @@ class _Plugin(BasePlugin):
         assert(isinstance(sender, unicode))
         if msg == "names":
             _room_lock.acquire()
-            reply = u"\n".join(u"%s (%s)" % e for e in _rooms[self._mucname])
+            reply = u"Participants in %s:\n" % self._mucname
+            reply += "\n".join(u"- %s (%s)" % e for e in _rooms[self._mucname])
             _room_lock.release()
+            # Do not send the names command to other parties.
+            return (msg, reply)
         if msg is not None:
             self._one_msg(msg, sender)
         if reply is not None:
@@ -82,7 +89,7 @@ class _Plugin(BasePlugin):
         _room_lock.acquire()
         try:
             room = _rooms[self._mucname]
-            me = (self._identity, self._peername)
+            me = (self._peername, self._identity)
             assert(me in room)
             room.remove(me)
             assert(me not in room)
@@ -101,5 +108,7 @@ class ManyOnManyPlugin(_Plugin):
         return u"%s:%s" % (self._peername, self._identity.get_mynick())
 
     def process(self, message, reply, sender, highlight):
+        if highlight:
+            message = "%s: %s" % (self._identity.get_mynick(), message)
         return self._process(message, reply, u"%s:%s" % (self._peername,
             sender.nick))
