@@ -9,7 +9,8 @@ joins groupname foo and then MUC B joins groupname foo too, they will
 see eachothers messages. Individual C, though, who joins groupname bar,
 will not.
 
-STRICTLY load this as the last plugin!
+More information on U{the wiki
+<https://0brg.net/anna/wiki/Mucproxy_plugin>}.
 
 """
 try:
@@ -69,8 +70,7 @@ class _Plugin(BasePlugin):
         assert(isinstance(sender, unicode))
         if msg == "names":
             _room_lock.acquire()
-            reply = u"\n".join(u"%s (%s)" % e for e in
-                    _rooms[self._mucname].iteritems())
+            reply = u"\n".join(u"%s (%s)" % e for e in _rooms[self._mucname])
             _room_lock.release()
         if msg is not None:
             self._one_msg(msg, sender)
