@@ -32,17 +32,23 @@ class _Plugin(BasePlugin):
             raise PluginError(u'Illegal syntax, see "about plugin mucproxy".')
         assert(isinstance(args[0], unicode))
         assert(isinstance(args[1], unicode))
+        if u":" in args[1]:
+            raise PluginError(u"Nickname may not contain colons (:).")
         self._identity = identity
         self._mucname = args[0]
         self._peername = args[1]
         _room_lock.acquire()
-        if args[0] in _rooms:
-            if any(map(lambda x: x[0] == identity, _rooms[args[0]])):
-                raise PluginError(u"You can not join the same room twice.")
-            _rooms[args[0]].append((identity, args[1]))
-        else:
-            _rooms[args[0]] = [(identity, args[1])]
-        _room_lock.release()
+        try:
+            if args[0] in _rooms:
+                if any(map(lambda x: x[0] == identity, _rooms[args[0]])):
+                    raise PluginError(u"You can not join the same room twice.")
+                if any(map(lambda x: x[1] == args[1], _rooms[args[0]])):
+                    raise PluginError(u"Name is taken.")
+                _rooms[args[0]].append((identity, args[1]))
+            else:
+                _rooms[args[0]] = [(identity, args[1])]
+        finally:
+            _room_lock.release()
 
     def __unicode__(self):
         return u"MUC proxy for group " + self._mucname
@@ -52,22 +58,36 @@ class _Plugin(BasePlugin):
         assert(isinstance(msg, unicode))
         assert(isinstance(sender, unicode))
         _room_lock.acquire()
-        for identity, name in _rooms[self._mucname]:
-            if name != self._peername:
-                identity.send(u"<%s> %s" % (sender, msg))
-        _room_lock.release()
+        try:
+            for identity, name in _rooms[self._mucname]:
+                if name != self._peername:
+                    identity.send(u"<%s> %s" % (sender, msg))
+        finally:
+            _room_lock.release()
 
     def _process(self, msg, reply, sender):
         assert(isinstance(sender, unicode))
         if msg == "names":
             _room_lock.acquire()
-            reply = u", ".join(map(lambda x: x[1], _rooms[self._mucname]))
+            reply = u"\n".join(u"%s (%s)" % e for e in
+                    _rooms[self._mucname].iteritems())
             _room_lock.release()
         if msg is not None:
             self._one_msg(msg, sender)
         if reply is not None:
             self._one_msg(reply, self._getmyname())
         return (msg, reply)
+
+    def unloaded(self):
+        _room_lock.acquire()
+        try:
+            room = _rooms[self._mucname]
+            me = (self._identity, self._peername)
+            assert(me in room)
+            room.remove(me)
+            assert(me not in room)
+        finally:
+            _room_lock.release()
 
 class OneOnOnePlugin(_Plugin):
     def _getmyname(self):
