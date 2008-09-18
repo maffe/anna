@@ -20,7 +20,7 @@ class _Plugin(BasePlugin):
     def process(self, message, reply, *args):
         if message is None:
             return (message, reply)
-        stripped = self.regex_strip.match(message).group(1)
+        stripped = self.regex_strip.match(message).group(1).lower()
         for pool in self.words:
             if stripped in pool:
                 if pool == self.oldpool:
