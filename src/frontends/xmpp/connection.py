@@ -1,7 +1,7 @@
 """Connect to the xmpp network and define connection handlers.
 
 @TODO: Display better error message when connection/auth fails.
-@var _RECONNECT_INTERVAL: Number of seconds to wait between reconnection
+@var _conf.xmpp["reconnect_interval"]: Number of seconds to wait between reconnection
 attempts when disconnected.
 @var _conf: Copy of the program's configuration settings from the L{config}
 module.
@@ -42,7 +42,7 @@ class Connection(px.jab.Client, _threading.Thread):
 
     """
     def __init__(self, **kwargs):
-        _threading.Thread.__init__(self, name="xmpp frontend")
+        _threading.Thread.__init__(self, name="XMPP frontend")
         if "jid" not in kwargs:
             jab_conf = _conf.xmpp
             args = (jab_conf["user"], jab_conf["server"], jab_conf["resource"])
@@ -87,7 +87,7 @@ class Connection(px.jab.Client, _threading.Thread):
                     px.jab.Client.connect(self)
                 except socket_error, e:
                     _logger.debug("Connection failed: %s.", e)
-                    time.sleep(_RECONNECT_INTERVAL)
+                    time.sleep(_conf.xmpp["reconnect_interval"])
                 time.sleep(1)
         finally:
             self.lock.release()
@@ -198,8 +198,14 @@ class Connection(px.jab.Client, _threading.Thread):
             _logger.warning(u"handle_mucinvite: %s", unicode(e))
             return True
         if unicode(room_jid) in self._rooms.rooms:
-            _logger.warning(u"Already in %s", unicode(room_jid))
-            return True
+            _logger.warning(u"Already in %s, rejoining.", unicode(room_jid))
+            # The parties.Group instance must be destroyed.
+            state = self._rooms.get_room_state(room_jid)
+            state.handler.room.destroy()
+            # TODO: Better method to detect the room has been left properly.
+            time.sleep(1)
+            self._rooms.forget(state)
+            del state
         room = parties.Group(room_jid, self.stream)
         handler = _MucEventHandler(self, room)
         self._rooms.join(room_jid, nick, handler, history_maxstanzas=0)
@@ -236,7 +242,7 @@ class Connection(px.jab.Client, _threading.Thread):
                 if stream is None:
                     # Wait till the connection is re-established.
                     _logger.debug("Not connected, waiting...")
-                    time.sleep(_RECONNECT_INTERVAL)
+                    time.sleep(_conf.xmpp["reconnect_interval"])
                     continue
                 try:
                     stream.loop_iter(timeout=timeout)
@@ -313,6 +319,10 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
             # Ignore messages from the conference server and this bot.
             return True
         text = message.get_body()
+        if text is None:
+            # Ignore messages without body (typically "x is composing a
+            # message" notifications).
+            return False
         _logger.debug(u"muc: %s: '%s'", message.get_from(), text)
         ai = self.room.get_AI()
         try:
@@ -370,8 +380,7 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
 
 def init():
     """Make this module ready for use."""
-    global _conf, _RECONNECT_INTERVAL
+    global _conf
     _conf = config.get_conf_copy()
-    _RECONNECT_INTERVAL = _conf.xmpp["reconnect_interval"]
 
 init()
