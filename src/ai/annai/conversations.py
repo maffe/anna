@@ -6,6 +6,7 @@ try:
     import threading as _threading
 except ImportError:
     import dummy_threading as _threading
+import types
 
 import ai
 from ai.annai import pluginhandler, plugins
@@ -70,6 +71,8 @@ def _mod_plugins(ai, party, message):
     elif message.startswith("load plugins "):
         for argv_str in message[len("load plugins "):].split(","):
             argv = argv_str.strip().split()
+            if not argv:
+                continue
             try:
                 plug_cls = _get_plugin(ai, argv[0])
                 ai.plugins.append(plug_cls(party, argv[1:]))
@@ -196,6 +199,8 @@ class OneOnOne(_AnnaiBase, ai.BaseOneOnOne):
             if not isinstance(message, unicode):
                 raise TypeError, "Message must be a unicode object."
         reply = self._general_reply(message)
+        # The only acceptable message types.
+        msg_types = (unicode, types.NoneType)
         for plugin in self.plugins[:]:
             try:
                 message, reply = plugin.process(message, reply)
@@ -203,6 +208,10 @@ class OneOnOne(_AnnaiBase, ai.BaseOneOnOne):
                 self.party.send(unicode(e))
                 self.plugins.remove(plugin)
                 plugin.unloaded()
+            # Check if the input and output of the plugin is really only
+            # unicode and/or None objects.
+            assert(all(any(isinstance(x, y) for y in msg_types) for x in
+                (message, reply)))
 
         if reply is not None:
             self.party.send(reply)
