@@ -16,6 +16,13 @@ class MyParser(Parser):
     def buildProcessor(self):
         return MyProcessor()
 
+    def parse(self, txt, *args):
+        success, children, next = Parser.parse(self, txt, *args)
+        if not (success and next == len(txt)):
+            return (False, 0.0)
+        else:
+            return (True, children[0])
+
 class MyProcessor(DispatchProcessor):
     def sexpression(self, (tag, start, stop, subtags), buffer):
         sign = dispatch(self, subtags[0], buffer)
@@ -52,12 +59,11 @@ def main():
     if len(sys.argv) < 2:
         sys.exit('Usage: %s <expression>' % sys.argv[0])
     expr = ''.join(sys.argv[1:])
-    res = pars.parse(expr)
-    success, children, next = res
-    if not (success and len(expr) == next):
+    success, res = pars.parse(expr)
+    if not success:
         sys.exit('Failed to parse.')
     else:
-        print '%g' % children[0]
+        print '%g' % res
 
 if __name__ == '__main__':
     main()

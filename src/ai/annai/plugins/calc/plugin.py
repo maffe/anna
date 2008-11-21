@@ -1,4 +1,9 @@
-'''Annai wrapper for the calculator library.'''
+'''Annai wrapper for the calculator library.
+
+Only reacts when the expression can be succesfully parsed. Acts shy (only
+reacts when no other plugin reacted yet).
+
+'''
 
 import sys
 
@@ -21,9 +26,12 @@ class _Plugin(BasePlugin):
         Only report errors if highlighted.
 
         '''
-        success, children, next = parser.parse(message)
-        if reply is None and success and next == len(message):
-            return (message, u'%g' % children[0])
+        try:
+            success, result = parser.parse(message)
+        except ArithmeticError, e:
+            return (message, reply)
+        if reply is None and success:
+            return (message, u'%g' % result)
         else:
             return (message, reply)
 
