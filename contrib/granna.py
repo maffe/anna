@@ -71,12 +71,19 @@ class _Plugin(BasePlugin):
                 for pattern in self.wrong:
                     cp = apply_pattern(pattern, words[i:])
                     if not cp == False:
-			reply = message[0:res.start()] + "DAN" + message[res.end():]
+                        reply = message[0:res.start()] + "DAN" + message[res.end():]
                         return (message, "Wrong! '" + reply + "'")
+    
+    # Test misspelled words
+
         return (message, reply) 
 
 OneOnOnePlugin = _Plugin
 ManyOnManyPlugin = _Plugin
 idfuncs = dict(x for x in locals().iteritems() 
     if callable(x[1]) and x[0].startswith("is_"))
+
+
+ss = ["dumbass", "asshole", "noob"]
+
 import pprint
