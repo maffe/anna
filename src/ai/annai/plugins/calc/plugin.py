@@ -22,10 +22,10 @@ class _Plugin(BasePlugin):
 
         '''
         success, children, next = parser.parse(message)
-        if success and next == len(message):
+        if reply is None and success and next == len(message):
             return (message, u'%g' % children[0])
-        elif highlight:
-            return (u'Failed to parse as arithmetic expression.', reply)
+        else:
+            return (message, reply)
 
 OneOnOnePlugin = _Plugin
 ManyOnManyPlugin = _Plugin
