@@ -1,0 +1,83 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module simpleparse.common.phonetics</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="simpleparse.html"><font color="#ffffff">simpleparse</font></a>.<a href="simpleparse.common.html"><font color="#ffffff">common</font></a>.phonetics</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/mcfletch/pylive/simpleparse/common/phonetics.py">/home/mcfletch/pylive/simpleparse/common/phonetics.py</a></font></td></tr></table>
+    <p><tt>Phonetic&nbsp;spellings&nbsp;for&nbsp;character&nbsp;values<br>
+&nbsp;<br>
+At&nbsp;the&nbsp;moment,&nbsp;only&nbsp;contains&nbsp;the&nbsp;"military&nbsp;alphabet"<br>
+(Alpha,&nbsp;Bravo&nbsp;...&nbsp;Yankee,&nbsp;Zulu),&nbsp;which&nbsp;is&nbsp;used&nbsp;as<br>
+alternative&nbsp;timezone&nbsp;names&nbsp;by&nbsp;the&nbsp;military&nbsp;and&nbsp;apparently<br>
+some&nbsp;aviation&nbsp;groups.&nbsp;&nbsp;Note,&nbsp;these&nbsp;are&nbsp;fairly&nbsp;common&nbsp;spellings,<br>
+but&nbsp;they&nbsp;aren't&nbsp;necessarily&nbsp;going&nbsp;to&nbsp;match&nbsp;a&nbsp;particular<br>
+usage.&nbsp;&nbsp;I&nbsp;may&nbsp;have&nbsp;missed&nbsp;some&nbsp;of&nbsp;the&nbsp;possibilities...<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;military_alphabet_char&nbsp;--&nbsp;fully&nbsp;spelled&nbsp;out&nbsp;versions&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;Alpha,&nbsp;Bravo&nbsp;...&nbsp;Yankee,&nbsp;Zulu&nbsp;phonetic&nbsp;alphabet,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including&nbsp;a&nbsp;few&nbsp;minor&nbsp;variations&nbsp;in&nbsp;spelling&nbsp;such&nbsp;as<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Xray&nbsp;and&nbsp;X-ray.&nbsp;&nbsp;All&nbsp;characters&nbsp;use&nbsp;title-caps&nbsp;format,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;so&nbsp;Zulu,&nbsp;not&nbsp;zulu&nbsp;will&nbsp;match.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;military_alphabet_char_lower&nbsp;--&nbsp;as&nbsp;for&nbsp;above,&nbsp;but&nbsp;with<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lowercased&nbsp;versions&nbsp;of&nbsp;the&nbsp;above<br>
+&nbsp;<br>
+No&nbsp;interpreters&nbsp;are&nbsp;provided.&nbsp;&nbsp;Taking&nbsp;the&nbsp;first&nbsp;character&nbsp;of<br>
+the&nbsp;name&nbsp;will&nbsp;always&nbsp;give&nbsp;you&nbsp;the&nbsp;equivalent&nbsp;character&nbsp;uppercase<br>
+for&nbsp;the&nbsp;military_alphabet_char&nbsp;and&nbsp;lowercase&nbsp;for&nbsp;the<br>
+military_alphabet_char_lower.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="simpleparse.common.html">simpleparse.common</a><br>
+</td><td width="25%" valign=top><a href="simpleparse.objectgenerator.html">simpleparse.objectgenerator</a><br>
+</td><td width="25%" valign=top><a href="string.html">string</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>_letters</strong> = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Echo', 'Foxtrot', 'Golf', 'Gulf', 'Hotel', 'India', 'Juliette', 'Juliet', 'Kilo', 'Lima', 'Mike', 'November', 'Oscar', 'Papa', 'Quebec', ...]<br>
+<strong>c</strong> = {'military_alphabet_char': FirstOfGroup(
+    children = [
+        Literal(
+...(
+            value = 'Zulu',
+        ),
+    ],
+), 'military_alphabet_char_lower': FirstOfGroup(
+    children = [
+        Literal(
+...(
+            value = 'zulu',
+        ),
+    ],
+)}<br>
+<strong>item</strong> = 'Zulu'<br>
+<strong>military_alphabet_char</strong> = FirstOfGroup(
+    children = [
+        Literal(
+...(
+            value = 'Zulu',
+        ),
+    ],
+)<br>
+<strong>military_alphabet_char_lower</strong> = FirstOfGroup(
+    children = [
+        Literal(
+...(
+            value = 'zulu',
+        ),
+    ],
+)</td></tr></table>
+</body></html>

@@ -1,0 +1,80 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module simpleparse.examples.formatvrml</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="simpleparse.html"><font color="#ffffff">simpleparse</font></a>.<a href="simpleparse.examples.html"><font color="#ffffff">examples</font></a>.formatvrml</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/mcfletch/pylive/simpleparse/examples/formatvrml.py">/home/mcfletch/pylive/simpleparse/examples/formatvrml.py</a></font></td></tr></table>
+    <p><tt>Example&nbsp;using&nbsp;a&nbsp;parser&nbsp;to&nbsp;format&nbsp;VRML97&nbsp;code&nbsp;as&nbsp;HTML&nbsp;w/CSS</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="os.html">os</a><br>
+</td><td width="25%" valign=top><a href="string.html">string</a><br>
+</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="simpleparse.examples.formatvrml.html#VRMLFormatter">VRMLFormatter</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="simpleparse.examples.formatvrml.html#HTMLVRMLFormatter">HTMLVRMLFormatter</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="HTMLVRMLFormatter">class <strong>HTMLVRMLFormatter</strong></a>(<a href="simpleparse.examples.formatvrml.html#VRMLFormatter">VRMLFormatter</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Format&nbsp;VRML&nbsp;files&nbsp;for&nbsp;display&nbsp;in&nbsp;HTML<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Data and other attributes defined here:<br>
+<dl><dt><strong>NODEMAP</strong> = {'DEF': '&lt;%(head)sstrong&gt;', 'DEFName': '&lt;span class="%(nodetype)s"&gt;', 'DEFName_tail': '&lt;/span&gt;', 'EXTERNPROTO': '&lt;span class="%(nodetype)s"&gt;', 'EXTERNPROTO_tail': '&lt;/span&gt;', 'PROTO': '&lt;span class="%(nodetype)s"&gt;', 'PROTO_tail': '&lt;/span&gt;', 'ROUTEData': '&lt;strong class="%(nodetype)s"&gt;', 'ROUTEData_tail': '&lt;/span&gt;', 'SFString': '&lt;span class="%(nodetype)s"&gt;', ...}</dl>
+
+<hr>
+Methods inherited from <a href="simpleparse.examples.formatvrml.html#VRMLFormatter">VRMLFormatter</a>:<br>
+<dl><dt><a name="HTMLVRMLFormatter-__init__"><strong>__init__</strong></a>(self, infile, vrmlparser<font color="#909090">=&lt;simpleparse.parser.Parser instance&gt;</font>)</dt></dl>
+
+<dl><dt><a name="HTMLVRMLFormatter-format"><strong>format</strong></a>(self, outfile)</dt></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="VRMLFormatter">class <strong>VRMLFormatter</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Base&nbsp;formatting&nbsp;class<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="VRMLFormatter-__init__"><strong>__init__</strong></a>(self, infile, vrmlparser<font color="#909090">=&lt;simpleparse.parser.Parser instance&gt;</font>)</dt></dl>
+
+<dl><dt><a name="VRMLFormatter-format"><strong>format</strong></a>(self, outfile)</dt></dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>VRMLPARSERDEF</strong> = '<font color="#c040c0">\n</font># Specialised VRML parser for colourising VRML ...              :=  ( [ <font color="#c040c0">\\</font>011-<font color="#c040c0">\\</font>015,]+ / comment+ )*<font color="#c040c0">\n</font>'<br>
+<strong>usage</strong> = "formatvrml.py infile outfile<font color="#c040c0">\n\t</font>infile -- properly... your<font color="#c040c0">\n\t</font>VRML by changing this file's definitions.<font color="#c040c0">\n</font>"<br>
+<strong>vrmlparser</strong> = &lt;simpleparse.parser.Parser instance&gt;</td></tr></table>
+</body></html>

@@ -1,0 +1,84 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module simpleparse.processor</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="simpleparse.html"><font color="#ffffff">simpleparse</font></a>.processor</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/mcfletch/pylive/simpleparse/processor.py">/home/mcfletch/pylive/simpleparse/processor.py</a></font></td></tr></table>
+    <p><tt>Definitions&nbsp;of&nbsp;the&nbsp;<a href="#MethodSource">MethodSource</a>&nbsp;and&nbsp;<a href="#Processor">Processor</a>&nbsp;APIs</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="simpleparse.processor.html#MethodSource">MethodSource</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="simpleparse.processor.html#Processor">Processor</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="MethodSource">class <strong>MethodSource</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Base&nbsp;class&nbsp;for&nbsp;<a href="#MethodSource">MethodSource</a>&nbsp;objects&nbsp;(including&nbsp;Processors&nbsp;and&nbsp;Parsers)<br>
+Most&nbsp;applications&nbsp;will&nbsp;use&nbsp;either&nbsp;<a href="#Processor">Processor</a>&nbsp;or&nbsp;Parser&nbsp;objects,&nbsp;rather<br>
+than&nbsp;directly&nbsp;using&nbsp;a&nbsp;<a href="#MethodSource">MethodSource</a>&nbsp;object.<br>
+&nbsp;<br>
+The&nbsp;<a href="#MethodSource">MethodSource</a>&nbsp;is&nbsp;basically&nbsp;just&nbsp;a&nbsp;generic&nbsp;object&nbsp;whose&nbsp;attributes<br>
+are&nbsp;accessed&nbsp;during&nbsp;generation&nbsp;and/or&nbsp;post-processing&nbsp;of&nbsp;parse&nbsp;results.<br>
+The&nbsp;following&nbsp;are&nbsp;the&nbsp;special&nbsp;attribute&nbsp;forms&nbsp;for&nbsp;use&nbsp;in&nbsp;<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_m_productionname&nbsp;--&nbsp;alters&nbsp;the&nbsp;method&nbsp;used&nbsp;in&nbsp;the&nbsp;TextTools<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;engine&nbsp;for&nbsp;storing&nbsp;results.&nbsp;&nbsp;If&nbsp;this&nbsp;is&nbsp;a&nbsp;callable&nbsp;object,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;then&nbsp;call&nbsp;the&nbsp;object&nbsp;with:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;object(&nbsp;taglist,text,l,r,subtags&nbsp;)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;it&nbsp;is&nbsp;TextTools.AppendToTagobj,&nbsp;then&nbsp;append&nbsp;the&nbsp;result<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tuple&nbsp;to&nbsp;the&nbsp;associated&nbsp;object&nbsp;(_o_productionname).&nbsp;&nbsp;This<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;requires&nbsp;that&nbsp;_o_productionname&nbsp;have&nbsp;an&nbsp;"append"&nbsp;method,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;obviously.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;it&nbsp;is&nbsp;the&nbsp;constant&nbsp;TextTools.AppendMatch,&nbsp;then&nbsp;append<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;string&nbsp;value&nbsp;which&nbsp;matched&nbsp;the&nbsp;production.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;it&nbsp;is&nbsp;TextTools.AppendTagobj,&nbsp;then&nbsp;append&nbsp;the&nbsp;associated<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tagobject&nbsp;itself&nbsp;to&nbsp;the&nbsp;results&nbsp;tree.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_o_productionname&nbsp;--&nbsp;with&nbsp;AppendToTagobj,&nbsp;AppendTagobj&nbsp;and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cases&nbsp;where&nbsp;there&nbsp;is&nbsp;no&nbsp;_m_productionname&nbsp;defined,&nbsp;this<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allows&nbsp;you&nbsp;to&nbsp;provide&nbsp;an&nbsp;explicit&nbsp;tagobject&nbsp;for&nbsp;reporting<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;the&nbsp;results&nbsp;tree/getting&nbsp;called&nbsp;with&nbsp;results.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"></td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Processor">class <strong>Processor</strong></a>(<a href="simpleparse.processor.html#MethodSource">MethodSource</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Provides&nbsp;definition&nbsp;of&nbsp;a&nbsp;generic&nbsp;processing&nbsp;API<br>
+&nbsp;<br>
+Basically,&nbsp;a&nbsp;<a href="#Processor">Processor</a>&nbsp;has&nbsp;a&nbsp;method&nbsp;__call__&nbsp;which&nbsp;takes<br>
+two&nbsp;arguments,&nbsp;a&nbsp;value&nbsp;(which&nbsp;is&nbsp;either&nbsp;a&nbsp;3-tuple&nbsp;or&nbsp;a&nbsp;4-tuple<br>
+depending&nbsp;on&nbsp;whether&nbsp;a&nbsp;top-level&nbsp;production&nbsp;is&nbsp;being&nbsp;processed),<br>
+and&nbsp;a&nbsp;pointer&nbsp;to&nbsp;the&nbsp;buffer&nbsp;being&nbsp;parsed.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Processor-__call__"><strong>__call__</strong></a>(self, value, buffer)</dt><dd><tt>Process&nbsp;the&nbsp;results&nbsp;of&nbsp;a&nbsp;parsing&nbsp;run&nbsp;over&nbsp;buffer</tt></dd></dl>
+
+<dl><dt><a name="Processor-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;a&nbsp;representation&nbsp;of&nbsp;the&nbsp;class</tt></dd></dl>
+
+</td></tr></table></td></tr></table>
+</body></html>

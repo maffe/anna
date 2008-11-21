@@ -1,0 +1,1190 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module simpleparse.objectgenerator</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="simpleparse.html"><font color="#ffffff">simpleparse</font></a>.objectgenerator</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/mcfletch/pylive/simpleparse/objectgenerator.py">/home/mcfletch/pylive/simpleparse/objectgenerator.py</a></font></td></tr></table>
+    <p><tt>Object-oriented&nbsp;tag-table&nbsp;generator&nbsp;objects<br>
+&nbsp;<br>
+The&nbsp;objectgenerator&nbsp;module&nbsp;is&nbsp;the&nbsp;core&nbsp;of&nbsp;the&nbsp;SimpleParse<br>
+system,&nbsp;the&nbsp;various&nbsp;element&nbsp;token&nbsp;classes&nbsp;defined&nbsp;here<br>
+implement&nbsp;transitions&nbsp;from&nbsp;EBNF-style&nbsp;abstractions&nbsp;into<br>
+the&nbsp;low-level&nbsp;(assembly-like)&nbsp;instructions&nbsp;to&nbsp;the<br>
+TextTools&nbsp;engine.<br>
+&nbsp;<br>
+Each&nbsp;class&nbsp;within&nbsp;the&nbsp;module&nbsp;is&nbsp;a&nbsp;sub-class&nbsp;of&nbsp;<a href="#ElementToken">ElementToken</a>,<br>
+which&nbsp;provides&nbsp;a&nbsp;number&nbsp;of&nbsp;common&nbsp;facilities,&nbsp;the&nbsp;most<br>
+obvious&nbsp;of&nbsp;which&nbsp;is&nbsp;the&nbsp;permute&nbsp;method,&nbsp;which&nbsp;takes&nbsp;care&nbsp;of<br>
+the&nbsp;negative,&nbsp;optional,&nbsp;and&nbsp;repeating&nbsp;flags&nbsp;for&nbsp;the&nbsp;normal<br>
+case&nbsp;(with&nbsp;character&nbsp;ranges&nbsp;and&nbsp;literals&nbsp;being&nbsp;non-normal).</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="copy.html">copy</a><br>
+<a href="simpleparse.stt.TextTools.mxTextTools.mxTextTools.html">simpleparse.stt.TextTools.mxTextTools.mxTextTools</a><br>
+</td><td width="25%" valign=top><a href="string.html">string</a><br>
+<a href="time.html">time</a><br>
+</td><td width="25%" valign=top><a href="types.html">types</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="simpleparse.objectgenerator.html#ErrorOnFail">ErrorOnFail</a>
+</font></dt><dt><font face="helvetica, arial"><a href="simpleparse.objectgenerator.html#Group">Group</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="simpleparse.objectgenerator.html#FirstOfGroup">FirstOfGroup</a>
+</font></dt><dt><font face="helvetica, arial"><a href="simpleparse.objectgenerator.html#SequentialGroup">SequentialGroup</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="simpleparse.objectgenerator.html#CILiteral">CILiteral</a>
+</font></dt></dl>
+</dd>
+</dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="simpleparse.objectgenerator.html#LibraryElement">LibraryElement</a>
+</font></dt><dt><font face="helvetica, arial"><a href="simpleparse.objectgenerator.html#Literal">Literal</a>
+</font></dt><dt><font face="helvetica, arial"><a href="simpleparse.objectgenerator.html#Name">Name</a>
+</font></dt><dt><font face="helvetica, arial"><a href="simpleparse.objectgenerator.html#Prebuilt">Prebuilt</a>
+</font></dt><dt><font face="helvetica, arial"><a href="simpleparse.objectgenerator.html#_Range">_Range</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="simpleparse.objectgenerator.html#Range">Range</a>
+</font></dt></dl>
+</dd>
+</dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="CILiteral">class <strong>CILiteral</strong></a>(<a href="simpleparse.objectgenerator.html#SequentialGroup">SequentialGroup</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Case-insensitive&nbsp;<a href="#Literal">Literal</a>&nbsp;values<br>
+&nbsp;<br>
+The&nbsp;<a href="#CILiteral">CILiteral</a>&nbsp;is&nbsp;a&nbsp;sequence&nbsp;of&nbsp;literal&nbsp;and<br>
+character-range&nbsp;values,&nbsp;where&nbsp;each&nbsp;element&nbsp;is<br>
+positive&nbsp;and&nbsp;required.&nbsp;&nbsp;<a href="#Literal">Literal</a>&nbsp;values&nbsp;are<br>
+composed&nbsp;of&nbsp;those&nbsp;characters&nbsp;which&nbsp;are&nbsp;not<br>
+upper-case/lower-case&nbsp;pairs,&nbsp;while&nbsp;the&nbsp;ranges<br>
+are&nbsp;all&nbsp;two-character&nbsp;ranges&nbsp;with&nbsp;the&nbsp;upper<br>
+and&nbsp;lower&nbsp;forms.<br>
+&nbsp;<br>
+CILiterals&nbsp;in&nbsp;the&nbsp;SimpleParse&nbsp;EBNF&nbsp;grammar&nbsp;are&nbsp;defined&nbsp;like&nbsp;so:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;c"test",&nbsp;c"test"?,&nbsp;c"test"*,&nbsp;c"test"+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-c"test",&nbsp;-c"test"?,&nbsp;-c"test"*,&nbsp;-c"test"+<br>
+&nbsp;<br>
+Attributes:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;value&nbsp;--&nbsp;a&nbsp;string&nbsp;storing&nbsp;the&nbsp;literal's&nbsp;value<br>
+&nbsp;<br>
+Notes:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Currently&nbsp;we&nbsp;don't&nbsp;support&nbsp;Unicode&nbsp;literals<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;<a href="#CILiteral">CILiteral</a>&nbsp;will&nbsp;be&nbsp;*much*&nbsp;slower&nbsp;than&nbsp;a<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;regular&nbsp;literal&nbsp;or&nbsp;character&nbsp;range<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="simpleparse.objectgenerator.html#CILiteral">CILiteral</a></dd>
+<dd><a href="simpleparse.objectgenerator.html#SequentialGroup">SequentialGroup</a></dd>
+<dd><a href="simpleparse.objectgenerator.html#Group">Group</a></dd>
+<dd><a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="CILiteral-ciParse"><strong>ciParse</strong></a>(self, value)</dt><dd><tt>Break&nbsp;value&nbsp;into&nbsp;set&nbsp;of&nbsp;case-dependent&nbsp;groups...</tt></dd></dl>
+
+<dl><dt><a name="CILiteral-toParser"><strong>toParser</strong></a>(self, generator<font color="#909090">=None</font>, noReport<font color="#909090">=0</font>)</dt></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>value</strong> = ''</dl>
+
+<hr>
+Methods inherited from <a href="simpleparse.objectgenerator.html#Group">Group</a>:<br>
+<dl><dt><a name="CILiteral-terminal"><strong>terminal</strong></a>(self, generator)</dt><dd><tt>Determine&nbsp;if&nbsp;this&nbsp;element&nbsp;is&nbsp;terminal&nbsp;for&nbsp;the&nbsp;generator</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="simpleparse.objectgenerator.html#Group">Group</a>:<br>
+<dl><dt><strong>children</strong> = ()</dl>
+
+<dl><dt><strong>terminalValue</strong> = None</dl>
+
+<hr>
+Methods inherited from <a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>:<br>
+<dl><dt><a name="CILiteral-__init__"><strong>__init__</strong></a>(self, **namedarguments)</dt><dd><tt>Initialize&nbsp;the&nbsp;object&nbsp;with&nbsp;named&nbsp;attributes<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;simply&nbsp;takes&nbsp;the&nbsp;named&nbsp;attributes&nbsp;and<br>
+updates&nbsp;the&nbsp;object's&nbsp;dictionary&nbsp;with&nbsp;them</tt></dd></dl>
+
+<dl><dt><a name="CILiteral-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;a&nbsp;readily&nbsp;recognisable&nbsp;version&nbsp;of&nbsp;ourself</tt></dd></dl>
+
+<dl><dt><a name="CILiteral-permute"><strong>permute</strong></a>(self, basetable)</dt><dd><tt>Given&nbsp;a&nbsp;positive,&nbsp;required,&nbsp;non-repeating&nbsp;table,&nbsp;convert&nbsp;to&nbsp;appropriately&nbsp;configured&nbsp;table<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;applies&nbsp;generic&nbsp;logic&nbsp;for&nbsp;applying&nbsp;the<br>
+operational&nbsp;flags&nbsp;to&nbsp;a&nbsp;basic&nbsp;recipe&nbsp;for&nbsp;an&nbsp;element.<br>
+&nbsp;<br>
+It&nbsp;is&nbsp;normally&nbsp;called&nbsp;from&nbsp;the&nbsp;elements-token's&nbsp;own<br>
+toParser&nbsp;method.</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>:<br>
+<dl><dt><strong>errorOnFail</strong> = None</dl>
+
+<dl><dt><strong>expanded</strong> = 0</dl>
+
+<dl><dt><strong>lookahead</strong> = 0</dl>
+
+<dl><dt><strong>negative</strong> = 0</dl>
+
+<dl><dt><strong>optional</strong> = 0</dl>
+
+<dl><dt><strong>repeating</strong> = 0</dl>
+
+<dl><dt><strong>report</strong> = 1</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ElementToken">class <strong>ElementToken</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Abstract&nbsp;base&nbsp;class&nbsp;for&nbsp;all&nbsp;ElementTokens<br>
+&nbsp;<br>
+Common&nbsp;Attributes:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;negative&nbsp;--&nbsp;the&nbsp;element&nbsp;token&nbsp;should&nbsp;match<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;character&nbsp;if&nbsp;the&nbsp;"base"&nbsp;definition<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;would&nbsp;not&nbsp;match&nbsp;at&nbsp;the&nbsp;current&nbsp;position<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;optional&nbsp;--&nbsp;the&nbsp;element&nbsp;token&nbsp;will&nbsp;match&nbsp;even<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;the&nbsp;base&nbsp;definition&nbsp;would&nbsp;not&nbsp;match<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;at&nbsp;the&nbsp;current&nbsp;position<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;repeating&nbsp;--&nbsp;if&nbsp;the&nbsp;element&nbsp;is&nbsp;successfully<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;matched,&nbsp;attempt&nbsp;to&nbsp;match&nbsp;it&nbsp;again.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lookahead&nbsp;--&nbsp;if&nbsp;true,&nbsp;the&nbsp;scanning&nbsp;position<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;the&nbsp;engine&nbsp;will&nbsp;be&nbsp;reset&nbsp;after&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;element&nbsp;matches<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;errorOnFail&nbsp;--&nbsp;if&nbsp;true,&nbsp;the&nbsp;engine&nbsp;will&nbsp;call&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;object&nbsp;stored&nbsp;in&nbsp;errorOnFail&nbsp;as&nbsp;a&nbsp;text-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;matching&nbsp;object&nbsp;iff&nbsp;the&nbsp;element&nbsp;token&nbsp;fails<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;match.&nbsp;&nbsp;This&nbsp;is&nbsp;used&nbsp;to&nbsp;signal<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SyntaxErrors.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+Attributes&nbsp;only&nbsp;used&nbsp;for&nbsp;top-level&nbsp;Productions:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;report&nbsp;--&nbsp;if&nbsp;true,&nbsp;the&nbsp;production's&nbsp;results<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;will&nbsp;be&nbsp;added&nbsp;to&nbsp;the&nbsp;result&nbsp;tree<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;expanded&nbsp;--&nbsp;if&nbsp;true,&nbsp;the&nbsp;production's&nbsp;children's<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;results&nbsp;will&nbsp;be&nbsp;added&nbsp;to&nbsp;the&nbsp;result&nbsp;tree<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;but&nbsp;the&nbsp;production's&nbsp;own&nbsp;result&nbsp;will&nbsp;be&nbsp;ignored<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="ElementToken-__init__"><strong>__init__</strong></a>(self, **namedarguments)</dt><dd><tt>Initialize&nbsp;the&nbsp;object&nbsp;with&nbsp;named&nbsp;attributes<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;simply&nbsp;takes&nbsp;the&nbsp;named&nbsp;attributes&nbsp;and<br>
+updates&nbsp;the&nbsp;object's&nbsp;dictionary&nbsp;with&nbsp;them</tt></dd></dl>
+
+<dl><dt><a name="ElementToken-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;a&nbsp;readily&nbsp;recognisable&nbsp;version&nbsp;of&nbsp;ourself</tt></dd></dl>
+
+<dl><dt><a name="ElementToken-permute"><strong>permute</strong></a>(self, basetable)</dt><dd><tt>Given&nbsp;a&nbsp;positive,&nbsp;required,&nbsp;non-repeating&nbsp;table,&nbsp;convert&nbsp;to&nbsp;appropriately&nbsp;configured&nbsp;table<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;applies&nbsp;generic&nbsp;logic&nbsp;for&nbsp;applying&nbsp;the<br>
+operational&nbsp;flags&nbsp;to&nbsp;a&nbsp;basic&nbsp;recipe&nbsp;for&nbsp;an&nbsp;element.<br>
+&nbsp;<br>
+It&nbsp;is&nbsp;normally&nbsp;called&nbsp;from&nbsp;the&nbsp;elements-token's&nbsp;own<br>
+toParser&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="ElementToken-terminal"><strong>terminal</strong></a>(self, generator)</dt><dd><tt>Determine&nbsp;if&nbsp;this&nbsp;element&nbsp;is&nbsp;terminal&nbsp;for&nbsp;the&nbsp;generator</tt></dd></dl>
+
+<dl><dt><a name="ElementToken-toParser"><strong>toParser</strong></a>(self, generator, noReport<font color="#909090">=0</font>)</dt><dd><tt>Abstract&nbsp;interface&nbsp;for&nbsp;implementing&nbsp;the&nbsp;conversion&nbsp;to&nbsp;a&nbsp;text-tools&nbsp;table<br>
+&nbsp;<br>
+generator&nbsp;--&nbsp;an&nbsp;instance&nbsp;of&nbsp;generator.Generator<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;which&nbsp;provides&nbsp;various&nbsp;facilities&nbsp;for&nbsp;discovering<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;other&nbsp;productions.<br>
+noReport&nbsp;--&nbsp;if&nbsp;true,&nbsp;we're&nbsp;being&nbsp;called&nbsp;recursively<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;a&nbsp;terminal&nbsp;grammar&nbsp;fragment&nbsp;where&nbsp;one&nbsp;of&nbsp;our<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;parents&nbsp;has&nbsp;explicitly&nbsp;suppressed&nbsp;all&nbsp;reporting.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;is&nbsp;called&nbsp;by&nbsp;the&nbsp;generator&nbsp;or&nbsp;by<br>
+another&nbsp;element-token's&nbsp;toParser&nbsp;method.</tt></dd></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>errorOnFail</strong> = None</dl>
+
+<dl><dt><strong>expanded</strong> = 0</dl>
+
+<dl><dt><strong>lookahead</strong> = 0</dl>
+
+<dl><dt><strong>negative</strong> = 0</dl>
+
+<dl><dt><strong>optional</strong> = 0</dl>
+
+<dl><dt><strong>repeating</strong> = 0</dl>
+
+<dl><dt><strong>report</strong> = 1</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ErrorOnFail">class <strong>ErrorOnFail</strong></a>(<a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>When&nbsp;called&nbsp;as&nbsp;a&nbsp;matching&nbsp;function,&nbsp;raises&nbsp;a&nbsp;SyntaxError<br>
+&nbsp;<br>
+Attributes:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;expected&nbsp;--&nbsp;list&nbsp;of&nbsp;strings&nbsp;describing&nbsp;expected&nbsp;productions<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;production&nbsp;--&nbsp;string&nbsp;name&nbsp;of&nbsp;the&nbsp;production&nbsp;that's&nbsp;failing&nbsp;to&nbsp;parse<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;message&nbsp;--&nbsp;overrides&nbsp;default&nbsp;message&nbsp;generation&nbsp;if&nbsp;non-null<br>
+&nbsp;<br>
+&nbsp;<br>
+(something,something)+!<br>
+(something,something)!<br>
+(something,something)+!"Unable&nbsp;to&nbsp;parse&nbsp;somethings&nbsp;in&nbsp;my&nbsp;production"<br>
+(something,something)!"Unable&nbsp;to&nbsp;parse&nbsp;somethings&nbsp;in&nbsp;my&nbsp;production"<br>
+&nbsp;<br>
+if&nbsp;string&nbsp;-&gt;&nbsp;give&nbsp;an&nbsp;explicit&nbsp;message&nbsp;(with&nbsp;optional&nbsp;%&nbsp;values)<br>
+else&nbsp;-&gt;&nbsp;use&nbsp;a&nbsp;default&nbsp;string<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="ErrorOnFail-__call__"><strong>__call__</strong></a>(self, text, position, end)</dt><dd><tt>Method&nbsp;called&nbsp;by&nbsp;mxTextTools&nbsp;iff&nbsp;the&nbsp;base&nbsp;production&nbsp;fails</tt></dd></dl>
+
+<dl><dt><a name="ErrorOnFail-copy"><strong>copy</strong></a>(self)</dt></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>expected</strong> = ''</dl>
+
+<dl><dt><strong>message</strong> = ''</dl>
+
+<dl><dt><strong>production</strong> = ''</dl>
+
+<hr>
+Methods inherited from <a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>:<br>
+<dl><dt><a name="ErrorOnFail-__init__"><strong>__init__</strong></a>(self, **namedarguments)</dt><dd><tt>Initialize&nbsp;the&nbsp;object&nbsp;with&nbsp;named&nbsp;attributes<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;simply&nbsp;takes&nbsp;the&nbsp;named&nbsp;attributes&nbsp;and<br>
+updates&nbsp;the&nbsp;object's&nbsp;dictionary&nbsp;with&nbsp;them</tt></dd></dl>
+
+<dl><dt><a name="ErrorOnFail-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;a&nbsp;readily&nbsp;recognisable&nbsp;version&nbsp;of&nbsp;ourself</tt></dd></dl>
+
+<dl><dt><a name="ErrorOnFail-permute"><strong>permute</strong></a>(self, basetable)</dt><dd><tt>Given&nbsp;a&nbsp;positive,&nbsp;required,&nbsp;non-repeating&nbsp;table,&nbsp;convert&nbsp;to&nbsp;appropriately&nbsp;configured&nbsp;table<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;applies&nbsp;generic&nbsp;logic&nbsp;for&nbsp;applying&nbsp;the<br>
+operational&nbsp;flags&nbsp;to&nbsp;a&nbsp;basic&nbsp;recipe&nbsp;for&nbsp;an&nbsp;element.<br>
+&nbsp;<br>
+It&nbsp;is&nbsp;normally&nbsp;called&nbsp;from&nbsp;the&nbsp;elements-token's&nbsp;own<br>
+toParser&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="ErrorOnFail-terminal"><strong>terminal</strong></a>(self, generator)</dt><dd><tt>Determine&nbsp;if&nbsp;this&nbsp;element&nbsp;is&nbsp;terminal&nbsp;for&nbsp;the&nbsp;generator</tt></dd></dl>
+
+<dl><dt><a name="ErrorOnFail-toParser"><strong>toParser</strong></a>(self, generator, noReport<font color="#909090">=0</font>)</dt><dd><tt>Abstract&nbsp;interface&nbsp;for&nbsp;implementing&nbsp;the&nbsp;conversion&nbsp;to&nbsp;a&nbsp;text-tools&nbsp;table<br>
+&nbsp;<br>
+generator&nbsp;--&nbsp;an&nbsp;instance&nbsp;of&nbsp;generator.Generator<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;which&nbsp;provides&nbsp;various&nbsp;facilities&nbsp;for&nbsp;discovering<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;other&nbsp;productions.<br>
+noReport&nbsp;--&nbsp;if&nbsp;true,&nbsp;we're&nbsp;being&nbsp;called&nbsp;recursively<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;a&nbsp;terminal&nbsp;grammar&nbsp;fragment&nbsp;where&nbsp;one&nbsp;of&nbsp;our<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;parents&nbsp;has&nbsp;explicitly&nbsp;suppressed&nbsp;all&nbsp;reporting.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;is&nbsp;called&nbsp;by&nbsp;the&nbsp;generator&nbsp;or&nbsp;by<br>
+another&nbsp;element-token's&nbsp;toParser&nbsp;method.</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>:<br>
+<dl><dt><strong>errorOnFail</strong> = None</dl>
+
+<dl><dt><strong>expanded</strong> = 0</dl>
+
+<dl><dt><strong>lookahead</strong> = 0</dl>
+
+<dl><dt><strong>negative</strong> = 0</dl>
+
+<dl><dt><strong>optional</strong> = 0</dl>
+
+<dl><dt><strong>repeating</strong> = 0</dl>
+
+<dl><dt><strong>report</strong> = 1</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="FirstOfGroup">class <strong>FirstOfGroup</strong></a>(<a href="simpleparse.objectgenerator.html#Group">Group</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Set&nbsp;of&nbsp;tokens&nbsp;that&nbsp;matches&nbsp;(and&nbsp;stops&nbsp;searching)&nbsp;with&nbsp;the&nbsp;first&nbsp;successful&nbsp;child<br>
+&nbsp;<br>
+A&nbsp;FirstOf&nbsp;group&nbsp;attempts&nbsp;to&nbsp;match&nbsp;each&nbsp;child&nbsp;in&nbsp;turn,<br>
+declaring&nbsp;success&nbsp;with&nbsp;the&nbsp;first&nbsp;successful&nbsp;child,<br>
+or&nbsp;failure&nbsp;if&nbsp;none&nbsp;of&nbsp;the&nbsp;children&nbsp;match.<br>
+&nbsp;<br>
+Within&nbsp;the&nbsp;simpleparsegrammar,&nbsp;the&nbsp;FirstOf&nbsp;group<br>
+is&nbsp;defined&nbsp;like&nbsp;so:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;("a"&nbsp;/&nbsp;b&nbsp;/&nbsp;c&nbsp;/&nbsp;"d")<br>
+i.e.&nbsp;a&nbsp;series&nbsp;of&nbsp;slash-separated&nbsp;element&nbsp;token&nbsp;definitions.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="simpleparse.objectgenerator.html#FirstOfGroup">FirstOfGroup</a></dd>
+<dd><a href="simpleparse.objectgenerator.html#Group">Group</a></dd>
+<dd><a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="FirstOfGroup-toParser"><strong>toParser</strong></a>(self, generator<font color="#909090">=None</font>, noReport<font color="#909090">=0</font>)</dt></dl>
+
+<hr>
+Methods inherited from <a href="simpleparse.objectgenerator.html#Group">Group</a>:<br>
+<dl><dt><a name="FirstOfGroup-terminal"><strong>terminal</strong></a>(self, generator)</dt><dd><tt>Determine&nbsp;if&nbsp;this&nbsp;element&nbsp;is&nbsp;terminal&nbsp;for&nbsp;the&nbsp;generator</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="simpleparse.objectgenerator.html#Group">Group</a>:<br>
+<dl><dt><strong>children</strong> = ()</dl>
+
+<dl><dt><strong>terminalValue</strong> = None</dl>
+
+<hr>
+Methods inherited from <a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>:<br>
+<dl><dt><a name="FirstOfGroup-__init__"><strong>__init__</strong></a>(self, **namedarguments)</dt><dd><tt>Initialize&nbsp;the&nbsp;object&nbsp;with&nbsp;named&nbsp;attributes<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;simply&nbsp;takes&nbsp;the&nbsp;named&nbsp;attributes&nbsp;and<br>
+updates&nbsp;the&nbsp;object's&nbsp;dictionary&nbsp;with&nbsp;them</tt></dd></dl>
+
+<dl><dt><a name="FirstOfGroup-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;a&nbsp;readily&nbsp;recognisable&nbsp;version&nbsp;of&nbsp;ourself</tt></dd></dl>
+
+<dl><dt><a name="FirstOfGroup-permute"><strong>permute</strong></a>(self, basetable)</dt><dd><tt>Given&nbsp;a&nbsp;positive,&nbsp;required,&nbsp;non-repeating&nbsp;table,&nbsp;convert&nbsp;to&nbsp;appropriately&nbsp;configured&nbsp;table<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;applies&nbsp;generic&nbsp;logic&nbsp;for&nbsp;applying&nbsp;the<br>
+operational&nbsp;flags&nbsp;to&nbsp;a&nbsp;basic&nbsp;recipe&nbsp;for&nbsp;an&nbsp;element.<br>
+&nbsp;<br>
+It&nbsp;is&nbsp;normally&nbsp;called&nbsp;from&nbsp;the&nbsp;elements-token's&nbsp;own<br>
+toParser&nbsp;method.</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>:<br>
+<dl><dt><strong>errorOnFail</strong> = None</dl>
+
+<dl><dt><strong>expanded</strong> = 0</dl>
+
+<dl><dt><strong>lookahead</strong> = 0</dl>
+
+<dl><dt><strong>negative</strong> = 0</dl>
+
+<dl><dt><strong>optional</strong> = 0</dl>
+
+<dl><dt><strong>repeating</strong> = 0</dl>
+
+<dl><dt><strong>report</strong> = 1</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Group">class <strong>Group</strong></a>(<a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Abstract&nbsp;base&nbsp;class&nbsp;for&nbsp;all&nbsp;group&nbsp;element&nbsp;tokens<br>
+&nbsp;<br>
+The&nbsp;primary&nbsp;feature&nbsp;of&nbsp;a&nbsp;group&nbsp;is&nbsp;that&nbsp;it&nbsp;has&nbsp;a&nbsp;set<br>
+of&nbsp;element&nbsp;tokens&nbsp;stored&nbsp;in&nbsp;the&nbsp;attribute&nbsp;"children".<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Group-terminal"><strong>terminal</strong></a>(self, generator)</dt><dd><tt>Determine&nbsp;if&nbsp;this&nbsp;element&nbsp;is&nbsp;terminal&nbsp;for&nbsp;the&nbsp;generator</tt></dd></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>children</strong> = ()</dl>
+
+<dl><dt><strong>terminalValue</strong> = None</dl>
+
+<hr>
+Methods inherited from <a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>:<br>
+<dl><dt><a name="Group-__init__"><strong>__init__</strong></a>(self, **namedarguments)</dt><dd><tt>Initialize&nbsp;the&nbsp;object&nbsp;with&nbsp;named&nbsp;attributes<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;simply&nbsp;takes&nbsp;the&nbsp;named&nbsp;attributes&nbsp;and<br>
+updates&nbsp;the&nbsp;object's&nbsp;dictionary&nbsp;with&nbsp;them</tt></dd></dl>
+
+<dl><dt><a name="Group-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;a&nbsp;readily&nbsp;recognisable&nbsp;version&nbsp;of&nbsp;ourself</tt></dd></dl>
+
+<dl><dt><a name="Group-permute"><strong>permute</strong></a>(self, basetable)</dt><dd><tt>Given&nbsp;a&nbsp;positive,&nbsp;required,&nbsp;non-repeating&nbsp;table,&nbsp;convert&nbsp;to&nbsp;appropriately&nbsp;configured&nbsp;table<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;applies&nbsp;generic&nbsp;logic&nbsp;for&nbsp;applying&nbsp;the<br>
+operational&nbsp;flags&nbsp;to&nbsp;a&nbsp;basic&nbsp;recipe&nbsp;for&nbsp;an&nbsp;element.<br>
+&nbsp;<br>
+It&nbsp;is&nbsp;normally&nbsp;called&nbsp;from&nbsp;the&nbsp;elements-token's&nbsp;own<br>
+toParser&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="Group-toParser"><strong>toParser</strong></a>(self, generator, noReport<font color="#909090">=0</font>)</dt><dd><tt>Abstract&nbsp;interface&nbsp;for&nbsp;implementing&nbsp;the&nbsp;conversion&nbsp;to&nbsp;a&nbsp;text-tools&nbsp;table<br>
+&nbsp;<br>
+generator&nbsp;--&nbsp;an&nbsp;instance&nbsp;of&nbsp;generator.Generator<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;which&nbsp;provides&nbsp;various&nbsp;facilities&nbsp;for&nbsp;discovering<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;other&nbsp;productions.<br>
+noReport&nbsp;--&nbsp;if&nbsp;true,&nbsp;we're&nbsp;being&nbsp;called&nbsp;recursively<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;a&nbsp;terminal&nbsp;grammar&nbsp;fragment&nbsp;where&nbsp;one&nbsp;of&nbsp;our<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;parents&nbsp;has&nbsp;explicitly&nbsp;suppressed&nbsp;all&nbsp;reporting.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;is&nbsp;called&nbsp;by&nbsp;the&nbsp;generator&nbsp;or&nbsp;by<br>
+another&nbsp;element-token's&nbsp;toParser&nbsp;method.</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>:<br>
+<dl><dt><strong>errorOnFail</strong> = None</dl>
+
+<dl><dt><strong>expanded</strong> = 0</dl>
+
+<dl><dt><strong>lookahead</strong> = 0</dl>
+
+<dl><dt><strong>negative</strong> = 0</dl>
+
+<dl><dt><strong>optional</strong> = 0</dl>
+
+<dl><dt><strong>repeating</strong> = 0</dl>
+
+<dl><dt><strong>report</strong> = 1</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="LibraryElement">class <strong>LibraryElement</strong></a>(<a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Holder&nbsp;for&nbsp;a&nbsp;prebuilt&nbsp;item&nbsp;with&nbsp;it's&nbsp;own&nbsp;generator<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="LibraryElement-toParser"><strong>toParser</strong></a>(self, generator<font color="#909090">=None</font>, noReport<font color="#909090">=0</font>)</dt></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>generator</strong> = None</dl>
+
+<dl><dt><strong>methodSource</strong> = None</dl>
+
+<dl><dt><strong>production</strong> = ''</dl>
+
+<hr>
+Methods inherited from <a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>:<br>
+<dl><dt><a name="LibraryElement-__init__"><strong>__init__</strong></a>(self, **namedarguments)</dt><dd><tt>Initialize&nbsp;the&nbsp;object&nbsp;with&nbsp;named&nbsp;attributes<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;simply&nbsp;takes&nbsp;the&nbsp;named&nbsp;attributes&nbsp;and<br>
+updates&nbsp;the&nbsp;object's&nbsp;dictionary&nbsp;with&nbsp;them</tt></dd></dl>
+
+<dl><dt><a name="LibraryElement-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;a&nbsp;readily&nbsp;recognisable&nbsp;version&nbsp;of&nbsp;ourself</tt></dd></dl>
+
+<dl><dt><a name="LibraryElement-permute"><strong>permute</strong></a>(self, basetable)</dt><dd><tt>Given&nbsp;a&nbsp;positive,&nbsp;required,&nbsp;non-repeating&nbsp;table,&nbsp;convert&nbsp;to&nbsp;appropriately&nbsp;configured&nbsp;table<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;applies&nbsp;generic&nbsp;logic&nbsp;for&nbsp;applying&nbsp;the<br>
+operational&nbsp;flags&nbsp;to&nbsp;a&nbsp;basic&nbsp;recipe&nbsp;for&nbsp;an&nbsp;element.<br>
+&nbsp;<br>
+It&nbsp;is&nbsp;normally&nbsp;called&nbsp;from&nbsp;the&nbsp;elements-token's&nbsp;own<br>
+toParser&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="LibraryElement-terminal"><strong>terminal</strong></a>(self, generator)</dt><dd><tt>Determine&nbsp;if&nbsp;this&nbsp;element&nbsp;is&nbsp;terminal&nbsp;for&nbsp;the&nbsp;generator</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>:<br>
+<dl><dt><strong>errorOnFail</strong> = None</dl>
+
+<dl><dt><strong>expanded</strong> = 0</dl>
+
+<dl><dt><strong>lookahead</strong> = 0</dl>
+
+<dl><dt><strong>negative</strong> = 0</dl>
+
+<dl><dt><strong>optional</strong> = 0</dl>
+
+<dl><dt><strong>repeating</strong> = 0</dl>
+
+<dl><dt><strong>report</strong> = 1</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Literal">class <strong>Literal</strong></a>(<a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Literal">Literal</a>&nbsp;string&nbsp;value&nbsp;to&nbsp;be&nbsp;matched<br>
+&nbsp;<br>
+Literals&nbsp;are&nbsp;one&nbsp;of&nbsp;the&nbsp;most&nbsp;common&nbsp;elements&nbsp;within<br>
+any&nbsp;grammar.&nbsp;&nbsp;The&nbsp;implementation&nbsp;tries&nbsp;to&nbsp;use&nbsp;the<br>
+most&nbsp;efficient&nbsp;mechanism&nbsp;available&nbsp;for&nbsp;matching/searching<br>
+for&nbsp;a&nbsp;literal&nbsp;value,&nbsp;so&nbsp;the&nbsp;<a href="#Literal">Literal</a>&nbsp;class&nbsp;does&nbsp;not<br>
+use&nbsp;the&nbsp;permute&nbsp;method,&nbsp;instead&nbsp;defining&nbsp;explicit<br>
+parsing&nbsp;methodologies&nbsp;for&nbsp;each&nbsp;flag&nbsp;and&nbsp;value&nbsp;combination<br>
+&nbsp;<br>
+Literals&nbsp;in&nbsp;the&nbsp;SimpleParse&nbsp;EBNF&nbsp;grammar&nbsp;are&nbsp;defined&nbsp;like&nbsp;so:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"test",&nbsp;"test"?,&nbsp;"test"*,&nbsp;"test"+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-"test",&nbsp;-"test"?,&nbsp;-"test"*,&nbsp;-"test"+<br>
+&nbsp;<br>
+Attributes:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;value&nbsp;--&nbsp;a&nbsp;string&nbsp;storing&nbsp;the&nbsp;literal's&nbsp;value<br>
+&nbsp;<br>
+Notes:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Currently&nbsp;we&nbsp;don't&nbsp;support&nbsp;Unicode&nbsp;literals<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+See&nbsp;also:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#CILiteral">CILiteral</a>&nbsp;--&nbsp;case-insensitive&nbsp;<a href="#Literal">Literal</a>&nbsp;values<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Literal-baseToParser"><strong>baseToParser</strong></a>(self, generator<font color="#909090">=None</font>)</dt><dd><tt>Parser&nbsp;generation&nbsp;without&nbsp;considering&nbsp;flag&nbsp;settings</tt></dd></dl>
+
+<dl><dt><a name="Literal-terminal"><strong>terminal</strong></a>(self, generator)</dt><dd><tt>Determine&nbsp;if&nbsp;this&nbsp;element&nbsp;is&nbsp;terminal&nbsp;for&nbsp;the&nbsp;generator</tt></dd></dl>
+
+<dl><dt><a name="Literal-toParser"><strong>toParser</strong></a>(self, generator<font color="#909090">=None</font>, noReport<font color="#909090">=0</font>)</dt><dd><tt>Create&nbsp;the&nbsp;parser&nbsp;for&nbsp;the&nbsp;element&nbsp;token</tt></dd></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>value</strong> = ''</dl>
+
+<hr>
+Methods inherited from <a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>:<br>
+<dl><dt><a name="Literal-__init__"><strong>__init__</strong></a>(self, **namedarguments)</dt><dd><tt>Initialize&nbsp;the&nbsp;object&nbsp;with&nbsp;named&nbsp;attributes<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;simply&nbsp;takes&nbsp;the&nbsp;named&nbsp;attributes&nbsp;and<br>
+updates&nbsp;the&nbsp;object's&nbsp;dictionary&nbsp;with&nbsp;them</tt></dd></dl>
+
+<dl><dt><a name="Literal-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;a&nbsp;readily&nbsp;recognisable&nbsp;version&nbsp;of&nbsp;ourself</tt></dd></dl>
+
+<dl><dt><a name="Literal-permute"><strong>permute</strong></a>(self, basetable)</dt><dd><tt>Given&nbsp;a&nbsp;positive,&nbsp;required,&nbsp;non-repeating&nbsp;table,&nbsp;convert&nbsp;to&nbsp;appropriately&nbsp;configured&nbsp;table<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;applies&nbsp;generic&nbsp;logic&nbsp;for&nbsp;applying&nbsp;the<br>
+operational&nbsp;flags&nbsp;to&nbsp;a&nbsp;basic&nbsp;recipe&nbsp;for&nbsp;an&nbsp;element.<br>
+&nbsp;<br>
+It&nbsp;is&nbsp;normally&nbsp;called&nbsp;from&nbsp;the&nbsp;elements-token's&nbsp;own<br>
+toParser&nbsp;method.</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>:<br>
+<dl><dt><strong>errorOnFail</strong> = None</dl>
+
+<dl><dt><strong>expanded</strong> = 0</dl>
+
+<dl><dt><strong>lookahead</strong> = 0</dl>
+
+<dl><dt><strong>negative</strong> = 0</dl>
+
+<dl><dt><strong>optional</strong> = 0</dl>
+
+<dl><dt><strong>repeating</strong> = 0</dl>
+
+<dl><dt><strong>report</strong> = 1</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Name">class <strong>Name</strong></a>(<a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Reference&nbsp;to&nbsp;another&nbsp;rule&nbsp;in&nbsp;the&nbsp;grammar<br>
+&nbsp;<br>
+The&nbsp;<a href="#Name">Name</a>&nbsp;element&nbsp;token&nbsp;allows&nbsp;you&nbsp;to&nbsp;reference&nbsp;another<br>
+production&nbsp;within&nbsp;the&nbsp;grammar.&nbsp;&nbsp;There&nbsp;are&nbsp;three&nbsp;major<br>
+sub-categories&nbsp;of&nbsp;reference&nbsp;depending&nbsp;on&nbsp;both&nbsp;the&nbsp;<a href="#Name">Name</a><br>
+element&nbsp;token&nbsp;and&nbsp;the&nbsp;referenced&nbsp;table's&nbsp;values.<br>
+&nbsp;<br>
+if&nbsp;the&nbsp;<a href="#Name">Name</a>&nbsp;token's&nbsp;report&nbsp;attribute&nbsp;is&nbsp;false,<br>
+or&nbsp;the&nbsp;target&nbsp;table's&nbsp;report&nbsp;attribute&nbsp;is&nbsp;false,<br>
+or&nbsp;the&nbsp;<a href="#Name">Name</a>&nbsp;token&nbsp;negative&nbsp;attribute&nbsp;is&nbsp;true,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;<a href="#Name">Name</a>&nbsp;reference&nbsp;will&nbsp;report&nbsp;nothing&nbsp;in&nbsp;the&nbsp;result&nbsp;tree<br>
+&nbsp;<br>
+if&nbsp;the&nbsp;target's&nbsp;expand&nbsp;attribute&nbsp;is&nbsp;true,&nbsp;however,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;<a href="#Name">Name</a>&nbsp;reference&nbsp;will&nbsp;report&nbsp;the&nbsp;children<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;the&nbsp;target&nbsp;production&nbsp;without&nbsp;reporting&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;production's&nbsp;results&nbsp;(SubTable&nbsp;match)<br>
+&nbsp;<br>
+finally:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;the&nbsp;target&nbsp;is&nbsp;not&nbsp;expanded&nbsp;and&nbsp;the&nbsp;<a href="#Name">Name</a>&nbsp;token<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;should&nbsp;report&nbsp;something,&nbsp;the&nbsp;generator&nbsp;object&nbsp;is<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;asked&nbsp;to&nbsp;supply&nbsp;the&nbsp;tag&nbsp;object&nbsp;and&nbsp;flags&nbsp;for<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;processing&nbsp;the&nbsp;results&nbsp;of&nbsp;the&nbsp;target.&nbsp;&nbsp;See&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;generator.MethodSource&nbsp;documentation&nbsp;for&nbsp;details.<br>
+&nbsp;<br>
+Notes:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;expanded&nbsp;and&nbsp;un-reported&nbsp;productions&nbsp;won't&nbsp;get&nbsp;any<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;methodsource&nbsp;methods&nbsp;called&nbsp;when&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;they&nbsp;are&nbsp;finished,&nbsp;that's&nbsp;just&nbsp;how&nbsp;I&nbsp;decided&nbsp;to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;do&nbsp;it,&nbsp;not&nbsp;sure&nbsp;if&nbsp;there's&nbsp;some&nbsp;case&nbsp;where&nbsp;you'd<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;want&nbsp;it.&nbsp;&nbsp;As&nbsp;a&nbsp;result,&nbsp;it's&nbsp;possible&nbsp;to&nbsp;have&nbsp;a<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;method&nbsp;getting&nbsp;called&nbsp;for&nbsp;one&nbsp;instance&nbsp;(where&nbsp;a<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;ref&nbsp;is&nbsp;reporting)&nbsp;and&nbsp;not&nbsp;for&nbsp;another&nbsp;(where<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;name&nbsp;ref&nbsp;isn't&nbsp;reporting).<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Name-terminal"><strong>terminal</strong></a>(self, generator)</dt><dd><tt>Determine&nbsp;if&nbsp;this&nbsp;element&nbsp;is&nbsp;terminal&nbsp;for&nbsp;the&nbsp;generator</tt></dd></dl>
+
+<dl><dt><a name="Name-toParser"><strong>toParser</strong></a>(self, generator, noReport<font color="#909090">=0</font>)</dt><dd><tt>Create&nbsp;the&nbsp;table&nbsp;for&nbsp;parsing&nbsp;a&nbsp;name-reference<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;currently&nbsp;most&nbsp;of&nbsp;the&nbsp;"compression"&nbsp;optimisations<br>
+occur&nbsp;here.</tt></dd></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>report</strong> = 1</dl>
+
+<dl><dt><strong>terminalValue</strong> = None</dl>
+
+<dl><dt><strong>value</strong> = ''</dl>
+
+<hr>
+Methods inherited from <a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>:<br>
+<dl><dt><a name="Name-__init__"><strong>__init__</strong></a>(self, **namedarguments)</dt><dd><tt>Initialize&nbsp;the&nbsp;object&nbsp;with&nbsp;named&nbsp;attributes<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;simply&nbsp;takes&nbsp;the&nbsp;named&nbsp;attributes&nbsp;and<br>
+updates&nbsp;the&nbsp;object's&nbsp;dictionary&nbsp;with&nbsp;them</tt></dd></dl>
+
+<dl><dt><a name="Name-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;a&nbsp;readily&nbsp;recognisable&nbsp;version&nbsp;of&nbsp;ourself</tt></dd></dl>
+
+<dl><dt><a name="Name-permute"><strong>permute</strong></a>(self, basetable)</dt><dd><tt>Given&nbsp;a&nbsp;positive,&nbsp;required,&nbsp;non-repeating&nbsp;table,&nbsp;convert&nbsp;to&nbsp;appropriately&nbsp;configured&nbsp;table<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;applies&nbsp;generic&nbsp;logic&nbsp;for&nbsp;applying&nbsp;the<br>
+operational&nbsp;flags&nbsp;to&nbsp;a&nbsp;basic&nbsp;recipe&nbsp;for&nbsp;an&nbsp;element.<br>
+&nbsp;<br>
+It&nbsp;is&nbsp;normally&nbsp;called&nbsp;from&nbsp;the&nbsp;elements-token's&nbsp;own<br>
+toParser&nbsp;method.</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>:<br>
+<dl><dt><strong>errorOnFail</strong> = None</dl>
+
+<dl><dt><strong>expanded</strong> = 0</dl>
+
+<dl><dt><strong>lookahead</strong> = 0</dl>
+
+<dl><dt><strong>negative</strong> = 0</dl>
+
+<dl><dt><strong>optional</strong> = 0</dl>
+
+<dl><dt><strong>repeating</strong> = 0</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Prebuilt">class <strong>Prebuilt</strong></a>(<a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Holder&nbsp;for&nbsp;pre-built&nbsp;TextTools&nbsp;tag&nbsp;tables<br>
+&nbsp;<br>
+You&nbsp;can&nbsp;pass&nbsp;in&nbsp;a&nbsp;Pre-built&nbsp;tag&nbsp;table&nbsp;when<br>
+creating&nbsp;your&nbsp;grammar,&nbsp;doing&nbsp;so&nbsp;creates<br>
+<a href="#Prebuilt">Prebuilt</a>&nbsp;element&nbsp;tokens&nbsp;which&nbsp;can&nbsp;be&nbsp;referenced<br>
+by&nbsp;the&nbsp;other&nbsp;element&nbsp;tokens&nbsp;in&nbsp;your&nbsp;grammar.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Prebuilt-toParser"><strong>toParser</strong></a>(self, generator<font color="#909090">=None</font>, noReport<font color="#909090">=0</font>)</dt></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>value</strong> = ()</dl>
+
+<hr>
+Methods inherited from <a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>:<br>
+<dl><dt><a name="Prebuilt-__init__"><strong>__init__</strong></a>(self, **namedarguments)</dt><dd><tt>Initialize&nbsp;the&nbsp;object&nbsp;with&nbsp;named&nbsp;attributes<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;simply&nbsp;takes&nbsp;the&nbsp;named&nbsp;attributes&nbsp;and<br>
+updates&nbsp;the&nbsp;object's&nbsp;dictionary&nbsp;with&nbsp;them</tt></dd></dl>
+
+<dl><dt><a name="Prebuilt-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;a&nbsp;readily&nbsp;recognisable&nbsp;version&nbsp;of&nbsp;ourself</tt></dd></dl>
+
+<dl><dt><a name="Prebuilt-permute"><strong>permute</strong></a>(self, basetable)</dt><dd><tt>Given&nbsp;a&nbsp;positive,&nbsp;required,&nbsp;non-repeating&nbsp;table,&nbsp;convert&nbsp;to&nbsp;appropriately&nbsp;configured&nbsp;table<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;applies&nbsp;generic&nbsp;logic&nbsp;for&nbsp;applying&nbsp;the<br>
+operational&nbsp;flags&nbsp;to&nbsp;a&nbsp;basic&nbsp;recipe&nbsp;for&nbsp;an&nbsp;element.<br>
+&nbsp;<br>
+It&nbsp;is&nbsp;normally&nbsp;called&nbsp;from&nbsp;the&nbsp;elements-token's&nbsp;own<br>
+toParser&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="Prebuilt-terminal"><strong>terminal</strong></a>(self, generator)</dt><dd><tt>Determine&nbsp;if&nbsp;this&nbsp;element&nbsp;is&nbsp;terminal&nbsp;for&nbsp;the&nbsp;generator</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>:<br>
+<dl><dt><strong>errorOnFail</strong> = None</dl>
+
+<dl><dt><strong>expanded</strong> = 0</dl>
+
+<dl><dt><strong>lookahead</strong> = 0</dl>
+
+<dl><dt><strong>negative</strong> = 0</dl>
+
+<dl><dt><strong>optional</strong> = 0</dl>
+
+<dl><dt><strong>repeating</strong> = 0</dl>
+
+<dl><dt><strong>report</strong> = 1</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Range">class <strong>Range</strong></a>(<a href="simpleparse.objectgenerator.html#_Range">_Range</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Range">Range</a>&nbsp;type&nbsp;which&nbsp;doesn't&nbsp;use&nbsp;the&nbsp;CharSet&nbsp;features&nbsp;in&nbsp;mx.TextTools<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;likely&nbsp;to&nbsp;be&nbsp;much&nbsp;slower&nbsp;than&nbsp;the&nbsp;CharSet&nbsp;version&nbsp;(below),&nbsp;and<br>
+is&nbsp;unable&nbsp;to&nbsp;handle&nbsp;unicode&nbsp;character&nbsp;sets.&nbsp;&nbsp;However,&nbsp;it&nbsp;will&nbsp;work&nbsp;with<br>
+TextTools&nbsp;2.0.3,&nbsp;which&nbsp;may&nbsp;be&nbsp;needed&nbsp;in&nbsp;some&nbsp;cases.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="simpleparse.objectgenerator.html#Range">Range</a></dd>
+<dd><a href="simpleparse.objectgenerator.html#_Range">_Range</a></dd>
+<dd><a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="Range-baseToParser"><strong>baseToParser</strong></a>(self, generator<font color="#909090">=None</font>)</dt><dd><tt>Parser&nbsp;generation&nbsp;without&nbsp;considering&nbsp;flag&nbsp;settings</tt></dd></dl>
+
+<dl><dt><a name="Range-terminal"><strong>terminal</strong></a>(self, generator)</dt><dd><tt>Determine&nbsp;if&nbsp;this&nbsp;element&nbsp;is&nbsp;terminal&nbsp;for&nbsp;the&nbsp;generator</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="simpleparse.objectgenerator.html#_Range">_Range</a>:<br>
+<dl><dt><a name="Range-toParser"><strong>toParser</strong></a>(self, generator<font color="#909090">=None</font>, noReport<font color="#909090">=0</font>)</dt><dd><tt>Create&nbsp;the&nbsp;parser&nbsp;for&nbsp;the&nbsp;element&nbsp;token</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="simpleparse.objectgenerator.html#_Range">_Range</a>:<br>
+<dl><dt><strong>requiresExpandedSet</strong> = 1</dl>
+
+<dl><dt><strong>value</strong> = ''</dl>
+
+<hr>
+Methods inherited from <a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>:<br>
+<dl><dt><a name="Range-__init__"><strong>__init__</strong></a>(self, **namedarguments)</dt><dd><tt>Initialize&nbsp;the&nbsp;object&nbsp;with&nbsp;named&nbsp;attributes<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;simply&nbsp;takes&nbsp;the&nbsp;named&nbsp;attributes&nbsp;and<br>
+updates&nbsp;the&nbsp;object's&nbsp;dictionary&nbsp;with&nbsp;them</tt></dd></dl>
+
+<dl><dt><a name="Range-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;a&nbsp;readily&nbsp;recognisable&nbsp;version&nbsp;of&nbsp;ourself</tt></dd></dl>
+
+<dl><dt><a name="Range-permute"><strong>permute</strong></a>(self, basetable)</dt><dd><tt>Given&nbsp;a&nbsp;positive,&nbsp;required,&nbsp;non-repeating&nbsp;table,&nbsp;convert&nbsp;to&nbsp;appropriately&nbsp;configured&nbsp;table<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;applies&nbsp;generic&nbsp;logic&nbsp;for&nbsp;applying&nbsp;the<br>
+operational&nbsp;flags&nbsp;to&nbsp;a&nbsp;basic&nbsp;recipe&nbsp;for&nbsp;an&nbsp;element.<br>
+&nbsp;<br>
+It&nbsp;is&nbsp;normally&nbsp;called&nbsp;from&nbsp;the&nbsp;elements-token's&nbsp;own<br>
+toParser&nbsp;method.</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>:<br>
+<dl><dt><strong>errorOnFail</strong> = None</dl>
+
+<dl><dt><strong>expanded</strong> = 0</dl>
+
+<dl><dt><strong>lookahead</strong> = 0</dl>
+
+<dl><dt><strong>negative</strong> = 0</dl>
+
+<dl><dt><strong>optional</strong> = 0</dl>
+
+<dl><dt><strong>repeating</strong> = 0</dl>
+
+<dl><dt><strong>report</strong> = 1</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="SequentialGroup">class <strong>SequentialGroup</strong></a>(<a href="simpleparse.objectgenerator.html#Group">Group</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>A&nbsp;sequence&nbsp;of&nbsp;element&nbsp;tokens&nbsp;which&nbsp;must&nbsp;match&nbsp;in&nbsp;a&nbsp;particular&nbsp;order<br>
+&nbsp;<br>
+A&nbsp;sequential&nbsp;group&nbsp;must&nbsp;match&nbsp;each&nbsp;child&nbsp;in&nbsp;turn<br>
+and&nbsp;all&nbsp;children&nbsp;must&nbsp;be&nbsp;satisfied&nbsp;to&nbsp;consider&nbsp;the<br>
+group&nbsp;matched.<br>
+&nbsp;<br>
+Within&nbsp;the&nbsp;simpleparsegrammar,&nbsp;the&nbsp;sequential&nbsp;group<br>
+is&nbsp;defined&nbsp;like&nbsp;so:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;("a",&nbsp;b,&nbsp;c,&nbsp;"d")<br>
+i.e.&nbsp;a&nbsp;series&nbsp;of&nbsp;comma-separated&nbsp;element&nbsp;token&nbsp;definitions.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="simpleparse.objectgenerator.html#SequentialGroup">SequentialGroup</a></dd>
+<dd><a href="simpleparse.objectgenerator.html#Group">Group</a></dd>
+<dd><a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="SequentialGroup-toParser"><strong>toParser</strong></a>(self, generator<font color="#909090">=None</font>, noReport<font color="#909090">=0</font>)</dt></dl>
+
+<hr>
+Methods inherited from <a href="simpleparse.objectgenerator.html#Group">Group</a>:<br>
+<dl><dt><a name="SequentialGroup-terminal"><strong>terminal</strong></a>(self, generator)</dt><dd><tt>Determine&nbsp;if&nbsp;this&nbsp;element&nbsp;is&nbsp;terminal&nbsp;for&nbsp;the&nbsp;generator</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="simpleparse.objectgenerator.html#Group">Group</a>:<br>
+<dl><dt><strong>children</strong> = ()</dl>
+
+<dl><dt><strong>terminalValue</strong> = None</dl>
+
+<hr>
+Methods inherited from <a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>:<br>
+<dl><dt><a name="SequentialGroup-__init__"><strong>__init__</strong></a>(self, **namedarguments)</dt><dd><tt>Initialize&nbsp;the&nbsp;object&nbsp;with&nbsp;named&nbsp;attributes<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;simply&nbsp;takes&nbsp;the&nbsp;named&nbsp;attributes&nbsp;and<br>
+updates&nbsp;the&nbsp;object's&nbsp;dictionary&nbsp;with&nbsp;them</tt></dd></dl>
+
+<dl><dt><a name="SequentialGroup-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;a&nbsp;readily&nbsp;recognisable&nbsp;version&nbsp;of&nbsp;ourself</tt></dd></dl>
+
+<dl><dt><a name="SequentialGroup-permute"><strong>permute</strong></a>(self, basetable)</dt><dd><tt>Given&nbsp;a&nbsp;positive,&nbsp;required,&nbsp;non-repeating&nbsp;table,&nbsp;convert&nbsp;to&nbsp;appropriately&nbsp;configured&nbsp;table<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;applies&nbsp;generic&nbsp;logic&nbsp;for&nbsp;applying&nbsp;the<br>
+operational&nbsp;flags&nbsp;to&nbsp;a&nbsp;basic&nbsp;recipe&nbsp;for&nbsp;an&nbsp;element.<br>
+&nbsp;<br>
+It&nbsp;is&nbsp;normally&nbsp;called&nbsp;from&nbsp;the&nbsp;elements-token's&nbsp;own<br>
+toParser&nbsp;method.</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>:<br>
+<dl><dt><strong>errorOnFail</strong> = None</dl>
+
+<dl><dt><strong>expanded</strong> = 0</dl>
+
+<dl><dt><strong>lookahead</strong> = 0</dl>
+
+<dl><dt><strong>negative</strong> = 0</dl>
+
+<dl><dt><strong>optional</strong> = 0</dl>
+
+<dl><dt><strong>repeating</strong> = 0</dl>
+
+<dl><dt><strong>report</strong> = 1</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="_Range">class <strong>_Range</strong></a>(<a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Range">Range</a>&nbsp;of&nbsp;character&nbsp;values&nbsp;where&nbsp;any&nbsp;one&nbsp;of&nbsp;the&nbsp;characters&nbsp;may&nbsp;match<br>
+&nbsp;<br>
+The&nbsp;<a href="#Range">Range</a>&nbsp;token&nbsp;allows&nbsp;you&nbsp;to&nbsp;define&nbsp;a&nbsp;set&nbsp;of&nbsp;characters<br>
+(using&nbsp;a&nbsp;mini-grammar)&nbsp;of&nbsp;which&nbsp;any&nbsp;one&nbsp;may&nbsp;match.&nbsp;&nbsp;By&nbsp;using<br>
+the&nbsp;repetition&nbsp;flags,&nbsp;it&nbsp;is&nbsp;possible&nbsp;to&nbsp;easily&nbsp;create&nbsp;such<br>
+common&nbsp;structures&nbsp;as&nbsp;"names"&nbsp;and&nbsp;"numbers".&nbsp;&nbsp;For&nbsp;example:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;:=&nbsp;[a-zA-Z]+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;number&nbsp;:=&nbsp;[0-9.eE]+<br>
+&nbsp;<br>
+(Note:&nbsp;those&nbsp;are&nbsp;not&nbsp;beautifully&nbsp;defined&nbsp;examples&nbsp;:)&nbsp;).<br>
+&nbsp;<br>
+The&nbsp;mini-grammar&nbsp;for&nbsp;the&nbsp;simpleparsegrammar&nbsp;is&nbsp;defined&nbsp;as&nbsp;follows:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'[',CHARBRACE?,CHARDASH?,&nbsp;(CHARRANGE/CHARNOBRACE)*,&nbsp;CHARDASH?,']'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+that&nbsp;is,&nbsp;if&nbsp;a&nbsp;literal&nbsp;']'&nbsp;character&nbsp;is&nbsp;wanted,&nbsp;you&nbsp;must<br>
+define&nbsp;the&nbsp;character&nbsp;as&nbsp;the&nbsp;first&nbsp;item&nbsp;in&nbsp;the&nbsp;range.&nbsp;&nbsp;A&nbsp;literal<br>
+'-'&nbsp;character&nbsp;must&nbsp;appear&nbsp;as&nbsp;the&nbsp;first&nbsp;character&nbsp;after&nbsp;any<br>
+literal&nbsp;']'&nbsp;character&nbsp;(or&nbsp;the&nbsp;beginning&nbsp;of&nbsp;the&nbsp;range)&nbsp;or&nbsp;as&nbsp;the<br>
+last&nbsp;character&nbsp;in&nbsp;the&nbsp;range.<br>
+&nbsp;<br>
+Note:&nbsp;The&nbsp;expansion&nbsp;from&nbsp;the&nbsp;mini-grammar&nbsp;occurs&nbsp;before&nbsp;the<br>
+<a href="#Range">Range</a>&nbsp;token&nbsp;is&nbsp;created&nbsp;(the&nbsp;simpleparse&nbsp;grammar&nbsp;does&nbsp;the<br>
+expansion),&nbsp;so&nbsp;the&nbsp;value&nbsp;attribute&nbsp;of&nbsp;the&nbsp;token&nbsp;is&nbsp;actually<br>
+the&nbsp;expanded&nbsp;string&nbsp;of&nbsp;characters.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="_Range-toParser"><strong>toParser</strong></a>(self, generator<font color="#909090">=None</font>, noReport<font color="#909090">=0</font>)</dt><dd><tt>Create&nbsp;the&nbsp;parser&nbsp;for&nbsp;the&nbsp;element&nbsp;token</tt></dd></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>requiresExpandedSet</strong> = 1</dl>
+
+<dl><dt><strong>value</strong> = ''</dl>
+
+<hr>
+Methods inherited from <a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>:<br>
+<dl><dt><a name="_Range-__init__"><strong>__init__</strong></a>(self, **namedarguments)</dt><dd><tt>Initialize&nbsp;the&nbsp;object&nbsp;with&nbsp;named&nbsp;attributes<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;simply&nbsp;takes&nbsp;the&nbsp;named&nbsp;attributes&nbsp;and<br>
+updates&nbsp;the&nbsp;object's&nbsp;dictionary&nbsp;with&nbsp;them</tt></dd></dl>
+
+<dl><dt><a name="_Range-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;a&nbsp;readily&nbsp;recognisable&nbsp;version&nbsp;of&nbsp;ourself</tt></dd></dl>
+
+<dl><dt><a name="_Range-permute"><strong>permute</strong></a>(self, basetable)</dt><dd><tt>Given&nbsp;a&nbsp;positive,&nbsp;required,&nbsp;non-repeating&nbsp;table,&nbsp;convert&nbsp;to&nbsp;appropriately&nbsp;configured&nbsp;table<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;applies&nbsp;generic&nbsp;logic&nbsp;for&nbsp;applying&nbsp;the<br>
+operational&nbsp;flags&nbsp;to&nbsp;a&nbsp;basic&nbsp;recipe&nbsp;for&nbsp;an&nbsp;element.<br>
+&nbsp;<br>
+It&nbsp;is&nbsp;normally&nbsp;called&nbsp;from&nbsp;the&nbsp;elements-token's&nbsp;own<br>
+toParser&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="_Range-terminal"><strong>terminal</strong></a>(self, generator)</dt><dd><tt>Determine&nbsp;if&nbsp;this&nbsp;element&nbsp;is&nbsp;terminal&nbsp;for&nbsp;the&nbsp;generator</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="simpleparse.objectgenerator.html#ElementToken">ElementToken</a>:<br>
+<dl><dt><strong>errorOnFail</strong> = None</dl>
+
+<dl><dt><strong>expanded</strong> = 0</dl>
+
+<dl><dt><strong>lookahead</strong> = 0</dl>
+
+<dl><dt><strong>negative</strong> = 0</dl>
+
+<dl><dt><strong>optional</strong> = 0</dl>
+
+<dl><dt><strong>repeating</strong> = 0</dl>
+
+<dl><dt><strong>report</strong> = 1</dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-BMS"><strong>BMS</strong></a> = TextSearch(...)</dt><dd><tt><a href="#-TextSearch">TextSearch</a>(match[,translate=None,algorithm=default_algorithm])<br>
+&nbsp;<br>
+Create&nbsp;a&nbsp;substring&nbsp;search&nbsp;object&nbsp;for&nbsp;the&nbsp;string&nbsp;match;<br>
+translate&nbsp;is&nbsp;an&nbsp;optional&nbsp;translate-string&nbsp;like&nbsp;the&nbsp;one&nbsp;used<br>
+in&nbsp;the&nbsp;module&nbsp;re.</tt></dd></dl>
+ <dl><dt><a name="-CharSet"><strong>CharSet</strong></a>(...)</dt><dd><tt><a href="#-CharSet">CharSet</a>(definition)<br>
+&nbsp;<br>
+Create&nbsp;a&nbsp;character&nbsp;set&nbsp;matching&nbsp;object&nbsp;from&nbsp;the&nbsp;string</tt></dd></dl>
+ <dl><dt><a name="-FS"><strong>FS</strong></a> = TextSearch(...)</dt><dd><tt><a href="#-TextSearch">TextSearch</a>(match[,translate=None,algorithm=default_algorithm])<br>
+&nbsp;<br>
+Create&nbsp;a&nbsp;substring&nbsp;search&nbsp;object&nbsp;for&nbsp;the&nbsp;string&nbsp;match;<br>
+translate&nbsp;is&nbsp;an&nbsp;optional&nbsp;translate-string&nbsp;like&nbsp;the&nbsp;one&nbsp;used<br>
+in&nbsp;the&nbsp;module&nbsp;re.</tt></dd></dl>
+ <dl><dt><a name="-FSType"><strong>FSType</strong></a> = TextSearch(...)</dt><dd><tt><a href="#-TextSearch">TextSearch</a>(match[,translate=None,algorithm=default_algorithm])<br>
+&nbsp;<br>
+Create&nbsp;a&nbsp;substring&nbsp;search&nbsp;object&nbsp;for&nbsp;the&nbsp;string&nbsp;match;<br>
+translate&nbsp;is&nbsp;an&nbsp;optional&nbsp;translate-string&nbsp;like&nbsp;the&nbsp;one&nbsp;used<br>
+in&nbsp;the&nbsp;module&nbsp;re.</tt></dd></dl>
+ <dl><dt><a name="-TagTable"><strong>TagTable</strong></a>(...)</dt><dd><tt><a href="#-TagTable">TagTable</a>(definition[,cachable=1])</tt></dd></dl>
+ <dl><dt><a name="-TextSearch"><strong>TextSearch</strong></a>(...)</dt><dd><tt><a href="#-TextSearch">TextSearch</a>(match[,translate=None,algorithm=default_algorithm])<br>
+&nbsp;<br>
+Create&nbsp;a&nbsp;substring&nbsp;search&nbsp;object&nbsp;for&nbsp;the&nbsp;string&nbsp;match;<br>
+translate&nbsp;is&nbsp;an&nbsp;optional&nbsp;translate-string&nbsp;like&nbsp;the&nbsp;one&nbsp;used<br>
+in&nbsp;the&nbsp;module&nbsp;re.</tt></dd></dl>
+ <dl><dt><a name="-UnicodeTagTable"><strong>UnicodeTagTable</strong></a>(...)</dt><dd><tt><a href="#-TagTable">TagTable</a>(definition[,cachable=1])</tt></dd></dl>
+ <dl><dt><a name="-charsplit"><strong>charsplit</strong></a>(...)</dt><dd><tt><a href="#-charsplit">charsplit</a>(text,char,start=0,stop=len(text))<br>
+&nbsp;<br>
+Split&nbsp;text[start:stop]&nbsp;into&nbsp;substrings&nbsp;at&nbsp;char&nbsp;and<br>
+return&nbsp;the&nbsp;result&nbsp;as&nbsp;list&nbsp;of&nbsp;strings.</tt></dd></dl>
+ <dl><dt><a name="-cmp"><strong>cmp</strong></a>(...)</dt><dd><tt><a href="#-cmp">cmp</a>(a,b)<br>
+&nbsp;<br>
+Compare&nbsp;two&nbsp;valid&nbsp;taglist&nbsp;tuples&nbsp;w/r&nbsp;to&nbsp;their&nbsp;slice<br>
+position;&nbsp;this&nbsp;is&nbsp;useful&nbsp;for&nbsp;sorting&nbsp;joinlists.</tt></dd></dl>
+ <dl><dt><a name="-compositeFlags"><strong>compositeFlags</strong></a>(first, second, report<font color="#909090">=1</font>)</dt><dd><tt>Composite&nbsp;flags&nbsp;from&nbsp;two&nbsp;items&nbsp;into&nbsp;overall&nbsp;flag-set</tt></dd></dl>
+ <dl><dt><a name="-copyToNewFlags"><strong>copyToNewFlags</strong></a>(target, flags)</dt><dd><tt>Copy&nbsp;target&nbsp;using&nbsp;combined&nbsp;flags</tt></dd></dl>
+ <dl><dt><a name="-extractFlags"><strong>extractFlags</strong></a>(item, report<font color="#909090">=1</font>)</dt><dd><tt>Extract&nbsp;the&nbsp;flags&nbsp;from&nbsp;an&nbsp;item&nbsp;as&nbsp;a&nbsp;tuple</tt></dd></dl>
+ <dl><dt><a name="-hex2str"><strong>hex2str</strong></a>(...)</dt><dd><tt><a href="#-hex2str">hex2str</a>(text)<br>
+&nbsp;<br>
+Return&nbsp;text&nbsp;interpreted&nbsp;as&nbsp;two&nbsp;byte&nbsp;HEX&nbsp;values&nbsp;converted<br>
+to&nbsp;a&nbsp;string.</tt></dd></dl>
+ <dl><dt><a name="-isascii"><strong>isascii</strong></a>(...)</dt><dd><tt><a href="#-isascii">isascii</a>(text,start=0,stop=len(text))<br>
+&nbsp;<br>
+Return&nbsp;1/0&nbsp;depending&nbsp;on&nbsp;whether&nbsp;text&nbsp;only&nbsp;contains&nbsp;ASCII<br>
+characters.</tt></dd></dl>
+ <dl><dt><a name="-join"><strong>join</strong></a>(...)</dt><dd><tt><a href="#-join">join</a>(joinlist,sep='',start=0,stop=len(joinlist))<br>
+&nbsp;<br>
+Copy&nbsp;snippets&nbsp;from&nbsp;different&nbsp;strings&nbsp;together&nbsp;producing&nbsp;a<br>
+new&nbsp;string<br>
+The&nbsp;first&nbsp;argument&nbsp;must&nbsp;be&nbsp;a&nbsp;list&nbsp;of&nbsp;tuples&nbsp;or&nbsp;strings;<br>
+tuples&nbsp;must&nbsp;be&nbsp;of&nbsp;the&nbsp;form&nbsp;(string,l,r[,...])&nbsp;and&nbsp;turn&nbsp;out<br>
+as&nbsp;string[l:r]<br>
+NOTE:&nbsp;the&nbsp;syntax&nbsp;used&nbsp;for&nbsp;negative&nbsp;slices&nbsp;is&nbsp;different<br>
+than&nbsp;the&nbsp;Python&nbsp;standard:&nbsp;-1&nbsp;corresponds&nbsp;to&nbsp;the&nbsp;first<br>
+character&nbsp;*after*&nbsp;the&nbsp;string,&nbsp;e.g.&nbsp;('Example',0,-1)&nbsp;gives<br>
+'Example'&nbsp;and&nbsp;not&nbsp;'Exampl',&nbsp;like&nbsp;in&nbsp;Python<br>
+sep&nbsp;is&nbsp;an&nbsp;optional&nbsp;separator&nbsp;string,&nbsp;start&nbsp;and&nbsp;stop<br>
+define&nbsp;the&nbsp;slice&nbsp;of&nbsp;joinlist&nbsp;that&nbsp;is&nbsp;taken&nbsp;into&nbsp;accont.</tt></dd></dl>
+ <dl><dt><a name="-joinlist"><strong>joinlist</strong></a>(...)</dt><dd><tt><a href="#-joinlist">joinlist</a>(text,list,start=0,stop=len(text))<br>
+&nbsp;<br>
+Takes&nbsp;a&nbsp;list&nbsp;of&nbsp;tuples&nbsp;(replacement,l,r,...)&nbsp;and&nbsp;produces<br>
+a&nbsp;taglist&nbsp;suitable&nbsp;for&nbsp;<a href="#-join">join</a>()&nbsp;which&nbsp;creates&nbsp;a&nbsp;copy<br>
+of&nbsp;text&nbsp;where&nbsp;every&nbsp;slice&nbsp;[l:r]&nbsp;is&nbsp;replaced&nbsp;by&nbsp;the<br>
+given&nbsp;replacement<br>
+-&nbsp;the&nbsp;list&nbsp;must&nbsp;be&nbsp;sorted&nbsp;using&nbsp;<a href="#-cmp">cmp</a>()&nbsp;as&nbsp;compare&nbsp;function<br>
+-&nbsp;it&nbsp;may&nbsp;not&nbsp;contain&nbsp;overlapping&nbsp;slices<br>
+-&nbsp;the&nbsp;slices&nbsp;may&nbsp;not&nbsp;contain&nbsp;negative&nbsp;indices<br>
+-&nbsp;if&nbsp;the&nbsp;taglist&nbsp;cannot&nbsp;contain&nbsp;overlapping&nbsp;slices,&nbsp;you&nbsp;can<br>
+&nbsp;&nbsp;give&nbsp;this&nbsp;function&nbsp;the&nbsp;taglist&nbsp;produced&nbsp;by&nbsp;<a href="#-tag">tag</a>()&nbsp;directly<br>
+&nbsp;&nbsp;(sorting&nbsp;is&nbsp;not&nbsp;needed,&nbsp;as&nbsp;the&nbsp;list&nbsp;will&nbsp;already&nbsp;be&nbsp;sorted)<br>
+-&nbsp;start&nbsp;and&nbsp;stop&nbsp;set&nbsp;the&nbsp;slice&nbsp;to&nbsp;work&nbsp;in,&nbsp;i.e.&nbsp;text[start:stop]</tt></dd></dl>
+ <dl><dt><a name="-lower"><strong>lower</strong></a>(...)</dt><dd><tt><a href="#-lower">lower</a>(text)<br>
+&nbsp;<br>
+Return&nbsp;text&nbsp;converted&nbsp;to&nbsp;lower&nbsp;case.</tt></dd></dl>
+ <dl><dt><a name="-prefix"><strong>prefix</strong></a>(...)</dt><dd><tt><a href="#-prefix">prefix</a>(text,prefixes,start=0,stop=len(text)[,translate])<br>
+&nbsp;<br>
+Looks&nbsp;at&nbsp;text[start:stop]&nbsp;and&nbsp;returns&nbsp;the&nbsp;first&nbsp;matching<br>
+prefix&nbsp;out&nbsp;of&nbsp;the&nbsp;tuple&nbsp;of&nbsp;strings&nbsp;given&nbsp;in&nbsp;prefixes.<br>
+If&nbsp;no&nbsp;prefix&nbsp;is&nbsp;found&nbsp;to&nbsp;be&nbsp;matching,&nbsp;None&nbsp;is&nbsp;returned.<br>
+The&nbsp;optional&nbsp;256&nbsp;char&nbsp;translate&nbsp;string&nbsp;is&nbsp;used&nbsp;to&nbsp;translate<br>
+the&nbsp;text&nbsp;prior&nbsp;to&nbsp;comparing&nbsp;it&nbsp;with&nbsp;the&nbsp;given&nbsp;suffixes.</tt></dd></dl>
+ <dl><dt><a name="-set"><strong>set</strong></a>(...)</dt><dd><tt><a href="#-set">set</a>(string,logic=1)<br>
+&nbsp;<br>
+Returns&nbsp;a&nbsp;character&nbsp;set&nbsp;for&nbsp;string:&nbsp;a&nbsp;bit&nbsp;encoded&nbsp;version<br>
+of&nbsp;the&nbsp;characters&nbsp;occurring&nbsp;in&nbsp;string.<br>
+-&nbsp;logic&nbsp;can&nbsp;be&nbsp;set&nbsp;to&nbsp;0&nbsp;if&nbsp;all&nbsp;characters&nbsp;*not*&nbsp;in&nbsp;string<br>
+&nbsp;&nbsp;should&nbsp;go&nbsp;into&nbsp;the&nbsp;set</tt></dd></dl>
+ <dl><dt><a name="-setfind"><strong>setfind</strong></a>(...)</dt><dd><tt><a href="#-setfind">setfind</a>(text,set,start=0,stop=len(text))<br>
+&nbsp;<br>
+Find&nbsp;the&nbsp;first&nbsp;occurence&nbsp;of&nbsp;any&nbsp;character&nbsp;from&nbsp;set&nbsp;in<br>
+text[start:stop]<br>
+&nbsp;set&nbsp;must&nbsp;be&nbsp;a&nbsp;string&nbsp;obtained&nbsp;with&nbsp;<a href="#-set">set</a>()<br>
+DEPRECATED:&nbsp;use&nbsp;<a href="#-CharSet">CharSet</a>().search()&nbsp;instead.</tt></dd></dl>
+ <dl><dt><a name="-setsplit"><strong>setsplit</strong></a>(...)</dt><dd><tt><a href="#-setsplit">setsplit</a>(text,set,start=0,stop=len(text))<br>
+&nbsp;<br>
+Split&nbsp;text[start:stop]&nbsp;into&nbsp;substrings&nbsp;using&nbsp;set,<br>
+omitting&nbsp;the&nbsp;splitting&nbsp;parts&nbsp;and&nbsp;empty&nbsp;substrings.<br>
+set&nbsp;must&nbsp;be&nbsp;a&nbsp;string&nbsp;obtained&nbsp;from&nbsp;<a href="#-set">set</a>()<br>
+DEPRECATED:&nbsp;use&nbsp;<a href="#-CharSet">CharSet</a>().split()&nbsp;instead.</tt></dd></dl>
+ <dl><dt><a name="-setsplitx"><strong>setsplitx</strong></a>(...)</dt><dd><tt><a href="#-setsplitx">setsplitx</a>(text,set,start=0,stop=len(text))<br>
+&nbsp;<br>
+Split&nbsp;text[start:stop]&nbsp;into&nbsp;substrings&nbsp;using&nbsp;set,&nbsp;so<br>
+that&nbsp;every&nbsp;second&nbsp;entry&nbsp;consists&nbsp;only&nbsp;of&nbsp;characters&nbsp;in&nbsp;set.<br>
+set&nbsp;must&nbsp;be&nbsp;a&nbsp;string&nbsp;obtained&nbsp;with&nbsp;<a href="#-set">set</a>()<br>
+DEPRECATED:&nbsp;use&nbsp;<a href="#-CharSet">CharSet</a>().splitx()&nbsp;instead.</tt></dd></dl>
+ <dl><dt><a name="-setstrip"><strong>setstrip</strong></a>(...)</dt><dd><tt><a href="#-setstrip">setstrip</a>(text,set,start=0,stop=len(text),mode=0)<br>
+&nbsp;<br>
+Strip&nbsp;all&nbsp;characters&nbsp;in&nbsp;text[start:stop]&nbsp;appearing&nbsp;in&nbsp;set.<br>
+mode&nbsp;indicates&nbsp;where&nbsp;to&nbsp;strip&nbsp;(&lt;0:&nbsp;left;&nbsp;=0:&nbsp;left&nbsp;and&nbsp;right;<br>
+&gt;0:&nbsp;right).&nbsp;set&nbsp;must&nbsp;be&nbsp;a&nbsp;string&nbsp;obtained&nbsp;with&nbsp;<a href="#-set">set</a>()<br>
+DEPRECATED:&nbsp;use&nbsp;<a href="#-CharSet">CharSet</a>().strip()&nbsp;instead.</tt></dd></dl>
+ <dl><dt><a name="-splitat"><strong>splitat</strong></a>(...)</dt><dd><tt><a href="#-splitat">splitat</a>(text,char,nth=1,start=0,stop=len(text))<br>
+&nbsp;<br>
+Split&nbsp;text[start:stop]&nbsp;into&nbsp;two&nbsp;substrings&nbsp;at&nbsp;the&nbsp;nth<br>
+occurance&nbsp;of&nbsp;char&nbsp;and&nbsp;return&nbsp;the&nbsp;result&nbsp;as&nbsp;2-tuple.&nbsp;If&nbsp;the<br>
+character&nbsp;is&nbsp;not&nbsp;found,&nbsp;the&nbsp;second&nbsp;string&nbsp;is&nbsp;empty.&nbsp;nth&nbsp;may<br>
+be&nbsp;negative:&nbsp;the&nbsp;search&nbsp;is&nbsp;then&nbsp;done&nbsp;from&nbsp;the&nbsp;right&nbsp;and&nbsp;the<br>
+first&nbsp;string&nbsp;is&nbsp;empty&nbsp;in&nbsp;case&nbsp;the&nbsp;character&nbsp;is&nbsp;not&nbsp;found.</tt></dd></dl>
+ <dl><dt><a name="-str2hex"><strong>str2hex</strong></a>(...)</dt><dd><tt><a href="#-str2hex">str2hex</a>(text)<br>
+&nbsp;<br>
+Return&nbsp;text&nbsp;converted&nbsp;to&nbsp;a&nbsp;string&nbsp;consisting&nbsp;of&nbsp;two&nbsp;byte<br>
+HEX&nbsp;values.</tt></dd></dl>
+ <dl><dt><a name="-suffix"><strong>suffix</strong></a>(...)</dt><dd><tt><a href="#-suffix">suffix</a>(text,suffixes,start=0,stop=len(text)[,translate])<br>
+&nbsp;<br>
+Looks&nbsp;at&nbsp;text[start:stop]&nbsp;and&nbsp;returns&nbsp;the&nbsp;first&nbsp;matching<br>
+suffix&nbsp;out&nbsp;of&nbsp;the&nbsp;tuple&nbsp;of&nbsp;strings&nbsp;given&nbsp;in&nbsp;suffixes.<br>
+If&nbsp;no&nbsp;suffix&nbsp;is&nbsp;found&nbsp;to&nbsp;be&nbsp;matching,&nbsp;None&nbsp;is&nbsp;returned.<br>
+The&nbsp;optional&nbsp;256&nbsp;char&nbsp;translate&nbsp;string&nbsp;is&nbsp;used&nbsp;to&nbsp;translate<br>
+the&nbsp;text&nbsp;prior&nbsp;to&nbsp;comparing&nbsp;it&nbsp;with&nbsp;the&nbsp;given&nbsp;suffixes.</tt></dd></dl>
+ <dl><dt><a name="-tag"><strong>tag</strong></a>(...)</dt><dd><tt><a href="#-tag">tag</a>(text,tagtable,sliceleft=0,sliceright=len(text),taglist=[],context=None)&nbsp;<br>
+Produce&nbsp;a&nbsp;tag&nbsp;list&nbsp;for&nbsp;a&nbsp;string,&nbsp;given&nbsp;a&nbsp;tag-table<br>
+-&nbsp;returns&nbsp;a&nbsp;tuple&nbsp;(success,&nbsp;taglist,&nbsp;nextindex)<br>
+-&nbsp;if&nbsp;taglist&nbsp;==&nbsp;None,&nbsp;then&nbsp;no&nbsp;taglist&nbsp;is&nbsp;created</tt></dd></dl>
+ <dl><dt><a name="-upper"><strong>upper</strong></a>(...)</dt><dd><tt><a href="#-upper">upper</a>(text)<br>
+&nbsp;<br>
+Return&nbsp;text&nbsp;converted&nbsp;to&nbsp;upper&nbsp;case.</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>A2Z</strong> = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'<br>
+<strong>A2Z_charset</strong> = &lt;Character Set object for 'A-Z'&gt;<br>
+<strong>A2Z_set</strong> = '<font color="#c040c0">\x00\x00\x00\x00\x00\x00\x00\x00\xfe\xff\xff\x07\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00</font>'<br>
+<strong>AllIn</strong> = 11<br>
+<strong>AllInCharSet</strong> = 41<br>
+<strong>AllInSet</strong> = 31<br>
+<strong>AllNotIn</strong> = 12<br>
+<strong>AppendMatch</strong> = 2048<br>
+<strong>AppendTagobj</strong> = 1024<br>
+<strong>AppendToTagobj</strong> = 512<br>
+<strong>BOYERMOORE</strong> = 0<br>
+<strong>Break</strong> = 0<br>
+<strong>Call</strong> = 201<br>
+<strong>CallArg</strong> = 202<br>
+<strong>CallTag</strong> = 256<br>
+<strong>EOF</strong> = 101<br>
+<strong>FASTSEARCH</strong> = 1<br>
+<strong>Fail</strong> = 100<br>
+<strong>Here</strong> = 1<br>
+<strong>Is</strong> = 13<br>
+<strong>IsIn</strong> = 14<br>
+<strong>IsInCharSet</strong> = 42<br>
+<strong>IsInSet</strong> = 32<br>
+<strong>IsNot</strong> = 15<br>
+<strong>IsNotIn</strong> = 15<br>
+<strong>Jump</strong> = 100<br>
+<strong>JumpTarget</strong> = 104<br>
+<strong>LookAhead</strong> = 4096<br>
+<strong>Loop</strong> = 205<br>
+<strong>LoopControl</strong> = 206<br>
+<strong>MatchFail</strong> = -1000000<br>
+<strong>MatchOk</strong> = 1000000<br>
+<strong>Move</strong> = 103<br>
+<strong>NoWord</strong> = 211<br>
+<strong>Reset</strong> = -1<br>
+<strong>Skip</strong> = 102<br>
+<strong>SubTable</strong> = 207<br>
+<strong>SubTableInList</strong> = 208<br>
+<strong>TRIVIAL</strong> = 2<br>
+<strong>Table</strong> = 203<br>
+<strong>TableInList</strong> = 204<br>
+<strong>ThisTable</strong> = 999<br>
+<strong>To</strong> = 0<br>
+<strong>ToBOF</strong> = 0<br>
+<strong>ToEOF</strong> = -1<br>
+<strong>Umlaute</strong> = '<font color="#c040c0">\xc4\xd6\xdc</font>'<br>
+<strong>Umlaute_charset</strong> = &lt;Character Set object for '\xc4\xd6\xdc'&gt;<br>
+<strong>Word</strong> = 21<br>
+<strong>WordEnd</strong> = 23<br>
+<strong>WordStart</strong> = 22<br>
+<strong>a2z</strong> = 'abcdefghijklmnopqrstuvwxyz'<br>
+<strong>a2z_charset</strong> = &lt;Character Set object for 'a-z'&gt;<br>
+<strong>a2z_set</strong> = '<font color="#c040c0">\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xfe\xff\xff\x07\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00</font>'<br>
+<strong>alpha</strong> = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'<br>
+<strong>alpha_charset</strong> = &lt;Character Set object for 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'&gt;<br>
+<strong>alpha_set</strong> = '<font color="#c040c0">\x00\x00\x00\x00\x00\x00\x00\x00\xfe\xff\xff\x07\xfe\xff\xff\x07\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00</font>'<br>
+<strong>alphanumeric</strong> = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'<br>
+<strong>alphanumeric_charset</strong> = &lt;Character Set object for 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'&gt;<br>
+<strong>alphanumeric_set</strong> = '<font color="#c040c0">\x00\x00\x00\x00\x00\x00\xff\x03\xfe\xff\xff\x07\xfe\xff\xff\x07\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00</font>'<br>
+<strong>any</strong> = '<font color="#c040c0">\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f</font> !"#$%&amp;<font color="#c040c0">\'</font>()*+,-./...<font color="#c040c0">\xcf\xd0\xd1\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xdb\xdc\xdd\xde\xdf\xe0\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff</font>'<br>
+<strong>any_charset</strong> = &lt;Character Set object for '\x00-\xff'&gt;<br>
+<strong>any_set</strong> = '<font color="#c040c0">\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff</font>'<br>
+<strong>formfeed</strong> = '<font color="#c040c0">\x0c</font>'<br>
+<strong>formfeed_charset</strong> = &lt;Character Set object for '\x0c'&gt;<br>
+<strong>german_alpha</strong> = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz<font color="#c040c0">\xe4\xf6\xfc\xdf\xc4\xd6\xdc</font>'<br>
+<strong>german_alpha_charset</strong> = &lt;Character Set object for 'ABCDEFGHIJKLMNOPQRSTU...hijklmnopqrstuvwxyz\xe4\xf6\xfc\xdf\xc4\xd6\xdc'&gt;<br>
+<strong>german_alpha_set</strong> = '<font color="#c040c0">\x00\x00\x00\x00\x00\x00\x00\x00\xfe\xff\xff\x07\xfe\xff\xff\x07\x00\x00\x00\x00\x00\x00\x00\x00\x10\x00</font>@<font color="#c040c0">\x90\x10\x00</font>@<font color="#c040c0">\x10</font>'<br>
+<strong>id2cmd</strong> = {-1000000: 'MatchFail', -1: 'ToEOF', 0: 'Fail/Jump', 1: 'Here', 11: 'AllIn', 12: 'AllNotIn', 13: 'Is', 14: 'IsIn', 15: 'IsNotIn', 21: 'Word', ...}<br>
+<strong>newline</strong> = '<font color="#c040c0">\r\n</font>'<br>
+<strong>newline_charset</strong> = &lt;Character Set object for '\r\n'&gt;<br>
+<strong>newline_set</strong> = '<font color="#c040c0">\x00</font>$<font color="#c040c0">\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00</font>'<br>
+<strong>nonwhitespace_charset</strong> = &lt;Character Set object for '^ \t\x0b\r\n\x0c'&gt;<br>
+<strong>nonwhitespace_set</strong> = '<font color="#c040c0">\xff\xc1\xff\xff\xfe\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff</font>'<br>
+<strong>number</strong> = '0123456789'<br>
+<strong>number_charset</strong> = &lt;Character Set object for '0-9'&gt;<br>
+<strong>number_set</strong> = '<font color="#c040c0">\x00\x00\x00\x00\x00\x00\xff\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00</font>'<br>
+<strong>sFindWord</strong> = 213<br>
+<strong>sWordEnd</strong> = 212<br>
+<strong>sWordStart</strong> = 211<br>
+<strong>tagtable_cache</strong> = {(46912536021760, 0): &lt;String Tag Table object&gt;, (46912540134840, 0): &lt;String Tag Table object&gt;, (46912541410080, 0): &lt;String Tag Table object&gt;, (46912541454848, 0): &lt;String Tag Table object&gt;, (46912541455136, 0): &lt;String Tag Table object&gt;, (46912541455208, 0): &lt;String Tag Table object&gt;, (46912541489264, 0): &lt;String Tag Table object&gt;, (46912541566016, 0): &lt;String Tag Table object&gt;, (46912543903688, 0): &lt;String Tag Table object&gt;, (46912543908136, 0): &lt;String Tag Table object&gt;, ...}<br>
+<strong>to_lower</strong> = '<font color="#c040c0">\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f</font> !"#$%&amp;<font color="#c040c0">\'</font>()*+,-./...<font color="#c040c0">\xcf\xd0\xd1\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xdb\xdc\xdd\xde\xdf\xe0\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff</font>'<br>
+<strong>to_upper</strong> = '<font color="#c040c0">\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f</font> !"#$%&amp;<font color="#c040c0">\'</font>()*+,-./...<font color="#c040c0">\xcf\xd0\xd1\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xdb\xdc\xdd\xde\xdf\xe0\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff</font>'<br>
+<strong>umlaute</strong> = '<font color="#c040c0">\xe4\xf6\xfc\xdf</font>'<br>
+<strong>umlaute_charset</strong> = &lt;Character Set object for '\xe4\xf6\xfc\xdf'&gt;<br>
+<strong>white</strong> = ' <font color="#c040c0">\t\x0b</font>'<br>
+<strong>white_charset</strong> = &lt;Character Set object for ' \t\x0b'&gt;<br>
+<strong>white_set</strong> = '<font color="#c040c0">\x00\x02\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00</font>'<br>
+<strong>whitespace</strong> = ' <font color="#c040c0">\t\x0b\r\n\x0c</font>'<br>
+<strong>whitespace_charset</strong> = &lt;Character Set object for ' \t\x0b\r\n\x0c'&gt;<br>
+<strong>whitespace_set</strong> = '<font color="#c040c0">\x00</font>&amp;<font color="#c040c0">\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00</font>'</td></tr></table>
+</body></html>

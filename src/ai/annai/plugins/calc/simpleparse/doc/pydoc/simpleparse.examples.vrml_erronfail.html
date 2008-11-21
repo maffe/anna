@@ -1,0 +1,49 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module simpleparse.examples.vrml_erronfail</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="simpleparse.html"><font color="#ffffff">simpleparse</font></a>.<a href="simpleparse.examples.html"><font color="#ffffff">examples</font></a>.vrml_erronfail</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/mcfletch/pylive/simpleparse/examples/vrml_erronfail.py">/home/mcfletch/pylive/simpleparse/examples/vrml_erronfail.py</a></font></td></tr></table>
+    <p><tt>VRML97-compliant&nbsp;Parser<br>
+&nbsp;<br>
+This&nbsp;example&nbsp;is&nbsp;a&nbsp;full&nbsp;VRML97&nbsp;parser,&nbsp;originally&nbsp;created<br>
+for&nbsp;the&nbsp;mcf.vrml&nbsp;VRML-processing&nbsp;system.&nbsp;&nbsp;It&nbsp;supports&nbsp;all<br>
+VRML97&nbsp;constructs,&nbsp;and&nbsp;should&nbsp;be&nbsp;correct&nbsp;for&nbsp;any&nbsp;VRML97<br>
+content&nbsp;you&nbsp;can&nbsp;produce.&nbsp;&nbsp;The&nbsp;parser&nbsp;is&nbsp;fairly&nbsp;fast<br>
+(parsing&nbsp;around&nbsp;280,000&nbsp;cps&nbsp;on&nbsp;a&nbsp;1GHz&nbsp;Athlon&nbsp;machine).<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;the&nbsp;errorOnFail&nbsp;version&nbsp;of&nbsp;the&nbsp;grammar,&nbsp;otherwise<br>
+identical&nbsp;to&nbsp;the&nbsp;vrml.py&nbsp;module.&nbsp;&nbsp;Note:&nbsp;there&nbsp;is&nbsp;basically<br>
+no&nbsp;speed&nbsp;penalty&nbsp;for&nbsp;the&nbsp;errorOnFail&nbsp;version&nbsp;compared&nbsp;to<br>
+the&nbsp;original&nbsp;version,&nbsp;as&nbsp;the&nbsp;errorOnFail&nbsp;code&nbsp;is&nbsp;not&nbsp;touched<br>
+unless&nbsp;a&nbsp;syntax&nbsp;error&nbsp;is&nbsp;actually&nbsp;found&nbsp;in&nbsp;the&nbsp;input&nbsp;text.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="simpleparse.common.chartypes.html">simpleparse.common.chartypes</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-buildVRMLParser"><strong>buildVRMLParser</strong></a>(declaration<font color="#909090">="header         := -[<font color="#c040c0">\\</font>n]*<font color="#c040c0">\n</font>vrmlFile       := heade...  :=  ( [ <font color="#c040c0">\\</font>011-<font color="#c040c0">\\</font>015,]+ / ('#',-'<font color="#c040c0">\\</font>012'*,'<font color="#c040c0">\\</font>n')+ )*<font color="#c040c0">\n</font>"</font>)</dt></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>VRMLPARSERDEF</strong> = "header         := -[<font color="#c040c0">\\</font>n]*<font color="#c040c0">\n</font>vrmlFile       := heade...  :=  ( [ <font color="#c040c0">\\</font>011-<font color="#c040c0">\\</font>015,]+ / ('#',-'<font color="#c040c0">\\</font>012'*,'<font color="#c040c0">\\</font>n')+ )*<font color="#c040c0">\n</font>"</td></tr></table>
+</body></html>

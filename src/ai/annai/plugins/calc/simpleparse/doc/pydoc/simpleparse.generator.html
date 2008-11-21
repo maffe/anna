@@ -1,0 +1,113 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module simpleparse.generator</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="simpleparse.html"><font color="#ffffff">simpleparse</font></a>.generator</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/mcfletch/pylive/simpleparse/generator.py">/home/mcfletch/pylive/simpleparse/generator.py</a></font></td></tr></table>
+    <p><tt>Abstract&nbsp;representation&nbsp;of&nbsp;an&nbsp;in-memory&nbsp;grammar&nbsp;that&nbsp;generates&nbsp;parsers</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="simpleparse.stt.TextTools.TextTools.html">simpleparse.stt.TextTools.TextTools</a><br>
+</td><td width="25%" valign=top><a href="traceback.html">traceback</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="simpleparse.generator.html#Generator">Generator</a>
+</font></dt><dt><font face="helvetica, arial"><a href="simpleparse.generator.html#GeneratorAPI1">GeneratorAPI1</a>
+</font></dt></dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Generator">class <strong>Generator</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Abstract&nbsp;representation&nbsp;of&nbsp;an&nbsp;in-memory&nbsp;grammar&nbsp;that&nbsp;generates&nbsp;parsers<br>
+&nbsp;<br>
+The&nbsp;generator&nbsp;class&nbsp;manages&nbsp;a&nbsp;collection&nbsp;of<br>
+ElementToken&nbsp;objects.&nbsp;&nbsp;These&nbsp;element&nbsp;token&nbsp;objects<br>
+allow&nbsp;the&nbsp;generator&nbsp;to&nbsp;be&nbsp;separated&nbsp;from&nbsp;the<br>
+particular&nbsp;parser&nbsp;associated&nbsp;with&nbsp;any&nbsp;particular&nbsp;EBNF<br>
+grammar.&nbsp;&nbsp;In&nbsp;fact,&nbsp;it&nbsp;is&nbsp;possible&nbsp;to&nbsp;create&nbsp;entire&nbsp;grammars<br>
+using&nbsp;only&nbsp;the&nbsp;generator&nbsp;objects&nbsp;as&nbsp;a&nbsp;python&nbsp;API.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Generator-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Initialise&nbsp;the&nbsp;<a href="#Generator">Generator</a></tt></dd></dl>
+
+<dl><dt><a name="Generator-addDefinition"><strong>addDefinition</strong></a>(self, name, rootElement)</dt><dd><tt>Add&nbsp;a&nbsp;new&nbsp;definition&nbsp;(object)&nbsp;to&nbsp;the&nbsp;generator</tt></dd></dl>
+
+<dl><dt><a name="Generator-addDefinitionSource"><strong>addDefinitionSource</strong></a>(self, item)</dt><dd><tt>Add&nbsp;a&nbsp;source&nbsp;for&nbsp;definitions&nbsp;when&nbsp;the&nbsp;current&nbsp;grammar&nbsp;doesn't&nbsp;supply<br>
+a&nbsp;particular&nbsp;rule&nbsp;(effectively&nbsp;common/shared&nbsp;items&nbsp;for&nbsp;the&nbsp;grammar).</tt></dd></dl>
+
+<dl><dt><a name="Generator-buildParser"><strong>buildParser</strong></a>(self, name, methodSource<font color="#909090">=None</font>)</dt><dd><tt>Build&nbsp;the&nbsp;given&nbsp;parser&nbsp;definition,&nbsp;returning&nbsp;a&nbsp;TextTools&nbsp;parsing&nbsp;tuple</tt></dd></dl>
+
+<dl><dt><a name="Generator-cacheCustomTerminalParser"><strong>cacheCustomTerminalParser</strong></a>(self, index, flags, parser)</dt><dd><tt>Optimization&nbsp;to&nbsp;reuse&nbsp;customized&nbsp;terminal&nbsp;parsers</tt></dd></dl>
+
+<dl><dt><a name="Generator-getCustomTerminalParser"><strong>getCustomTerminalParser</strong></a>(self, index, flags)</dt><dd><tt>Retrieved&nbsp;a&nbsp;cached&nbsp;customized&nbsp;terminal&nbsp;parser&nbsp;or&nbsp;None</tt></dd></dl>
+
+<dl><dt><a name="Generator-getNameIndex"><strong>getNameIndex</strong></a>(self, name)</dt><dd><tt>Return&nbsp;the&nbsp;index&nbsp;into&nbsp;the&nbsp;main&nbsp;list&nbsp;for&nbsp;the&nbsp;given&nbsp;name</tt></dd></dl>
+
+<dl><dt><a name="Generator-getNames"><strong>getNames</strong></a>(self)</dt><dd><tt>Return&nbsp;the&nbsp;list&nbsp;of&nbsp;root&nbsp;generator&nbsp;objects</tt></dd></dl>
+
+<dl><dt><a name="Generator-getObjectForName"><strong>getObjectForName</strong></a>(self, name)</dt><dd><tt>Determine&nbsp;whether&nbsp;our&nbsp;methodSource&nbsp;has&nbsp;a&nbsp;parsing&nbsp;method&nbsp;for&nbsp;the&nbsp;given&nbsp;name<br>
+&nbsp;<br>
+returns&nbsp;(&nbsp;flags&nbsp;or&nbsp;0&nbsp;,&nbsp;tagobject)</tt></dd></dl>
+
+<dl><dt><a name="Generator-getParserList"><strong>getParserList</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Generator-getRootObject"><strong>getRootObject</strong></a>(self, name)</dt><dd><tt>Get&nbsp;a&nbsp;particular&nbsp;root&nbsp;object&nbsp;by&nbsp;name</tt></dd></dl>
+
+<dl><dt><a name="Generator-getRootObjects"><strong>getRootObjects</strong></a>(self)</dt><dd><tt>Return&nbsp;the&nbsp;list&nbsp;of&nbsp;root&nbsp;generator&nbsp;objects</tt></dd></dl>
+
+<dl><dt><a name="Generator-getTagObjectForName"><strong>getTagObjectForName</strong></a>(self, name)</dt><dd><tt>Get&nbsp;any&nbsp;explicitly&nbsp;defined&nbsp;tag&nbsp;object&nbsp;for&nbsp;the&nbsp;given&nbsp;name</tt></dd></dl>
+
+<dl><dt><a name="Generator-getTerminalParser"><strong>getTerminalParser</strong></a>(self, index)</dt><dd><tt>Try&nbsp;to&nbsp;retrieve&nbsp;a&nbsp;parser&nbsp;from&nbsp;the&nbsp;parser-list</tt></dd></dl>
+
+<dl><dt><a name="Generator-setTerminalParser"><strong>setTerminalParser</strong></a>(self, index, parser)</dt><dd><tt>Explicitly&nbsp;set&nbsp;the&nbsp;parser&nbsp;value&nbsp;for&nbsp;given&nbsp;name</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="GeneratorAPI1">class <strong>GeneratorAPI1</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Stand-in&nbsp;class&nbsp;supporting&nbsp;operation&nbsp;of&nbsp;SimpleParse&nbsp;1.0&nbsp;applications<br>
+&nbsp;<br>
+There&nbsp;was&nbsp;really&nbsp;only&nbsp;the&nbsp;one&nbsp;method&nbsp;of&nbsp;interest,&nbsp;parserbyname,<br>
+everything&nbsp;else&nbsp;was&nbsp;internal&nbsp;(and&nbsp;is&nbsp;now&nbsp;part&nbsp;of<br>
+simpleparsegrammar.py).<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="GeneratorAPI1-__init__"><strong>__init__</strong></a>(self, production, prebuilt<font color="#909090">=()</font>)</dt></dl>
+
+<dl><dt><a name="GeneratorAPI1-parserbyname"><strong>parserbyname</strong></a>(self, name)</dt><dd><tt>Retrieve&nbsp;a&nbsp;tag-table&nbsp;by&nbsp;production&nbsp;name</tt></dd></dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-buildParser"><strong>buildParser</strong></a>(declaration, prebuiltnodes<font color="#909090">=()</font>)</dt><dd><tt>API&nbsp;1.0&nbsp;primary&nbsp;entry&nbsp;point,&nbsp;returns&nbsp;a&nbsp;<a href="#GeneratorAPI1">GeneratorAPI1</a>&nbsp;instance<br>
+&nbsp;<br>
+That&nbsp;object&nbsp;will&nbsp;respond&nbsp;to&nbsp;the&nbsp;parserbyname&nbsp;API&nbsp;expected&nbsp;by<br>
+SimpleParse&nbsp;1.0&nbsp;applications.</tt></dd></dl>
+</td></tr></table>
+</body></html>

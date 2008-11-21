@@ -1,0 +1,107 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module simpleparse.error</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="simpleparse.html"><font color="#ffffff">simpleparse</font></a>.error</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/mcfletch/pylive/simpleparse/error.py">/home/mcfletch/pylive/simpleparse/error.py</a></font></td></tr></table>
+    <p><tt>Definition&nbsp;of&nbsp;the&nbsp;<a href="#ParserSyntaxError">ParserSyntaxError</a>&nbsp;raised&nbsp;on&nbsp;parse&nbsp;failure</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="string.html">string</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="exceptions.html#SyntaxError">SyntaxError</a>(<a href="exceptions.html#StandardError">StandardError</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="simpleparse.error.html#ParserSyntaxError">ParserSyntaxError</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ParserSyntaxError">class <strong>ParserSyntaxError</strong></a>(<a href="exceptions.html#SyntaxError">SyntaxError</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Sub-class&nbsp;of&nbsp;<a href="exceptions.html#SyntaxError">SyntaxError</a>&nbsp;for&nbsp;use&nbsp;by&nbsp;SimpleParse&nbsp;parsers<br>
+&nbsp;<br>
+Every&nbsp;instance&nbsp;will&nbsp;have&nbsp;the&nbsp;following&nbsp;attributes:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;buffer&nbsp;--&nbsp;pointer&nbsp;to&nbsp;the&nbsp;source&nbsp;buffer<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;position&nbsp;--&nbsp;integer&nbsp;position&nbsp;in&nbsp;buffer&nbsp;where&nbsp;error&nbsp;occured&nbsp;or&nbsp;-1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;production&nbsp;--&nbsp;the&nbsp;production&nbsp;which&nbsp;failed<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;expected&nbsp;--&nbsp;string&nbsp;(currently&nbsp;taken&nbsp;from&nbsp;grammar)&nbsp;describing<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;what&nbsp;production/element&nbsp;token&nbsp;failed&nbsp;to&nbsp;match<br>
+the&nbsp;following&nbsp;will&nbsp;be&nbsp;calculated&nbsp;in&nbsp;order&nbsp;to&nbsp;display<br>
+human-friendly&nbsp;error&nbsp;messages:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;line&nbsp;--&nbsp;~&nbsp;text&nbsp;line-number&nbsp;or&nbsp;-1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lineChar&nbsp;--&nbsp;~&nbsp;character&nbsp;on&nbsp;line&nbsp;where&nbsp;parsing&nbsp;failed&nbsp;or&nbsp;-1<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="simpleparse.error.html#ParserSyntaxError">ParserSyntaxError</a></dd>
+<dd><a href="exceptions.html#SyntaxError">SyntaxError</a></dd>
+<dd><a href="exceptions.html#StandardError">StandardError</a></dd>
+<dd><a href="exceptions.html#Exception">Exception</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="ParserSyntaxError-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Create&nbsp;a&nbsp;string&nbsp;representation&nbsp;of&nbsp;the&nbsp;error</tt></dd></dl>
+
+<dl><dt><a name="ParserSyntaxError-getLineCoordinate"><strong>getLineCoordinate</strong></a>(self)</dt><dd><tt>Get&nbsp;(line&nbsp;number,&nbsp;line&nbsp;character)&nbsp;for&nbsp;the&nbsp;error</tt></dd></dl>
+
+<dl><dt><a name="ParserSyntaxError-messageFormat"><strong>messageFormat</strong></a>(self, template<font color="#909090">=None</font>)</dt><dd><tt>Create&nbsp;a&nbsp;default&nbsp;message&nbsp;for&nbsp;this&nbsp;syntax&nbsp;error</tt></dd></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>DEFAULTTEMPLATE</strong> = 'Failed parsing production "%(production)s" @pos ...<font color="#c040c0">\n</font>Expected syntax: %(expected)s<font color="#c040c0">\n</font>Got text: %(text)s'</dl>
+
+<dl><dt><strong>buffer</strong> = ''</dl>
+
+<dl><dt><strong>expected</strong> = ''</dl>
+
+<dl><dt><strong>line</strong> = -1</dl>
+
+<dl><dt><strong>position</strong> = -1</dl>
+
+<dl><dt><strong>production</strong> = ''</dl>
+
+<hr>
+Methods inherited from <a href="exceptions.html#SyntaxError">SyntaxError</a>:<br>
+<dl><dt><a name="ParserSyntaxError-__init__"><strong>__init__</strong></a>(...)</dt></dl>
+
+<hr>
+Data and other attributes inherited from <a href="exceptions.html#SyntaxError">SyntaxError</a>:<br>
+<dl><dt><strong>filename</strong> = None</dl>
+
+<dl><dt><strong>lineno</strong> = None</dl>
+
+<dl><dt><strong>msg</strong> = ''</dl>
+
+<dl><dt><strong>offset</strong> = None</dl>
+
+<dl><dt><strong>print_file_and_line</strong> = None</dl>
+
+<dl><dt><strong>text</strong> = None</dl>
+
+<hr>
+Methods inherited from <a href="exceptions.html#Exception">Exception</a>:<br>
+<dl><dt><a name="ParserSyntaxError-__getitem__"><strong>__getitem__</strong></a>(...)</dt></dl>
+
+</td></tr></table></td></tr></table>
+</body></html>

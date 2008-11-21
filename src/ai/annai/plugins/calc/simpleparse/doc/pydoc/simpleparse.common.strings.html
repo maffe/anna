@@ -1,0 +1,175 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module simpleparse.common.strings</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="simpleparse.html"><font color="#ffffff">simpleparse</font></a>.<a href="simpleparse.common.html"><font color="#ffffff">common</font></a>.strings</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/mcfletch/pylive/simpleparse/common/strings.py">/home/mcfletch/pylive/simpleparse/common/strings.py</a></font></td></tr></table>
+    <p><tt>Python&nbsp;string&nbsp;parsers&nbsp;with&nbsp;escape&nbsp;characters<br>
+&nbsp;<br>
+Python-string-like&nbsp;operation&nbsp;as&nbsp;much&nbsp;as&nbsp;possible,&nbsp;this&nbsp;includes:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;support&nbsp;for&nbsp;single&nbsp;and&nbsp;double-quoted&nbsp;strings<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;support&nbsp;for&nbsp;triple-quoted&nbsp;versions&nbsp;of&nbsp;the&nbsp;same<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;support&nbsp;for&nbsp;special&nbsp;character&nbsp;escapes&nbsp;as&nbsp;seen&nbsp;in&nbsp;8-bit&nbsp;python&nbsp;strings<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;support&nbsp;for&nbsp;octal&nbsp;and&nbsp;hexidecimal&nbsp;character&nbsp;escapes<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string_single_quote<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string_double_quote<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string_triple_single<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string_triple_double<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Individual&nbsp;string&nbsp;types&nbsp;with&nbsp;the&nbsp;above&nbsp;features<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Any&nbsp;of&nbsp;the&nbsp;above&nbsp;string&nbsp;types,&nbsp;in&nbsp;a&nbsp;simple&nbsp;FirstOf&nbsp;group<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;the&nbsp;triple-quoted&nbsp;types&nbsp;first,&nbsp;then&nbsp;the&nbsp;single&nbsp;quoted<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;i.e.&nbsp;generated&nbsp;with&nbsp;this&nbsp;grammar:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string_triple_double/string_triple_single/string_double_quote/string_single_quote<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;<br>
+Interpreters:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#StringInterpreter">StringInterpreter</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Interprets&nbsp;any/all&nbsp;of&nbsp;the&nbsp;above&nbsp;as&nbsp;a&nbsp;normal&nbsp;(non-Raw)&nbsp;Python<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;regular&nbsp;(non-unicode)&nbsp;string.&nbsp;&nbsp;Hopefully&nbsp;the&nbsp;action&nbsp;is&nbsp;identical<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;doing&nbsp;eval(&nbsp;matchedString,&nbsp;{},{}),&nbsp;without&nbsp;the&nbsp;negative&nbsp;security<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;implications&nbsp;of&nbsp;that&nbsp;approach.&nbsp;&nbsp;Note&nbsp;that&nbsp;you&nbsp;need&nbsp;to&nbsp;make&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;interpreter&nbsp;available&nbsp;under&nbsp;each&nbsp;name&nbsp;you&nbsp;use&nbsp;directly&nbsp;in&nbsp;your<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;grammar,&nbsp;so&nbsp;if&nbsp;you&nbsp;use&nbsp;string_single_quote&nbsp;and&nbsp;string_double_quote<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;directly,&nbsp;then&nbsp;you&nbsp;need&nbsp;to&nbsp;add:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string_single_quote&nbsp;=&nbsp;myStringInterpreterInstance<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string_double_quote&nbsp;=&nbsp;myStringInterpreterInstance<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;your&nbsp;processor&nbsp;class.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="simpleparse.common.chartypes.html">simpleparse.common.chartypes</a><br>
+</td><td width="25%" valign=top><a href="simpleparse.common.html">simpleparse.common</a><br>
+</td><td width="25%" valign=top><a href="simpleparse.objectgenerator.html">simpleparse.objectgenerator</a><br>
+</td><td width="25%" valign=top><a href="string.html">string</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="simpleparse.dispatchprocessor.html#DispatchProcessor">DispatchProcessor</a>(<a href="simpleparse.processor.html#Processor">Processor</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="simpleparse.common.strings.html#StringInterpreter">StringInterpreter</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="StringInterpreter">class <strong>StringInterpreter</strong></a>(<a href="simpleparse.dispatchprocessor.html#DispatchProcessor">DispatchProcessor</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Processor&nbsp;for&nbsp;converting&nbsp;parsed&nbsp;string&nbsp;values&nbsp;to&nbsp;their&nbsp;"intended"&nbsp;value<br>
+&nbsp;<br>
+Basically&nbsp;this&nbsp;processor&nbsp;handles&nbsp;de-escaping&nbsp;and&nbsp;stripping&nbsp;the<br>
+surrounding&nbsp;quotes,&nbsp;so&nbsp;that&nbsp;you&nbsp;get&nbsp;the&nbsp;string&nbsp;as&nbsp;a&nbsp;Python&nbsp;string<br>
+value.&nbsp;&nbsp;You&nbsp;use&nbsp;the&nbsp;processor&nbsp;by&nbsp;creating&nbsp;an&nbsp;instance&nbsp;of<br>
+<a href="#StringInterpreter">StringInterpreter</a>()&nbsp;as&nbsp;an&nbsp;item&nbsp;in&nbsp;another&nbsp;processor's<br>
+methodSource&nbsp;object&nbsp;(often&nbsp;the&nbsp;Parser&nbsp;itself).<br>
+&nbsp;<br>
+For&nbsp;example:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;MyProcessor(&nbsp;<a href="simpleparse.dispatchprocessor.html#DispatchProcessor">DispatchProcessor</a>&nbsp;):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;=&nbsp;<a href="#StringInterpreter">StringInterpreter</a>()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;following&nbsp;would&nbsp;be&nbsp;used&nbsp;if&nbsp;you&nbsp;have,&nbsp;for&nbsp;instance,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;used&nbsp;string_single_quote&nbsp;in&nbsp;an&nbsp;area&nbsp;where&nbsp;double<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;or&nbsp;triple-quoted&nbsp;strings&nbsp;are&nbsp;not&nbsp;allowed,&nbsp;but&nbsp;have<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;used&nbsp;string&nbsp;in&nbsp;another&nbsp;area.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string_single_quote&nbsp;=&nbsp;string<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="simpleparse.common.strings.html#StringInterpreter">StringInterpreter</a></dd>
+<dd><a href="simpleparse.dispatchprocessor.html#DispatchProcessor">DispatchProcessor</a></dd>
+<dd><a href="simpleparse.processor.html#Processor">Processor</a></dd>
+<dd><a href="simpleparse.processor.html#MethodSource">MethodSource</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="StringInterpreter-backslash_char"><strong>backslash_char</strong></a>(self, (tag, left, right, sublist), buffer)</dt></dl>
+
+<dl><dt><a name="StringInterpreter-char_no_quote"><strong>char_no_quote</strong></a>(self, (tag, left, right, sublist), buffer)</dt></dl>
+
+<dl><dt><a name="StringInterpreter-escaped_char"><strong>escaped_char</strong></a>(self, (tag, left, right, sublist), buffer)</dt></dl>
+
+<dl><dt><a name="StringInterpreter-hex_escaped_char"><strong>hex_escaped_char</strong></a>(self, (tag, left, right, sublist), buffer)</dt></dl>
+
+<dl><dt><a name="StringInterpreter-nondelimiter"><strong>nondelimiter</strong></a> = <a href="#StringInterpreter-char_no_quote">char_no_quote</a>(self, (tag, left, right, sublist), buffer)</dt></dl>
+
+<dl><dt><a name="StringInterpreter-octal_escaped_char"><strong>octal_escaped_char</strong></a>(self, (tag, left, right, sublist), buffer)</dt></dl>
+
+<dl><dt><a name="StringInterpreter-string"><strong>string</strong></a>(self, (tag, left, right, sublist), buffer)</dt><dd><tt>Dispatch&nbsp;any&nbsp;of&nbsp;the&nbsp;string&nbsp;types&nbsp;and&nbsp;return&nbsp;the&nbsp;result</tt></dd></dl>
+
+<dl><dt><a name="StringInterpreter-string_double_quote"><strong>string_double_quote</strong></a> = <a href="#StringInterpreter-string_single_quote">string_single_quote</a>(self, (tag, left, right, sublist), buffer)</dt></dl>
+
+<dl><dt><a name="StringInterpreter-string_single_quote"><strong>string_single_quote</strong></a>(self, (tag, left, right, sublist), buffer)</dt></dl>
+
+<dl><dt><a name="StringInterpreter-string_special_escapes"><strong>string_special_escapes</strong></a>(self, (tag, left, right, sublist), buffer)</dt><dd><tt>Maps&nbsp;"special"&nbsp;escapes&nbsp;to&nbsp;the&nbsp;corresponding&nbsp;characters</tt></dd></dl>
+
+<dl><dt><a name="StringInterpreter-string_triple_double"><strong>string_triple_double</strong></a> = <a href="#StringInterpreter-string_single_quote">string_single_quote</a>(self, (tag, left, right, sublist), buffer)</dt></dl>
+
+<dl><dt><a name="StringInterpreter-string_triple_single"><strong>string_triple_single</strong></a> = <a href="#StringInterpreter-string_single_quote">string_single_quote</a>(self, (tag, left, right, sublist), buffer)</dt></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>specialescapedmap</strong> = {'<font color="#c040c0">\n</font>': '', '"': '"', "'": "'", r'\': r'\', 'a': '<font color="#c040c0">\x07</font>', 'b': '<font color="#c040c0">\x08</font>', 'f': '<font color="#c040c0">\x0c</font>', 'n': '<font color="#c040c0">\n</font>', 'r': '<font color="#c040c0">\r</font>', 't': '<font color="#c040c0">\t</font>', ...}</dl>
+
+<hr>
+Methods inherited from <a href="simpleparse.dispatchprocessor.html#DispatchProcessor">DispatchProcessor</a>:<br>
+<dl><dt><a name="StringInterpreter-__call__"><strong>__call__</strong></a>(self, value, buffer)</dt><dd><tt>Process&nbsp;the&nbsp;results&nbsp;of&nbsp;the&nbsp;parsing&nbsp;run&nbsp;over&nbsp;buffer<br>
+&nbsp;<br>
+Value&nbsp;can&nbsp;either&nbsp;be:&nbsp;(success,&nbsp;tags,&nbsp;next)&nbsp;for&nbsp;a&nbsp;top-level<br>
+production,&nbsp;or&nbsp;(tag,&nbsp;left,&nbsp;right,&nbsp;children)&nbsp;for&nbsp;a&nbsp;non-top<br>
+production.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="simpleparse.processor.html#Processor">Processor</a>:<br>
+<dl><dt><a name="StringInterpreter-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;a&nbsp;representation&nbsp;of&nbsp;the&nbsp;class</tt></dd></dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>_p</strong> = &lt;simpleparse.parser.Parser instance&gt;<br>
+<strong>_stringTypeData</strong> = [('string_double_quote', '<font color="#c040c0">\n</font>&lt;delimiter&gt;                :=  <font color="#c040c0">\'</font>"<font color="#c040c0">\'\n</font>nondelimiter...<font color="#c040c0">\\\\</font>"]+<font color="#c040c0">\n</font>string_special_escapes     := [<font color="#c040c0">\\\\</font>abfnrtv"]<font color="#c040c0">\n</font>'), ('string_single_quote', '<font color="#c040c0">\n</font>&lt;delimiter&gt;                :=  "<font color="#c040c0">\'</font>"<font color="#c040c0">\n</font>nondelimiter...<font color="#c040c0">\\\\\'</font>]+<font color="#c040c0">\n</font>string_special_escapes     := [<font color="#c040c0">\\\\</font>abfnrtv<font color="#c040c0">\'</font>]<font color="#c040c0">\n</font>'), ('string_triple_single', '<font color="#c040c0">\n</font>nondelimiter               :=  -"<font color="#c040c0">\'\'\'</font>"<font color="#c040c0">\n</font>&lt;delimite...<font color="#c040c0">\\\\\'</font>]+<font color="#c040c0">\n</font>string_special_escapes     := [<font color="#c040c0">\\\\</font>abfnrtv<font color="#c040c0">\'</font>]<font color="#c040c0">\n</font>'), ('string_triple_double', '<font color="#c040c0">\n</font>nondelimiter               :=  -<font color="#c040c0">\'</font>"""<font color="#c040c0">\'\n</font>&lt;delimite...<font color="#c040c0">\\\\</font>"]+<font color="#c040c0">\n</font>string_special_escapes     := [<font color="#c040c0">\\\\</font>abfnrtv"]<font color="#c040c0">\n</font>')]<br>
+<strong>c</strong> = {'string': LibraryElement(
+    production = 'string',
+    g...enerator.Generator instance at 0x2aaaad608d88&gt;,
+), 'string_double_quote': LibraryElement(
+    production = 'str',
+    gene...enerator.Generator instance at 0x2aaaad82b200&gt;,
+), 'string_single_quote': LibraryElement(
+    production = 'str',
+    gene...enerator.Generator instance at 0x2aaaad602680&gt;,
+), 'string_triple_double': LibraryElement(
+    production = 'str',
+    gene...enerator.Generator instance at 0x2aaaad5d95a8&gt;,
+), 'string_triple_single': LibraryElement(
+    production = 'str',
+    gene...enerator.Generator instance at 0x2aaaad827710&gt;,
+)}<br>
+<strong>name</strong> = 'string_triple_double'<br>
+<strong>partial</strong> = '<font color="#c040c0">\n</font>nondelimiter               :=  -<font color="#c040c0">\'</font>"""<font color="#c040c0">\'\n</font>&lt;delimite...<font color="#c040c0">\\\\</font>"]+<font color="#c040c0">\n</font>string_special_escapes     := [<font color="#c040c0">\\\\</font>abfnrtv"]<font color="#c040c0">\n</font>'<br>
+<strong>stringDeclaration</strong> = '<font color="#c040c0">\n</font># note that non-delimiter can never be hit by n...# i.e. a backslash preceding a non-special char<font color="#c040c0">\n\n</font>'</td></tr></table>
+</body></html>

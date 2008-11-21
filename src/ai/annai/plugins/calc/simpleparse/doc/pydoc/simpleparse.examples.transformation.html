@@ -1,0 +1,74 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module simpleparse.examples.transformation</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="simpleparse.html"><font color="#ffffff">simpleparse</font></a>.<a href="simpleparse.examples.html"><font color="#ffffff">examples</font></a>.transformation</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/mcfletch/pylive/simpleparse/examples/transformation.py">/home/mcfletch/pylive/simpleparse/examples/transformation.py</a></font></td></tr></table>
+    <p><tt>A&nbsp;simple&nbsp;example&nbsp;of&nbsp;parsing<br>
+&nbsp;<br>
+I&nbsp;have&nbsp;no&nbsp;idea&nbsp;for&nbsp;whom&nbsp;I&nbsp;originally&nbsp;created&nbsp;this&nbsp;code,<br>
+(which&nbsp;was&nbsp;originally&nbsp;written&nbsp;for&nbsp;SimpleParse&nbsp;1.0)&nbsp;nor<br>
+why&nbsp;they&nbsp;wanted&nbsp;it.&nbsp;&nbsp;Oh&nbsp;well,&nbsp;such&nbsp;is&nbsp;life.<br>
+&nbsp;<br>
+Running&nbsp;as&nbsp;a&nbsp;script&nbsp;will&nbsp;do&nbsp;some&nbsp;timing&nbsp;tests,&nbsp;but&nbsp;the<br>
+tests&nbsp;are&nbsp;rather...&nbsp;simplistic.<br>
+&nbsp;<br>
+The&nbsp;grammar&nbsp;is&nbsp;slow&nbsp;parsing&nbsp;around&nbsp;5-10%&nbsp;of&nbsp;the&nbsp;speed&nbsp;I<br>
+normally&nbsp;expect&nbsp;from&nbsp;SimpleParse/mxTextTools&nbsp;parsers.<br>
+I'm&nbsp;guessing&nbsp;it&nbsp;gets&nbsp;into&nbsp;lots&nbsp;and&nbsp;lots&nbsp;of&nbsp;partial&nbsp;parses<br>
+of&nbsp;the&nbsp;"interesting"&nbsp;production,&nbsp;and&nbsp;that&nbsp;the&nbsp;huge&nbsp;number<br>
+of&nbsp;reported&nbsp;productions&nbsp;slows&nbsp;it&nbsp;down.&nbsp;&nbsp;For&nbsp;example,<br>
+making&nbsp;atom&nbsp;non-reporting&nbsp;gives&nbsp;a&nbsp;15%&nbsp;speedup&nbsp;on&nbsp;my<br>
+machine.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="string.html">string</a><br>
+</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="simpleparse.examples.transformation.html#Emitter">Emitter</a>
+</font></dt></dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Emitter">class <strong>Emitter</strong></a></font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Emitter-emit"><strong>emit</strong></a>(self, tree)</dt><dd><tt>return&nbsp;transformation&nbsp;for&nbsp;a&nbsp;single&nbsp;tuple...</tt></dd></dl>
+
+<dl><dt><a name="Emitter-emitexample1"><strong>emitexample1</strong></a>(self, tuple)</dt><dd><tt>*+AB+CD&nbsp;-&gt;&nbsp;++*AC*AD+*BC*BD</tt></dd></dl>
+
+<dl><dt><a name="Emitter-parse"><strong>parse</strong></a>(self, data)</dt></dl>
+
+<dl><dt><a name="Emitter-process"><strong>process</strong></a>(self, data)</dt></dl>
+
+<dl><dt><a name="Emitter-write"><strong>write</strong></a>(self, data)</dt></dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>declaration</strong> = "<font color="#c040c0">\n</font>set       := (interesting/multset/plusset)+<font color="#c040c0">\n</font>mul...(set/atom),'++',(set/atom),(set/atom),(set/atom)<font color="#c040c0">\n</font>"<br>
+<strong>parser</strong> = &lt;simpleparse.parser.Parser instance&gt;</td></tr></table>
+</body></html>

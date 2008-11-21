@@ -1,0 +1,30 @@
+# Expressions can be explicitly or implicitly signed:
+>expression<	:= uexpression / sexpression
+# Unsigned expression.
+>uexpression<	:= addsub / muldiv / unumber
+# Signed expression.
+sexpression	:= sign, ws, uexpression
+>atomicexpr<	:= ('(', ws, expression, ws, ')') / unumber / snumber
+
+# Additions and substraction of terms.
+addsub		:= term, (ws, addsub_oper, ws, term)+
+>term<		:= muldiv / atomicexpr
+# Multiplication and division of factors.
+muldiv		:= factor, (ws, muldiv_oper, ws, factor)+
+>factor<	:= atomicexpr
+
+# Signed number.
+snumber		:= sign, ws, unumber
+# Unsigned number.
+unumber		:= [0-9]+
+<ws>		:= [ \t\n]*
+>addsub_oper<	:= add_oper / sub_oper
+add_oper	:= '+'
+sub_oper	:= '-'
+>muldiv_oper<	:= mul_oper / div_oper
+div_oper	:= '/'
+mul_oper	:= '*' / c'x'
+# Unary sign operators for numbers and expressions.
+>sign<		:= pos_sign / neg_sign
+pos_sign	:= add_oper
+neg_sign	:= sub_oper

@@ -1,0 +1,611 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module simpleparse.tests.test_simpleparsegrammar</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="simpleparse.html"><font color="#ffffff">simpleparse</font></a>.<a href="simpleparse.tests.html"><font color="#ffffff">tests</font></a>.test_simpleparsegrammar</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/mcfletch/pylive/simpleparse/tests/test_simpleparsegrammar.py">/home/mcfletch/pylive/simpleparse/tests/test_simpleparsegrammar.py</a></font></td></tr></table>
+    <p></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="simpleparse.stt.TextTools.TextTools.html">simpleparse.stt.TextTools.TextTools</a><br>
+<a href="pprint.html">pprint</a><br>
+</td><td width="25%" valign=top><a href="simpleparse.tests.test_erroronfail.html">simpleparse.tests.test_erroronfail</a><br>
+<a href="simpleparse.tests.test_grammarparser.html">simpleparse.tests.test_grammarparser</a><br>
+</td><td width="25%" valign=top><a href="unittest.html">unittest</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="simpleparse.tests.test_simpleparsegrammar.html#AppendToTagobjMethodSource">AppendToTagobjMethodSource</a>
+</font></dt><dt><font face="helvetica, arial"><a href="simpleparse.tests.test_simpleparsegrammar.html#BasicMethodSource">BasicMethodSource</a>
+</font></dt><dt><font face="helvetica, arial"><a href="unittest.html#TestCase">TestCase</a>(<a href="__builtin__.html#object">object</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="simpleparse.tests.test_simpleparsegrammar.html#CallTests">CallTests</a>
+</font></dt><dt><font face="helvetica, arial"><a href="simpleparse.tests.test_simpleparsegrammar.html#NameTests">NameTests</a>
+</font></dt><dt><font face="helvetica, arial"><a href="simpleparse.tests.test_simpleparsegrammar.html#ParserGenerationTests">ParserGenerationTests</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="AppendToTagobjMethodSource">class <strong>AppendToTagobjMethodSource</strong></a></font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="AppendToTagobjMethodSource-__init__"><strong>__init__</strong></a>(self)</dt></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="BasicMethodSource">class <strong>BasicMethodSource</strong></a></font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="BasicMethodSource-__init__"><strong>__init__</strong></a>(self)</dt></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="CallTests">class <strong>CallTests</strong></a>(<a href="unittest.html#TestCase">TestCase</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Tests&nbsp;semantics&nbsp;of&nbsp;calling&nbsp;objects&nbsp;from&nbsp;a&nbsp;method&nbsp;source&nbsp;during&nbsp;parsing<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="simpleparse.tests.test_simpleparsegrammar.html#CallTests">CallTests</a></dd>
+<dd><a href="unittest.html#TestCase">TestCase</a></dd>
+<dd><a href="__builtin__.html#object">object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="CallTests-parse"><strong>parse</strong></a>(self, definition, parserName, testValue, source)</dt></dl>
+
+<dl><dt><a name="CallTests-test_AppendMatch"><strong>test_AppendMatch</strong></a>(self)</dt><dd><tt>Test&nbsp;ability&nbsp;to&nbsp;append&nbsp;the&nbsp;text-string&nbsp;match&nbsp;to&nbsp;the&nbsp;results&nbsp;list</tt></dd></dl>
+
+<dl><dt><a name="CallTests-test_AppendTagObj"><strong>test_AppendTagObj</strong></a>(self)</dt><dd><tt>Test&nbsp;appending&nbsp;the&nbsp;tagobject&nbsp;to&nbsp;the&nbsp;results&nbsp;list</tt></dd></dl>
+
+<dl><dt><a name="CallTests-test_AppendToTagObj"><strong>test_AppendToTagObj</strong></a>(self)</dt><dd><tt>Test&nbsp;basic&nbsp;ability&nbsp;to&nbsp;call&nbsp;a&nbsp;method&nbsp;instead&nbsp;of&nbsp;regular&nbsp;functioning</tt></dd></dl>
+
+<dl><dt><a name="CallTests-test_basic_call"><strong>test_basic_call</strong></a>(self)</dt><dd><tt>Test&nbsp;basic&nbsp;ability&nbsp;to&nbsp;call&nbsp;a&nbsp;method&nbsp;instead&nbsp;of&nbsp;regular&nbsp;functioning</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="unittest.html#TestCase">TestCase</a>:<br>
+<dl><dt><a name="CallTests-__call__"><strong>__call__</strong></a>(self, *args, **kwds)</dt></dl>
+
+<dl><dt><a name="CallTests-__init__"><strong>__init__</strong></a>(self, methodName<font color="#909090">='runTest'</font>)</dt><dd><tt>Create&nbsp;an&nbsp;instance&nbsp;of&nbsp;the&nbsp;class&nbsp;that&nbsp;will&nbsp;use&nbsp;the&nbsp;named&nbsp;test<br>
+method&nbsp;when&nbsp;executed.&nbsp;Raises&nbsp;a&nbsp;ValueError&nbsp;if&nbsp;the&nbsp;instance&nbsp;does<br>
+not&nbsp;have&nbsp;a&nbsp;method&nbsp;with&nbsp;the&nbsp;specified&nbsp;name.</tt></dd></dl>
+
+<dl><dt><a name="CallTests-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="CallTests-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="CallTests-assertAlmostEqual"><strong>assertAlmostEqual</strong></a> = failUnlessAlmostEqual(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="CallTests-assertAlmostEquals"><strong>assertAlmostEquals</strong></a> = failUnlessAlmostEqual(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="CallTests-assertEqual"><strong>assertEqual</strong></a> = failUnlessEqual(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="CallTests-assertEquals"><strong>assertEquals</strong></a> = failUnlessEqual(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="CallTests-assertFalse"><strong>assertFalse</strong></a> = failIf(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;if&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="CallTests-assertNotAlmostEqual"><strong>assertNotAlmostEqual</strong></a> = failIfAlmostEqual(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="CallTests-assertNotAlmostEquals"><strong>assertNotAlmostEquals</strong></a> = failIfAlmostEqual(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="CallTests-assertNotEqual"><strong>assertNotEqual</strong></a> = failIfEqual(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="CallTests-assertNotEquals"><strong>assertNotEquals</strong></a> = failIfEqual(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="CallTests-assertRaises"><strong>assertRaises</strong></a> = failUnlessRaises(self, excClass, callableObj, *args, **kwargs)</dt><dd><tt>Fail&nbsp;unless&nbsp;an&nbsp;exception&nbsp;of&nbsp;class&nbsp;excClass&nbsp;is&nbsp;thrown<br>
+by&nbsp;callableObj&nbsp;when&nbsp;invoked&nbsp;with&nbsp;arguments&nbsp;args&nbsp;and&nbsp;keyword<br>
+arguments&nbsp;kwargs.&nbsp;If&nbsp;a&nbsp;different&nbsp;type&nbsp;of&nbsp;exception&nbsp;is<br>
+thrown,&nbsp;it&nbsp;will&nbsp;not&nbsp;be&nbsp;caught,&nbsp;and&nbsp;the&nbsp;test&nbsp;case&nbsp;will&nbsp;be<br>
+deemed&nbsp;to&nbsp;have&nbsp;suffered&nbsp;an&nbsp;error,&nbsp;exactly&nbsp;as&nbsp;for&nbsp;an<br>
+unexpected&nbsp;exception.</tt></dd></dl>
+
+<dl><dt><a name="CallTests-assertTrue"><strong>assertTrue</strong></a> = failUnless(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;unless&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="CallTests-assert_"><strong>assert_</strong></a> = failUnless(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;unless&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="CallTests-countTestCases"><strong>countTestCases</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="CallTests-debug"><strong>debug</strong></a>(self)</dt><dd><tt>Run&nbsp;the&nbsp;test&nbsp;without&nbsp;collecting&nbsp;errors&nbsp;in&nbsp;a&nbsp;TestResult</tt></dd></dl>
+
+<dl><dt><a name="CallTests-defaultTestResult"><strong>defaultTestResult</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="CallTests-fail"><strong>fail</strong></a>(self, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;immediately,&nbsp;with&nbsp;the&nbsp;given&nbsp;message.</tt></dd></dl>
+
+<dl><dt><a name="CallTests-failIf"><strong>failIf</strong></a>(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;if&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="CallTests-failIfAlmostEqual"><strong>failIfAlmostEqual</strong></a>(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="CallTests-failIfEqual"><strong>failIfEqual</strong></a>(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="CallTests-failUnless"><strong>failUnless</strong></a>(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;unless&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="CallTests-failUnlessAlmostEqual"><strong>failUnlessAlmostEqual</strong></a>(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="CallTests-failUnlessEqual"><strong>failUnlessEqual</strong></a>(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="CallTests-failUnlessRaises"><strong>failUnlessRaises</strong></a>(self, excClass, callableObj, *args, **kwargs)</dt><dd><tt>Fail&nbsp;unless&nbsp;an&nbsp;exception&nbsp;of&nbsp;class&nbsp;excClass&nbsp;is&nbsp;thrown<br>
+by&nbsp;callableObj&nbsp;when&nbsp;invoked&nbsp;with&nbsp;arguments&nbsp;args&nbsp;and&nbsp;keyword<br>
+arguments&nbsp;kwargs.&nbsp;If&nbsp;a&nbsp;different&nbsp;type&nbsp;of&nbsp;exception&nbsp;is<br>
+thrown,&nbsp;it&nbsp;will&nbsp;not&nbsp;be&nbsp;caught,&nbsp;and&nbsp;the&nbsp;test&nbsp;case&nbsp;will&nbsp;be<br>
+deemed&nbsp;to&nbsp;have&nbsp;suffered&nbsp;an&nbsp;error,&nbsp;exactly&nbsp;as&nbsp;for&nbsp;an<br>
+unexpected&nbsp;exception.</tt></dd></dl>
+
+<dl><dt><a name="CallTests-id"><strong>id</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="CallTests-run"><strong>run</strong></a>(self, result<font color="#909090">=None</font>)</dt></dl>
+
+<dl><dt><a name="CallTests-setUp"><strong>setUp</strong></a>(self)</dt><dd><tt>Hook&nbsp;method&nbsp;for&nbsp;setting&nbsp;up&nbsp;the&nbsp;test&nbsp;fixture&nbsp;before&nbsp;exercising&nbsp;it.</tt></dd></dl>
+
+<dl><dt><a name="CallTests-shortDescription"><strong>shortDescription</strong></a>(self)</dt><dd><tt>Returns&nbsp;a&nbsp;one-line&nbsp;description&nbsp;of&nbsp;the&nbsp;test,&nbsp;or&nbsp;None&nbsp;if&nbsp;no<br>
+description&nbsp;has&nbsp;been&nbsp;provided.<br>
+&nbsp;<br>
+The&nbsp;default&nbsp;implementation&nbsp;of&nbsp;this&nbsp;method&nbsp;returns&nbsp;the&nbsp;first&nbsp;line&nbsp;of<br>
+the&nbsp;specified&nbsp;test&nbsp;method's&nbsp;docstring.</tt></dd></dl>
+
+<dl><dt><a name="CallTests-tearDown"><strong>tearDown</strong></a>(self)</dt><dd><tt>Hook&nbsp;method&nbsp;for&nbsp;deconstructing&nbsp;the&nbsp;test&nbsp;fixture&nbsp;after&nbsp;testing&nbsp;it.</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="unittest.html#TestCase">TestCase</a>:<br>
+<dl><dt><strong>__dict__</strong> = &lt;dictproxy object&gt;<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dl>
+
+<dl><dt><strong>__weakref__</strong> = &lt;attribute '__weakref__' of 'TestCase' objects&gt;<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dl>
+
+<dl><dt><strong>failureException</strong> = &lt;class exceptions.AssertionError&gt;<dd><tt>Assertion&nbsp;failed.</tt></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="NameTests">class <strong>NameTests</strong></a>(<a href="unittest.html#TestCase">TestCase</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="simpleparse.tests.test_simpleparsegrammar.html#NameTests">NameTests</a></dd>
+<dd><a href="unittest.html#TestCase">TestCase</a></dd>
+<dd><a href="__builtin__.html#object">object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="NameTests-doBasicTest"><strong>doBasicTest</strong></a>(self, definition, parserName, testValue, expected)</dt></dl>
+
+<dl><dt><a name="NameTests-test_expanded_SingleNameChild"><strong>test_expanded_SingleNameChild</strong></a>(self)</dt><dd><tt>Expanded&nbsp;group&nbsp;with&nbsp;single&nbsp;child&nbsp;which&nbsp;is&nbsp;a&nbsp;Name&nbsp;itself<br>
+&nbsp;<br>
+This&nbsp;originally&nbsp;failed&nbsp;when&nbsp;the&nbsp;Name&nbsp;object's&nbsp;report&nbsp;value<br>
+was&nbsp;changed&nbsp;to&nbsp;0&nbsp;(redundant&nbsp;information&nbsp;for&nbsp;the&nbsp;"expanded"&nbsp;code),<br>
+resulting&nbsp;in&nbsp;the&nbsp;child&nbsp;production&nbsp;not&nbsp;getting&nbsp;reported.</tt></dd></dl>
+
+<dl><dt><a name="NameTests-test_expanded_name"><strong>test_expanded_name</strong></a>(self)</dt><dd><tt>Non-reporting&nbsp;(expanded)&nbsp;name&nbsp;test<br>
+&nbsp;<br>
+Tests&nbsp;new&nbsp;feature,&nbsp;a&nbsp;name&nbsp;whose&nbsp;children<br>
+are&nbsp;reported,&nbsp;but&nbsp;which&nbsp;is&nbsp;not&nbsp;itself&nbsp;reported,<br>
+basically&nbsp;this&nbsp;lets&nbsp;you&nbsp;create&nbsp;anonymous<br>
+groups&nbsp;which&nbsp;can&nbsp;be&nbsp;referenced&nbsp;from&nbsp;other<br>
+productions.</tt></dd></dl>
+
+<dl><dt><a name="NameTests-test_n"><strong>test_n</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="NameTests-test_n_f"><strong>test_n_f</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="NameTests-test_no"><strong>test_no</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="NameTests-test_no_f"><strong>test_no_f</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="NameTests-test_nor"><strong>test_nor</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="NameTests-test_nor_f"><strong>test_nor_f</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="NameTests-test_nr"><strong>test_nr</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="NameTests-test_nr_f"><strong>test_nr_f</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="NameTests-test_p"><strong>test_p</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="NameTests-test_po"><strong>test_po</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="NameTests-test_por"><strong>test_por</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="NameTests-test_pr"><strong>test_pr</strong></a>(self)</dt></dl>
+
+<hr>
+Methods inherited from <a href="unittest.html#TestCase">TestCase</a>:<br>
+<dl><dt><a name="NameTests-__call__"><strong>__call__</strong></a>(self, *args, **kwds)</dt></dl>
+
+<dl><dt><a name="NameTests-__init__"><strong>__init__</strong></a>(self, methodName<font color="#909090">='runTest'</font>)</dt><dd><tt>Create&nbsp;an&nbsp;instance&nbsp;of&nbsp;the&nbsp;class&nbsp;that&nbsp;will&nbsp;use&nbsp;the&nbsp;named&nbsp;test<br>
+method&nbsp;when&nbsp;executed.&nbsp;Raises&nbsp;a&nbsp;ValueError&nbsp;if&nbsp;the&nbsp;instance&nbsp;does<br>
+not&nbsp;have&nbsp;a&nbsp;method&nbsp;with&nbsp;the&nbsp;specified&nbsp;name.</tt></dd></dl>
+
+<dl><dt><a name="NameTests-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="NameTests-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="NameTests-assertAlmostEqual"><strong>assertAlmostEqual</strong></a> = failUnlessAlmostEqual(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="NameTests-assertAlmostEquals"><strong>assertAlmostEquals</strong></a> = failUnlessAlmostEqual(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="NameTests-assertEqual"><strong>assertEqual</strong></a> = failUnlessEqual(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="NameTests-assertEquals"><strong>assertEquals</strong></a> = failUnlessEqual(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="NameTests-assertFalse"><strong>assertFalse</strong></a> = failIf(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;if&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="NameTests-assertNotAlmostEqual"><strong>assertNotAlmostEqual</strong></a> = failIfAlmostEqual(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="NameTests-assertNotAlmostEquals"><strong>assertNotAlmostEquals</strong></a> = failIfAlmostEqual(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="NameTests-assertNotEqual"><strong>assertNotEqual</strong></a> = failIfEqual(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="NameTests-assertNotEquals"><strong>assertNotEquals</strong></a> = failIfEqual(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="NameTests-assertRaises"><strong>assertRaises</strong></a> = failUnlessRaises(self, excClass, callableObj, *args, **kwargs)</dt><dd><tt>Fail&nbsp;unless&nbsp;an&nbsp;exception&nbsp;of&nbsp;class&nbsp;excClass&nbsp;is&nbsp;thrown<br>
+by&nbsp;callableObj&nbsp;when&nbsp;invoked&nbsp;with&nbsp;arguments&nbsp;args&nbsp;and&nbsp;keyword<br>
+arguments&nbsp;kwargs.&nbsp;If&nbsp;a&nbsp;different&nbsp;type&nbsp;of&nbsp;exception&nbsp;is<br>
+thrown,&nbsp;it&nbsp;will&nbsp;not&nbsp;be&nbsp;caught,&nbsp;and&nbsp;the&nbsp;test&nbsp;case&nbsp;will&nbsp;be<br>
+deemed&nbsp;to&nbsp;have&nbsp;suffered&nbsp;an&nbsp;error,&nbsp;exactly&nbsp;as&nbsp;for&nbsp;an<br>
+unexpected&nbsp;exception.</tt></dd></dl>
+
+<dl><dt><a name="NameTests-assertTrue"><strong>assertTrue</strong></a> = failUnless(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;unless&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="NameTests-assert_"><strong>assert_</strong></a> = failUnless(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;unless&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="NameTests-countTestCases"><strong>countTestCases</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="NameTests-debug"><strong>debug</strong></a>(self)</dt><dd><tt>Run&nbsp;the&nbsp;test&nbsp;without&nbsp;collecting&nbsp;errors&nbsp;in&nbsp;a&nbsp;TestResult</tt></dd></dl>
+
+<dl><dt><a name="NameTests-defaultTestResult"><strong>defaultTestResult</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="NameTests-fail"><strong>fail</strong></a>(self, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;immediately,&nbsp;with&nbsp;the&nbsp;given&nbsp;message.</tt></dd></dl>
+
+<dl><dt><a name="NameTests-failIf"><strong>failIf</strong></a>(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;if&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="NameTests-failIfAlmostEqual"><strong>failIfAlmostEqual</strong></a>(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="NameTests-failIfEqual"><strong>failIfEqual</strong></a>(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="NameTests-failUnless"><strong>failUnless</strong></a>(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;unless&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="NameTests-failUnlessAlmostEqual"><strong>failUnlessAlmostEqual</strong></a>(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="NameTests-failUnlessEqual"><strong>failUnlessEqual</strong></a>(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="NameTests-failUnlessRaises"><strong>failUnlessRaises</strong></a>(self, excClass, callableObj, *args, **kwargs)</dt><dd><tt>Fail&nbsp;unless&nbsp;an&nbsp;exception&nbsp;of&nbsp;class&nbsp;excClass&nbsp;is&nbsp;thrown<br>
+by&nbsp;callableObj&nbsp;when&nbsp;invoked&nbsp;with&nbsp;arguments&nbsp;args&nbsp;and&nbsp;keyword<br>
+arguments&nbsp;kwargs.&nbsp;If&nbsp;a&nbsp;different&nbsp;type&nbsp;of&nbsp;exception&nbsp;is<br>
+thrown,&nbsp;it&nbsp;will&nbsp;not&nbsp;be&nbsp;caught,&nbsp;and&nbsp;the&nbsp;test&nbsp;case&nbsp;will&nbsp;be<br>
+deemed&nbsp;to&nbsp;have&nbsp;suffered&nbsp;an&nbsp;error,&nbsp;exactly&nbsp;as&nbsp;for&nbsp;an<br>
+unexpected&nbsp;exception.</tt></dd></dl>
+
+<dl><dt><a name="NameTests-id"><strong>id</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="NameTests-run"><strong>run</strong></a>(self, result<font color="#909090">=None</font>)</dt></dl>
+
+<dl><dt><a name="NameTests-setUp"><strong>setUp</strong></a>(self)</dt><dd><tt>Hook&nbsp;method&nbsp;for&nbsp;setting&nbsp;up&nbsp;the&nbsp;test&nbsp;fixture&nbsp;before&nbsp;exercising&nbsp;it.</tt></dd></dl>
+
+<dl><dt><a name="NameTests-shortDescription"><strong>shortDescription</strong></a>(self)</dt><dd><tt>Returns&nbsp;a&nbsp;one-line&nbsp;description&nbsp;of&nbsp;the&nbsp;test,&nbsp;or&nbsp;None&nbsp;if&nbsp;no<br>
+description&nbsp;has&nbsp;been&nbsp;provided.<br>
+&nbsp;<br>
+The&nbsp;default&nbsp;implementation&nbsp;of&nbsp;this&nbsp;method&nbsp;returns&nbsp;the&nbsp;first&nbsp;line&nbsp;of<br>
+the&nbsp;specified&nbsp;test&nbsp;method's&nbsp;docstring.</tt></dd></dl>
+
+<dl><dt><a name="NameTests-tearDown"><strong>tearDown</strong></a>(self)</dt><dd><tt>Hook&nbsp;method&nbsp;for&nbsp;deconstructing&nbsp;the&nbsp;test&nbsp;fixture&nbsp;after&nbsp;testing&nbsp;it.</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="unittest.html#TestCase">TestCase</a>:<br>
+<dl><dt><strong>__dict__</strong> = &lt;dictproxy object&gt;<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dl>
+
+<dl><dt><strong>__weakref__</strong> = &lt;attribute '__weakref__' of 'TestCase' objects&gt;<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dl>
+
+<dl><dt><strong>failureException</strong> = &lt;class exceptions.AssertionError&gt;<dd><tt>Assertion&nbsp;failed.</tt></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ParserGenerationTests">class <strong>ParserGenerationTests</strong></a>(<a href="unittest.html#TestCase">TestCase</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="simpleparse.tests.test_simpleparsegrammar.html#ParserGenerationTests">ParserGenerationTests</a></dd>
+<dd><a href="unittest.html#TestCase">TestCase</a></dd>
+<dd><a href="__builtin__.html#object">object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="ParserGenerationTests-doBasicTest"><strong>doBasicTest</strong></a>(self, definition, parserName, testValue, expected)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-testGenCILiteral1"><strong>testGenCILiteral1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-testGenCILiteral2"><strong>testGenCILiteral2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-testGenCILiteral3"><strong>testGenCILiteral3</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-testGenCILiteral4"><strong>testGenCILiteral4</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-testGenCILiteral5"><strong>testGenCILiteral5</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-testGenCILiteral6"><strong>testGenCILiteral6</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-testGenNegLit1"><strong>testGenNegLit1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-testGenNegRange1"><strong>testGenNegRange1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-testGenNegRange2"><strong>testGenNegRange2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-testGenPos1"><strong>testGenPos1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-testGenPos2"><strong>testGenPos2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-testGenPosRept1"><strong>testGenPosRept1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-testGenPosReptOpt1"><strong>testGenPosReptOpt1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-testGenPosReptOpt2"><strong>testGenPosReptOpt2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-testLookahead2"><strong>testLookahead2</strong></a>(self)</dt><dd><tt>Test&nbsp;lookahead&nbsp;on&nbsp;literals&nbsp;(more&nbsp;complex)</tt></dd></dl>
+
+<dl><dt><a name="ParserGenerationTests-testLookahead3"><strong>testLookahead3</strong></a>(self)</dt><dd><tt>Test&nbsp;lookahead&nbsp;on&nbsp;reported&nbsp;positive&nbsp;productions</tt></dd></dl>
+
+<dl><dt><a name="ParserGenerationTests-testLookahead4"><strong>testLookahead4</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-testLookahead5"><strong>testLookahead5</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-testLookahead6"><strong>testLookahead6</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-testLookaheadNeg"><strong>testLookaheadNeg</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-testLookaheadNeg2"><strong>testLookaheadNeg2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-testLookaheadNeg3"><strong>testLookaheadNeg3</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-testLookaheadNeg4"><strong>testLookaheadNeg4</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-testLookaheadNeg5"><strong>testLookaheadNeg5</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-testLookaheadNeg6"><strong>testLookaheadNeg6</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-testLookaheadPositive"><strong>testLookaheadPositive</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-testMultiLineDef"><strong>testMultiLineDef</strong></a>(self)</dt><dd><tt>Test&nbsp;multi-line&nbsp;definitions</tt></dd></dl>
+
+<dl><dt><a name="ParserGenerationTests-testOptionalGroupHitEOF"><strong>testOptionalGroupHitEOF</strong></a>(self)</dt><dd><tt>Test&nbsp;optional&nbsp;group&nbsp;hitting&nbsp;an&nbsp;EOF&nbsp;during&nbsp;success&nbsp;run</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="unittest.html#TestCase">TestCase</a>:<br>
+<dl><dt><a name="ParserGenerationTests-__call__"><strong>__call__</strong></a>(self, *args, **kwds)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-__init__"><strong>__init__</strong></a>(self, methodName<font color="#909090">='runTest'</font>)</dt><dd><tt>Create&nbsp;an&nbsp;instance&nbsp;of&nbsp;the&nbsp;class&nbsp;that&nbsp;will&nbsp;use&nbsp;the&nbsp;named&nbsp;test<br>
+method&nbsp;when&nbsp;executed.&nbsp;Raises&nbsp;a&nbsp;ValueError&nbsp;if&nbsp;the&nbsp;instance&nbsp;does<br>
+not&nbsp;have&nbsp;a&nbsp;method&nbsp;with&nbsp;the&nbsp;specified&nbsp;name.</tt></dd></dl>
+
+<dl><dt><a name="ParserGenerationTests-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-assertAlmostEqual"><strong>assertAlmostEqual</strong></a> = failUnlessAlmostEqual(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="ParserGenerationTests-assertAlmostEquals"><strong>assertAlmostEquals</strong></a> = failUnlessAlmostEqual(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="ParserGenerationTests-assertEqual"><strong>assertEqual</strong></a> = failUnlessEqual(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="ParserGenerationTests-assertEquals"><strong>assertEquals</strong></a> = failUnlessEqual(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="ParserGenerationTests-assertFalse"><strong>assertFalse</strong></a> = failIf(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;if&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="ParserGenerationTests-assertNotAlmostEqual"><strong>assertNotAlmostEqual</strong></a> = failIfAlmostEqual(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="ParserGenerationTests-assertNotAlmostEquals"><strong>assertNotAlmostEquals</strong></a> = failIfAlmostEqual(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="ParserGenerationTests-assertNotEqual"><strong>assertNotEqual</strong></a> = failIfEqual(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="ParserGenerationTests-assertNotEquals"><strong>assertNotEquals</strong></a> = failIfEqual(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="ParserGenerationTests-assertRaises"><strong>assertRaises</strong></a> = failUnlessRaises(self, excClass, callableObj, *args, **kwargs)</dt><dd><tt>Fail&nbsp;unless&nbsp;an&nbsp;exception&nbsp;of&nbsp;class&nbsp;excClass&nbsp;is&nbsp;thrown<br>
+by&nbsp;callableObj&nbsp;when&nbsp;invoked&nbsp;with&nbsp;arguments&nbsp;args&nbsp;and&nbsp;keyword<br>
+arguments&nbsp;kwargs.&nbsp;If&nbsp;a&nbsp;different&nbsp;type&nbsp;of&nbsp;exception&nbsp;is<br>
+thrown,&nbsp;it&nbsp;will&nbsp;not&nbsp;be&nbsp;caught,&nbsp;and&nbsp;the&nbsp;test&nbsp;case&nbsp;will&nbsp;be<br>
+deemed&nbsp;to&nbsp;have&nbsp;suffered&nbsp;an&nbsp;error,&nbsp;exactly&nbsp;as&nbsp;for&nbsp;an<br>
+unexpected&nbsp;exception.</tt></dd></dl>
+
+<dl><dt><a name="ParserGenerationTests-assertTrue"><strong>assertTrue</strong></a> = failUnless(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;unless&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="ParserGenerationTests-assert_"><strong>assert_</strong></a> = failUnless(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;unless&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="ParserGenerationTests-countTestCases"><strong>countTestCases</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-debug"><strong>debug</strong></a>(self)</dt><dd><tt>Run&nbsp;the&nbsp;test&nbsp;without&nbsp;collecting&nbsp;errors&nbsp;in&nbsp;a&nbsp;TestResult</tt></dd></dl>
+
+<dl><dt><a name="ParserGenerationTests-defaultTestResult"><strong>defaultTestResult</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-fail"><strong>fail</strong></a>(self, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;immediately,&nbsp;with&nbsp;the&nbsp;given&nbsp;message.</tt></dd></dl>
+
+<dl><dt><a name="ParserGenerationTests-failIf"><strong>failIf</strong></a>(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;if&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="ParserGenerationTests-failIfAlmostEqual"><strong>failIfAlmostEqual</strong></a>(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="ParserGenerationTests-failIfEqual"><strong>failIfEqual</strong></a>(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="ParserGenerationTests-failUnless"><strong>failUnless</strong></a>(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;unless&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="ParserGenerationTests-failUnlessAlmostEqual"><strong>failUnlessAlmostEqual</strong></a>(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="ParserGenerationTests-failUnlessEqual"><strong>failUnlessEqual</strong></a>(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="ParserGenerationTests-failUnlessRaises"><strong>failUnlessRaises</strong></a>(self, excClass, callableObj, *args, **kwargs)</dt><dd><tt>Fail&nbsp;unless&nbsp;an&nbsp;exception&nbsp;of&nbsp;class&nbsp;excClass&nbsp;is&nbsp;thrown<br>
+by&nbsp;callableObj&nbsp;when&nbsp;invoked&nbsp;with&nbsp;arguments&nbsp;args&nbsp;and&nbsp;keyword<br>
+arguments&nbsp;kwargs.&nbsp;If&nbsp;a&nbsp;different&nbsp;type&nbsp;of&nbsp;exception&nbsp;is<br>
+thrown,&nbsp;it&nbsp;will&nbsp;not&nbsp;be&nbsp;caught,&nbsp;and&nbsp;the&nbsp;test&nbsp;case&nbsp;will&nbsp;be<br>
+deemed&nbsp;to&nbsp;have&nbsp;suffered&nbsp;an&nbsp;error,&nbsp;exactly&nbsp;as&nbsp;for&nbsp;an<br>
+unexpected&nbsp;exception.</tt></dd></dl>
+
+<dl><dt><a name="ParserGenerationTests-id"><strong>id</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-run"><strong>run</strong></a>(self, result<font color="#909090">=None</font>)</dt></dl>
+
+<dl><dt><a name="ParserGenerationTests-setUp"><strong>setUp</strong></a>(self)</dt><dd><tt>Hook&nbsp;method&nbsp;for&nbsp;setting&nbsp;up&nbsp;the&nbsp;test&nbsp;fixture&nbsp;before&nbsp;exercising&nbsp;it.</tt></dd></dl>
+
+<dl><dt><a name="ParserGenerationTests-shortDescription"><strong>shortDescription</strong></a>(self)</dt><dd><tt>Returns&nbsp;a&nbsp;one-line&nbsp;description&nbsp;of&nbsp;the&nbsp;test,&nbsp;or&nbsp;None&nbsp;if&nbsp;no<br>
+description&nbsp;has&nbsp;been&nbsp;provided.<br>
+&nbsp;<br>
+The&nbsp;default&nbsp;implementation&nbsp;of&nbsp;this&nbsp;method&nbsp;returns&nbsp;the&nbsp;first&nbsp;line&nbsp;of<br>
+the&nbsp;specified&nbsp;test&nbsp;method's&nbsp;docstring.</tt></dd></dl>
+
+<dl><dt><a name="ParserGenerationTests-tearDown"><strong>tearDown</strong></a>(self)</dt><dd><tt>Hook&nbsp;method&nbsp;for&nbsp;deconstructing&nbsp;the&nbsp;test&nbsp;fixture&nbsp;after&nbsp;testing&nbsp;it.</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="unittest.html#TestCase">TestCase</a>:<br>
+<dl><dt><strong>__dict__</strong> = &lt;dictproxy object&gt;<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dl>
+
+<dl><dt><strong>__weakref__</strong> = &lt;attribute '__weakref__' of 'TestCase' objects&gt;<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dl>
+
+<dl><dt><strong>failureException</strong> = &lt;class exceptions.AssertionError&gt;<dd><tt>Assertion&nbsp;failed.</tt></dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-getSuite"><strong>getSuite</strong></a>()</dt></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>AnyInt</strong> = &lt;Any Integer&gt;<br>
+<strong>NullResult</strong> = &lt;Null Children&gt;</td></tr></table>
+</body></html>

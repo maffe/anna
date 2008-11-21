@@ -1,0 +1,94 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module simpleparse.common.chartypes</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="simpleparse.html"><font color="#ffffff">simpleparse</font></a>.<a href="simpleparse.common.html"><font color="#ffffff">common</font></a>.chartypes</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/mcfletch/pylive/simpleparse/common/chartypes.py">/home/mcfletch/pylive/simpleparse/common/chartypes.py</a></font></td></tr></table>
+    <p><tt>Common&nbsp;locale-specific&nbsp;character&nbsp;types<br>
+&nbsp;<br>
+Following&nbsp;productions&nbsp;are&nbsp;all&nbsp;based&nbsp;on&nbsp;string&nbsp;module,<br>
+with&nbsp;the&nbsp;default&nbsp;locale&nbsp;specified.&nbsp;&nbsp;The&nbsp;first&nbsp;production<br>
+is&nbsp;a&nbsp;single&nbsp;character&nbsp;of&nbsp;the&nbsp;class&nbsp;and&nbsp;the&nbsp;second&nbsp;a<br>
+repeating&nbsp;character&nbsp;version:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;digit,&nbsp;digits<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;uppercasechar,&nbsp;uppercase<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lowercasechar,&nbsp;lowercase<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;letter,&nbsp;letters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;whitespacechar,&nbsp;whitespace<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;punctuationchar,&nbsp;punctuation<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;octdigit,&nbsp;octdigits<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hexdigit,&nbsp;hexdigits<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printablechar,&nbsp;printable<br>
+&nbsp;<br>
+For&nbsp;Python&nbsp;versions&nbsp;with&nbsp;the&nbsp;constants&nbsp;in&nbsp;the&nbsp;string&nbsp;module:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ascii_letter,&nbsp;ascii_letters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ascii_lowercasechar,&nbsp;ascii_lowercase<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ascii_uppercasechar,&nbsp;ascii_uppercase<br>
+&nbsp;<br>
+&nbsp;<br>
+Following&nbsp;are&nbsp;locale-specific&nbsp;values,&nbsp;both&nbsp;are<br>
+single-character&nbsp;values:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;locale_decimal_point&nbsp;--&nbsp;locale-specific&nbsp;decimal&nbsp;seperator<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;locale_thousands_seperator&nbsp;--&nbsp;locale-specific&nbsp;"thousands"&nbsp;seperator<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+Others:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EOF&nbsp;--&nbsp;Matches&nbsp;iff&nbsp;parsing&nbsp;has&nbsp;reached&nbsp;the&nbsp;end&nbsp;of&nbsp;the&nbsp;buffer<br>
+&nbsp;<br>
+There&nbsp;are&nbsp;no&nbsp;interpreters&nbsp;provided&nbsp;(the&nbsp;types&nbsp;are&nbsp;considered<br>
+too&nbsp;common&nbsp;to&nbsp;provide&nbsp;meaningful&nbsp;interpreters).</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="simpleparse.stt.TextTools.html">simpleparse.stt.TextTools</a><br>
+<a href="simpleparse.common.html">simpleparse.common</a><br>
+</td><td width="25%" valign=top><a href="locale.html">locale</a><br>
+<a href="simpleparse.objectgenerator.html">simpleparse.objectgenerator</a><br>
+</td><td width="25%" valign=top><a href="string.html">string</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>c</strong> = {'EOF': Prebuilt(
+    value = ((None, 101, 1),),
+), 'ascii_letter': Range(
+    value = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+), 'ascii_letters': Range(
+    repeating = 1,
+    value = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+), 'ascii_lowercase': Range(
+    repeating = 1,
+    value = 'abcdefghijklmnopqrstuvwxyz',
+), 'ascii_lowercasechar': Range(
+    value = 'abcdefghijklmnopqrstuvwxyz',
+), 'ascii_uppercase': Range(
+    repeating = 1,
+    value = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+), 'ascii_uppercasechar': Range(
+    value = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+), 'digit': Range(
+    value = '0123456789',
+), 'digits': Range(
+    repeating = 1,
+    value = '0123456789',
+), 'hexdigit': Range(
+    value = '0123456789abcdefABCDEF',
+), ...}<br>
+<strong>single</strong> = 'printablechar'<br>
+<strong>source</strong> = 'printable'<br>
+<strong>value</strong> = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&amp;<font color="#c040c0">\'</font>()*+,-./:;&lt;=&gt;?@[<font color="#c040c0">\\</font>]^_`{|}~ <font color="#c040c0">\t\n\r\x0b\x0c</font>'</td></tr></table>
+</body></html>

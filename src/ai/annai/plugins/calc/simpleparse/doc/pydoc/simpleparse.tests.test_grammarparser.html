@@ -1,0 +1,714 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module simpleparse.tests.test_grammarparser</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="simpleparse.html"><font color="#ffffff">simpleparse</font></a>.<a href="simpleparse.tests.html"><font color="#ffffff">tests</font></a>.test_grammarparser</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/mcfletch/pylive/simpleparse/tests/test_grammarparser.py">/home/mcfletch/pylive/simpleparse/tests/test_grammarparser.py</a></font></td></tr></table>
+    <p><tt>Tests&nbsp;that&nbsp;simpleparsegrammar&nbsp;does&nbsp;parse&nbsp;SimpleParse&nbsp;grammars</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="simpleparse.stt.TextTools.TextTools.html">simpleparse.stt.TextTools.TextTools</a><br>
+</td><td width="25%" valign=top><a href="pprint.html">pprint</a><br>
+</td><td width="25%" valign=top><a href="unittest.html">unittest</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="unittest.html#TestCase">TestCase</a>(<a href="__builtin__.html#object">object</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="simpleparse.tests.test_grammarparser.html#SimpleParseGrammarTests">SimpleParseGrammarTests</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="simpleparse.tests.test_grammarparser.html#SimpleParseRecursiveTests">SimpleParseRecursiveTests</a>
+</font></dt></dl>
+</dd>
+</dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="SimpleParseGrammarTests">class <strong>SimpleParseGrammarTests</strong></a>(<a href="unittest.html#TestCase">TestCase</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Test&nbsp;parsing&nbsp;of&nbsp;the&nbsp;the&nbsp;simpleparse&nbsp;grammar&nbsp;elements<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="simpleparse.tests.test_grammarparser.html#SimpleParseGrammarTests">SimpleParseGrammarTests</a></dd>
+<dd><a href="unittest.html#TestCase">TestCase</a></dd>
+<dd><a href="__builtin__.html#object">object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="SimpleParseGrammarTests-doBasicTest"><strong>doBasicTest</strong></a>(self, parserName, testValue, expected)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testChar1"><strong>testChar1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testChar2"><strong>testChar2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testChar3"><strong>testChar3</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testChar4"><strong>testChar4</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testChar5"><strong>testChar5</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testChar6"><strong>testChar6</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testChar7"><strong>testChar7</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testChar8"><strong>testChar8</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testChar85"><strong>testChar85</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testChar9"><strong>testChar9</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testCharNoBrace1"><strong>testCharNoBrace1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testCharRange1"><strong>testCharRange1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testComment1"><strong>testComment1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testComment2"><strong>testComment2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testCutToken2"><strong>testCutToken2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testCutToken3"><strong>testCutToken3</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testCutToken4"><strong>testCutToken4</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testDeclaration"><strong>testDeclaration</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testDeclaration2"><strong>testDeclaration2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testDeclaration3"><strong>testDeclaration3</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testDeclaration4"><strong>testDeclaration4</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testDeclaration5"><strong>testDeclaration5</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testDeclarationSet1"><strong>testDeclarationSet1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testDeclarationSet2"><strong>testDeclarationSet2</strong></a>(self)</dt><dd><tt>Just&nbsp;tries&nbsp;to&nbsp;parse&nbsp;and&nbsp;sees&nbsp;that&nbsp;everything&nbsp;was&nbsp;parsed,&nbsp;doesn't&nbsp;predict&nbsp;the&nbsp;result</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testElementToken1"><strong>testElementToken1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testElementToken2"><strong>testElementToken2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testElementToken3"><strong>testElementToken3</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testElementToken4"><strong>testElementToken4</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testElementToken5"><strong>testElementToken5</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testElementToken6"><strong>testElementToken6</strong></a>(self)</dt><dd><tt>Lookahead&nbsp;indicator&nbsp;with&nbsp;positive</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testElementToken7"><strong>testElementToken7</strong></a>(self)</dt><dd><tt>Lookahead&nbsp;indicator&nbsp;with&nbsp;negative</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testElementToken8"><strong>testElementToken8</strong></a>(self)</dt><dd><tt>Error&nbsp;on&nbsp;fail&nbsp;indicator</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testElementToken9"><strong>testElementToken9</strong></a>(self)</dt><dd><tt>Error&nbsp;on&nbsp;fail&nbsp;indicator&nbsp;with&nbsp;message</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testErrorOnFailFlag1"><strong>testErrorOnFailFlag1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testExpandedName1"><strong>testExpandedName1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testExpandedName2"><strong>testExpandedName2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testFOGroup1"><strong>testFOGroup1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testGroup1"><strong>testGroup1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testGroup2"><strong>testGroup2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testGroup3"><strong>testGroup3</strong></a>(self)</dt><dd><tt>Test&nbsp;group&nbsp;with&nbsp;sequential&nbsp;added&nbsp;group<br>
+Note&nbsp;that&nbsp;this&nbsp;test&nbsp;also&nbsp;serves&nbsp;to&nbsp;test<br>
+the&nbsp;function&nbsp;of&nbsp;non-reporting&nbsp;names</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testGroup4"><strong>testGroup4</strong></a>(self)</dt><dd><tt>Test&nbsp;group&nbsp;with&nbsp;sequential&nbsp;added&nbsp;group<br>
+Note&nbsp;that&nbsp;this&nbsp;test&nbsp;also&nbsp;serves&nbsp;to&nbsp;test<br>
+the&nbsp;function&nbsp;of&nbsp;non-reporting&nbsp;names</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testGroup5"><strong>testGroup5</strong></a>(self)</dt><dd><tt>Test&nbsp;group&nbsp;with&nbsp;sequential&nbsp;added&nbsp;group<br>
+Note&nbsp;that&nbsp;this&nbsp;test&nbsp;also&nbsp;serves&nbsp;to&nbsp;test<br>
+the&nbsp;function&nbsp;of&nbsp;non-reporting&nbsp;names</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testGroup6"><strong>testGroup6</strong></a>(self)</dt><dd><tt>Test&nbsp;group&nbsp;with&nbsp;multiple&nbsp;/&nbsp;'d&nbsp;values</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testLiteral1"><strong>testLiteral1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testLiteral2"><strong>testLiteral2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testLiteral3"><strong>testLiteral3</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testLiteral4"><strong>testLiteral4</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testLiteral5"><strong>testLiteral5</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testLiteral6"><strong>testLiteral6</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testLiteralDecorator"><strong>testLiteralDecorator</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testLiteralDecorator2"><strong>testLiteralDecorator2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testLiteralDecorator3"><strong>testLiteralDecorator3</strong></a>(self)</dt><dd><tt>Decorator&nbsp;must&nbsp;be&nbsp;right&nbsp;next&nbsp;to&nbsp;literal,&nbsp;no&nbsp;whitespace</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testLookAheadIndicator1"><strong>testLookAheadIndicator1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testLookAheadIndicator2"><strong>testLookAheadIndicator2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testName1"><strong>testName1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testName2"><strong>testName2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testName3"><strong>testName3</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testNegposIndicator1"><strong>testNegposIndicator1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testNegposIndicator2"><strong>testNegposIndicator2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testOccurenceIndicator1"><strong>testOccurenceIndicator1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testOccurenceIndicator2"><strong>testOccurenceIndicator2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testOccurenceIndicator3"><strong>testOccurenceIndicator3</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testOccurenceIndicator4"><strong>testOccurenceIndicator4</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testOccurenceIndicator5"><strong>testOccurenceIndicator5</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testRange1"><strong>testRange1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testRange2"><strong>testRange2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testRange3"><strong>testRange3</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testRange4"><strong>testRange4</strong></a>(self)</dt><dd><tt>Test&nbsp;optional&nbsp;repeating&nbsp;children&nbsp;running&nbsp;into&nbsp;eof<br>
+&nbsp;<br>
+Original&nbsp;SimpleParse&nbsp;had&nbsp;a&nbsp;major&nbsp;failure&nbsp;here,<br>
+system&nbsp;hung&nbsp;trying&nbsp;to&nbsp;parse&nbsp;the&nbsp;[]&nbsp;string.&nbsp;&nbsp;Basically,<br>
+there&nbsp;was&nbsp;no&nbsp;check&nbsp;for&nbsp;EOF&nbsp;during&nbsp;a&nbsp;repeating-item<br>
+parse&nbsp;(save&nbsp;for&nbsp;literals&nbsp;and&nbsp;character&nbsp;sets),&nbsp;so&nbsp;you<br>
+wound&nbsp;up&nbsp;with&nbsp;infinite&nbsp;loops.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testRange5"><strong>testRange5</strong></a>(self)</dt><dd><tt>Test&nbsp;optional&nbsp;repeating&nbsp;children&nbsp;with&nbsp;no&nbsp;termination<br>
+&nbsp;<br>
+Original&nbsp;SimpleParse&nbsp;had&nbsp;a&nbsp;major&nbsp;failure&nbsp;here,<br>
+system&nbsp;hung&nbsp;trying&nbsp;to&nbsp;parse&nbsp;the&nbsp;[]&nbsp;string.&nbsp;&nbsp;Basically,<br>
+there&nbsp;was&nbsp;no&nbsp;check&nbsp;for&nbsp;EOF&nbsp;during&nbsp;a&nbsp;repeating-item<br>
+parse&nbsp;(save&nbsp;for&nbsp;literals&nbsp;and&nbsp;character&nbsp;sets),&nbsp;so&nbsp;you<br>
+wound&nbsp;up&nbsp;with&nbsp;infinite&nbsp;loops.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testSEQGroup1"><strong>testSEQGroup1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testSEQToken1"><strong>testSEQToken1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testSeqGroup2"><strong>testSeqGroup2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testUnreportedName1"><strong>testUnreportedName1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testUnreportedName2"><strong>testUnreportedName2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testWhitespace1"><strong>testWhitespace1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testWhitespace2"><strong>testWhitespace2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testWhitespace3"><strong>testWhitespace3</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testWhitespace4"><strong>testWhitespace4</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-testWhitespace5"><strong>testWhitespace5</strong></a>(self)</dt><dd><tt>Bug&nbsp;in&nbsp;2.0.0&nbsp;where&nbsp;Null&nbsp;comments&nbsp;such&nbsp;as:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"#<br>
+"<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;didn't&nbsp;parse.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="unittest.html#TestCase">TestCase</a>:<br>
+<dl><dt><a name="SimpleParseGrammarTests-__call__"><strong>__call__</strong></a>(self, *args, **kwds)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-__init__"><strong>__init__</strong></a>(self, methodName<font color="#909090">='runTest'</font>)</dt><dd><tt>Create&nbsp;an&nbsp;instance&nbsp;of&nbsp;the&nbsp;class&nbsp;that&nbsp;will&nbsp;use&nbsp;the&nbsp;named&nbsp;test<br>
+method&nbsp;when&nbsp;executed.&nbsp;Raises&nbsp;a&nbsp;ValueError&nbsp;if&nbsp;the&nbsp;instance&nbsp;does<br>
+not&nbsp;have&nbsp;a&nbsp;method&nbsp;with&nbsp;the&nbsp;specified&nbsp;name.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-assertAlmostEqual"><strong>assertAlmostEqual</strong></a> = failUnlessAlmostEqual(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-assertAlmostEquals"><strong>assertAlmostEquals</strong></a> = failUnlessAlmostEqual(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-assertEqual"><strong>assertEqual</strong></a> = failUnlessEqual(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-assertEquals"><strong>assertEquals</strong></a> = failUnlessEqual(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-assertFalse"><strong>assertFalse</strong></a> = failIf(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;if&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-assertNotAlmostEqual"><strong>assertNotAlmostEqual</strong></a> = failIfAlmostEqual(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-assertNotAlmostEquals"><strong>assertNotAlmostEquals</strong></a> = failIfAlmostEqual(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-assertNotEqual"><strong>assertNotEqual</strong></a> = failIfEqual(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-assertNotEquals"><strong>assertNotEquals</strong></a> = failIfEqual(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-assertRaises"><strong>assertRaises</strong></a> = failUnlessRaises(self, excClass, callableObj, *args, **kwargs)</dt><dd><tt>Fail&nbsp;unless&nbsp;an&nbsp;exception&nbsp;of&nbsp;class&nbsp;excClass&nbsp;is&nbsp;thrown<br>
+by&nbsp;callableObj&nbsp;when&nbsp;invoked&nbsp;with&nbsp;arguments&nbsp;args&nbsp;and&nbsp;keyword<br>
+arguments&nbsp;kwargs.&nbsp;If&nbsp;a&nbsp;different&nbsp;type&nbsp;of&nbsp;exception&nbsp;is<br>
+thrown,&nbsp;it&nbsp;will&nbsp;not&nbsp;be&nbsp;caught,&nbsp;and&nbsp;the&nbsp;test&nbsp;case&nbsp;will&nbsp;be<br>
+deemed&nbsp;to&nbsp;have&nbsp;suffered&nbsp;an&nbsp;error,&nbsp;exactly&nbsp;as&nbsp;for&nbsp;an<br>
+unexpected&nbsp;exception.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-assertTrue"><strong>assertTrue</strong></a> = failUnless(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;unless&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-assert_"><strong>assert_</strong></a> = failUnless(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;unless&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-countTestCases"><strong>countTestCases</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-debug"><strong>debug</strong></a>(self)</dt><dd><tt>Run&nbsp;the&nbsp;test&nbsp;without&nbsp;collecting&nbsp;errors&nbsp;in&nbsp;a&nbsp;TestResult</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-defaultTestResult"><strong>defaultTestResult</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-fail"><strong>fail</strong></a>(self, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;immediately,&nbsp;with&nbsp;the&nbsp;given&nbsp;message.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-failIf"><strong>failIf</strong></a>(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;if&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-failIfAlmostEqual"><strong>failIfAlmostEqual</strong></a>(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-failIfEqual"><strong>failIfEqual</strong></a>(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-failUnless"><strong>failUnless</strong></a>(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;unless&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-failUnlessAlmostEqual"><strong>failUnlessAlmostEqual</strong></a>(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-failUnlessEqual"><strong>failUnlessEqual</strong></a>(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-failUnlessRaises"><strong>failUnlessRaises</strong></a>(self, excClass, callableObj, *args, **kwargs)</dt><dd><tt>Fail&nbsp;unless&nbsp;an&nbsp;exception&nbsp;of&nbsp;class&nbsp;excClass&nbsp;is&nbsp;thrown<br>
+by&nbsp;callableObj&nbsp;when&nbsp;invoked&nbsp;with&nbsp;arguments&nbsp;args&nbsp;and&nbsp;keyword<br>
+arguments&nbsp;kwargs.&nbsp;If&nbsp;a&nbsp;different&nbsp;type&nbsp;of&nbsp;exception&nbsp;is<br>
+thrown,&nbsp;it&nbsp;will&nbsp;not&nbsp;be&nbsp;caught,&nbsp;and&nbsp;the&nbsp;test&nbsp;case&nbsp;will&nbsp;be<br>
+deemed&nbsp;to&nbsp;have&nbsp;suffered&nbsp;an&nbsp;error,&nbsp;exactly&nbsp;as&nbsp;for&nbsp;an<br>
+unexpected&nbsp;exception.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-id"><strong>id</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-run"><strong>run</strong></a>(self, result<font color="#909090">=None</font>)</dt></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-setUp"><strong>setUp</strong></a>(self)</dt><dd><tt>Hook&nbsp;method&nbsp;for&nbsp;setting&nbsp;up&nbsp;the&nbsp;test&nbsp;fixture&nbsp;before&nbsp;exercising&nbsp;it.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-shortDescription"><strong>shortDescription</strong></a>(self)</dt><dd><tt>Returns&nbsp;a&nbsp;one-line&nbsp;description&nbsp;of&nbsp;the&nbsp;test,&nbsp;or&nbsp;None&nbsp;if&nbsp;no<br>
+description&nbsp;has&nbsp;been&nbsp;provided.<br>
+&nbsp;<br>
+The&nbsp;default&nbsp;implementation&nbsp;of&nbsp;this&nbsp;method&nbsp;returns&nbsp;the&nbsp;first&nbsp;line&nbsp;of<br>
+the&nbsp;specified&nbsp;test&nbsp;method's&nbsp;docstring.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseGrammarTests-tearDown"><strong>tearDown</strong></a>(self)</dt><dd><tt>Hook&nbsp;method&nbsp;for&nbsp;deconstructing&nbsp;the&nbsp;test&nbsp;fixture&nbsp;after&nbsp;testing&nbsp;it.</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="unittest.html#TestCase">TestCase</a>:<br>
+<dl><dt><strong>__dict__</strong> = &lt;dictproxy object&gt;<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dl>
+
+<dl><dt><strong>__weakref__</strong> = &lt;attribute '__weakref__' of 'TestCase' objects&gt;<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dl>
+
+<dl><dt><strong>failureException</strong> = &lt;class exceptions.AssertionError&gt;<dd><tt>Assertion&nbsp;failed.</tt></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="SimpleParseRecursiveTests">class <strong>SimpleParseRecursiveTests</strong></a>(<a href="simpleparse.tests.test_grammarparser.html#SimpleParseGrammarTests">SimpleParseGrammarTests</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Test&nbsp;parsing&nbsp;of&nbsp;grammar&nbsp;elements&nbsp;with&nbsp;generated&nbsp;version&nbsp;of&nbsp;simpleparse&nbsp;grammar<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="simpleparse.tests.test_grammarparser.html#SimpleParseRecursiveTests">SimpleParseRecursiveTests</a></dd>
+<dd><a href="simpleparse.tests.test_grammarparser.html#SimpleParseGrammarTests">SimpleParseGrammarTests</a></dd>
+<dd><a href="unittest.html#TestCase">TestCase</a></dd>
+<dd><a href="__builtin__.html#object">object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="SimpleParseRecursiveTests-doBasicTest"><strong>doBasicTest</strong></a>(self, parserName, testValue, expected)</dt></dl>
+
+<hr>
+Methods inherited from <a href="simpleparse.tests.test_grammarparser.html#SimpleParseGrammarTests">SimpleParseGrammarTests</a>:<br>
+<dl><dt><a name="SimpleParseRecursiveTests-testChar1"><strong>testChar1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testChar2"><strong>testChar2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testChar3"><strong>testChar3</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testChar4"><strong>testChar4</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testChar5"><strong>testChar5</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testChar6"><strong>testChar6</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testChar7"><strong>testChar7</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testChar8"><strong>testChar8</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testChar85"><strong>testChar85</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testChar9"><strong>testChar9</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testCharNoBrace1"><strong>testCharNoBrace1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testCharRange1"><strong>testCharRange1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testComment1"><strong>testComment1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testComment2"><strong>testComment2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testCutToken2"><strong>testCutToken2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testCutToken3"><strong>testCutToken3</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testCutToken4"><strong>testCutToken4</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testDeclaration"><strong>testDeclaration</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testDeclaration2"><strong>testDeclaration2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testDeclaration3"><strong>testDeclaration3</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testDeclaration4"><strong>testDeclaration4</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testDeclaration5"><strong>testDeclaration5</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testDeclarationSet1"><strong>testDeclarationSet1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testDeclarationSet2"><strong>testDeclarationSet2</strong></a>(self)</dt><dd><tt>Just&nbsp;tries&nbsp;to&nbsp;parse&nbsp;and&nbsp;sees&nbsp;that&nbsp;everything&nbsp;was&nbsp;parsed,&nbsp;doesn't&nbsp;predict&nbsp;the&nbsp;result</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testElementToken1"><strong>testElementToken1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testElementToken2"><strong>testElementToken2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testElementToken3"><strong>testElementToken3</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testElementToken4"><strong>testElementToken4</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testElementToken5"><strong>testElementToken5</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testElementToken6"><strong>testElementToken6</strong></a>(self)</dt><dd><tt>Lookahead&nbsp;indicator&nbsp;with&nbsp;positive</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testElementToken7"><strong>testElementToken7</strong></a>(self)</dt><dd><tt>Lookahead&nbsp;indicator&nbsp;with&nbsp;negative</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testElementToken8"><strong>testElementToken8</strong></a>(self)</dt><dd><tt>Error&nbsp;on&nbsp;fail&nbsp;indicator</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testElementToken9"><strong>testElementToken9</strong></a>(self)</dt><dd><tt>Error&nbsp;on&nbsp;fail&nbsp;indicator&nbsp;with&nbsp;message</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testErrorOnFailFlag1"><strong>testErrorOnFailFlag1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testExpandedName1"><strong>testExpandedName1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testExpandedName2"><strong>testExpandedName2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testFOGroup1"><strong>testFOGroup1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testGroup1"><strong>testGroup1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testGroup2"><strong>testGroup2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testGroup3"><strong>testGroup3</strong></a>(self)</dt><dd><tt>Test&nbsp;group&nbsp;with&nbsp;sequential&nbsp;added&nbsp;group<br>
+Note&nbsp;that&nbsp;this&nbsp;test&nbsp;also&nbsp;serves&nbsp;to&nbsp;test<br>
+the&nbsp;function&nbsp;of&nbsp;non-reporting&nbsp;names</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testGroup4"><strong>testGroup4</strong></a>(self)</dt><dd><tt>Test&nbsp;group&nbsp;with&nbsp;sequential&nbsp;added&nbsp;group<br>
+Note&nbsp;that&nbsp;this&nbsp;test&nbsp;also&nbsp;serves&nbsp;to&nbsp;test<br>
+the&nbsp;function&nbsp;of&nbsp;non-reporting&nbsp;names</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testGroup5"><strong>testGroup5</strong></a>(self)</dt><dd><tt>Test&nbsp;group&nbsp;with&nbsp;sequential&nbsp;added&nbsp;group<br>
+Note&nbsp;that&nbsp;this&nbsp;test&nbsp;also&nbsp;serves&nbsp;to&nbsp;test<br>
+the&nbsp;function&nbsp;of&nbsp;non-reporting&nbsp;names</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testGroup6"><strong>testGroup6</strong></a>(self)</dt><dd><tt>Test&nbsp;group&nbsp;with&nbsp;multiple&nbsp;/&nbsp;'d&nbsp;values</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testLiteral1"><strong>testLiteral1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testLiteral2"><strong>testLiteral2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testLiteral3"><strong>testLiteral3</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testLiteral4"><strong>testLiteral4</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testLiteral5"><strong>testLiteral5</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testLiteral6"><strong>testLiteral6</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testLiteralDecorator"><strong>testLiteralDecorator</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testLiteralDecorator2"><strong>testLiteralDecorator2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testLiteralDecorator3"><strong>testLiteralDecorator3</strong></a>(self)</dt><dd><tt>Decorator&nbsp;must&nbsp;be&nbsp;right&nbsp;next&nbsp;to&nbsp;literal,&nbsp;no&nbsp;whitespace</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testLookAheadIndicator1"><strong>testLookAheadIndicator1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testLookAheadIndicator2"><strong>testLookAheadIndicator2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testName1"><strong>testName1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testName2"><strong>testName2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testName3"><strong>testName3</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testNegposIndicator1"><strong>testNegposIndicator1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testNegposIndicator2"><strong>testNegposIndicator2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testOccurenceIndicator1"><strong>testOccurenceIndicator1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testOccurenceIndicator2"><strong>testOccurenceIndicator2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testOccurenceIndicator3"><strong>testOccurenceIndicator3</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testOccurenceIndicator4"><strong>testOccurenceIndicator4</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testOccurenceIndicator5"><strong>testOccurenceIndicator5</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testRange1"><strong>testRange1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testRange2"><strong>testRange2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testRange3"><strong>testRange3</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testRange4"><strong>testRange4</strong></a>(self)</dt><dd><tt>Test&nbsp;optional&nbsp;repeating&nbsp;children&nbsp;running&nbsp;into&nbsp;eof<br>
+&nbsp;<br>
+Original&nbsp;SimpleParse&nbsp;had&nbsp;a&nbsp;major&nbsp;failure&nbsp;here,<br>
+system&nbsp;hung&nbsp;trying&nbsp;to&nbsp;parse&nbsp;the&nbsp;[]&nbsp;string.&nbsp;&nbsp;Basically,<br>
+there&nbsp;was&nbsp;no&nbsp;check&nbsp;for&nbsp;EOF&nbsp;during&nbsp;a&nbsp;repeating-item<br>
+parse&nbsp;(save&nbsp;for&nbsp;literals&nbsp;and&nbsp;character&nbsp;sets),&nbsp;so&nbsp;you<br>
+wound&nbsp;up&nbsp;with&nbsp;infinite&nbsp;loops.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testRange5"><strong>testRange5</strong></a>(self)</dt><dd><tt>Test&nbsp;optional&nbsp;repeating&nbsp;children&nbsp;with&nbsp;no&nbsp;termination<br>
+&nbsp;<br>
+Original&nbsp;SimpleParse&nbsp;had&nbsp;a&nbsp;major&nbsp;failure&nbsp;here,<br>
+system&nbsp;hung&nbsp;trying&nbsp;to&nbsp;parse&nbsp;the&nbsp;[]&nbsp;string.&nbsp;&nbsp;Basically,<br>
+there&nbsp;was&nbsp;no&nbsp;check&nbsp;for&nbsp;EOF&nbsp;during&nbsp;a&nbsp;repeating-item<br>
+parse&nbsp;(save&nbsp;for&nbsp;literals&nbsp;and&nbsp;character&nbsp;sets),&nbsp;so&nbsp;you<br>
+wound&nbsp;up&nbsp;with&nbsp;infinite&nbsp;loops.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testSEQGroup1"><strong>testSEQGroup1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testSEQToken1"><strong>testSEQToken1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testSeqGroup2"><strong>testSeqGroup2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testUnreportedName1"><strong>testUnreportedName1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testUnreportedName2"><strong>testUnreportedName2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testWhitespace1"><strong>testWhitespace1</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testWhitespace2"><strong>testWhitespace2</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testWhitespace3"><strong>testWhitespace3</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testWhitespace4"><strong>testWhitespace4</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-testWhitespace5"><strong>testWhitespace5</strong></a>(self)</dt><dd><tt>Bug&nbsp;in&nbsp;2.0.0&nbsp;where&nbsp;Null&nbsp;comments&nbsp;such&nbsp;as:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"#<br>
+"<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;didn't&nbsp;parse.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="unittest.html#TestCase">TestCase</a>:<br>
+<dl><dt><a name="SimpleParseRecursiveTests-__call__"><strong>__call__</strong></a>(self, *args, **kwds)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-__init__"><strong>__init__</strong></a>(self, methodName<font color="#909090">='runTest'</font>)</dt><dd><tt>Create&nbsp;an&nbsp;instance&nbsp;of&nbsp;the&nbsp;class&nbsp;that&nbsp;will&nbsp;use&nbsp;the&nbsp;named&nbsp;test<br>
+method&nbsp;when&nbsp;executed.&nbsp;Raises&nbsp;a&nbsp;ValueError&nbsp;if&nbsp;the&nbsp;instance&nbsp;does<br>
+not&nbsp;have&nbsp;a&nbsp;method&nbsp;with&nbsp;the&nbsp;specified&nbsp;name.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-assertAlmostEqual"><strong>assertAlmostEqual</strong></a> = failUnlessAlmostEqual(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-assertAlmostEquals"><strong>assertAlmostEquals</strong></a> = failUnlessAlmostEqual(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-assertEqual"><strong>assertEqual</strong></a> = failUnlessEqual(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-assertEquals"><strong>assertEquals</strong></a> = failUnlessEqual(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-assertFalse"><strong>assertFalse</strong></a> = failIf(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;if&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-assertNotAlmostEqual"><strong>assertNotAlmostEqual</strong></a> = failIfAlmostEqual(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-assertNotAlmostEquals"><strong>assertNotAlmostEquals</strong></a> = failIfAlmostEqual(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-assertNotEqual"><strong>assertNotEqual</strong></a> = failIfEqual(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-assertNotEquals"><strong>assertNotEquals</strong></a> = failIfEqual(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-assertRaises"><strong>assertRaises</strong></a> = failUnlessRaises(self, excClass, callableObj, *args, **kwargs)</dt><dd><tt>Fail&nbsp;unless&nbsp;an&nbsp;exception&nbsp;of&nbsp;class&nbsp;excClass&nbsp;is&nbsp;thrown<br>
+by&nbsp;callableObj&nbsp;when&nbsp;invoked&nbsp;with&nbsp;arguments&nbsp;args&nbsp;and&nbsp;keyword<br>
+arguments&nbsp;kwargs.&nbsp;If&nbsp;a&nbsp;different&nbsp;type&nbsp;of&nbsp;exception&nbsp;is<br>
+thrown,&nbsp;it&nbsp;will&nbsp;not&nbsp;be&nbsp;caught,&nbsp;and&nbsp;the&nbsp;test&nbsp;case&nbsp;will&nbsp;be<br>
+deemed&nbsp;to&nbsp;have&nbsp;suffered&nbsp;an&nbsp;error,&nbsp;exactly&nbsp;as&nbsp;for&nbsp;an<br>
+unexpected&nbsp;exception.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-assertTrue"><strong>assertTrue</strong></a> = failUnless(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;unless&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-assert_"><strong>assert_</strong></a> = failUnless(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;unless&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-countTestCases"><strong>countTestCases</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-debug"><strong>debug</strong></a>(self)</dt><dd><tt>Run&nbsp;the&nbsp;test&nbsp;without&nbsp;collecting&nbsp;errors&nbsp;in&nbsp;a&nbsp;TestResult</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-defaultTestResult"><strong>defaultTestResult</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-fail"><strong>fail</strong></a>(self, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;immediately,&nbsp;with&nbsp;the&nbsp;given&nbsp;message.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-failIf"><strong>failIf</strong></a>(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;if&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-failIfAlmostEqual"><strong>failIfAlmostEqual</strong></a>(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-failIfEqual"><strong>failIfEqual</strong></a>(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-failUnless"><strong>failUnless</strong></a>(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;unless&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-failUnlessAlmostEqual"><strong>failUnlessAlmostEqual</strong></a>(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-failUnlessEqual"><strong>failUnlessEqual</strong></a>(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-failUnlessRaises"><strong>failUnlessRaises</strong></a>(self, excClass, callableObj, *args, **kwargs)</dt><dd><tt>Fail&nbsp;unless&nbsp;an&nbsp;exception&nbsp;of&nbsp;class&nbsp;excClass&nbsp;is&nbsp;thrown<br>
+by&nbsp;callableObj&nbsp;when&nbsp;invoked&nbsp;with&nbsp;arguments&nbsp;args&nbsp;and&nbsp;keyword<br>
+arguments&nbsp;kwargs.&nbsp;If&nbsp;a&nbsp;different&nbsp;type&nbsp;of&nbsp;exception&nbsp;is<br>
+thrown,&nbsp;it&nbsp;will&nbsp;not&nbsp;be&nbsp;caught,&nbsp;and&nbsp;the&nbsp;test&nbsp;case&nbsp;will&nbsp;be<br>
+deemed&nbsp;to&nbsp;have&nbsp;suffered&nbsp;an&nbsp;error,&nbsp;exactly&nbsp;as&nbsp;for&nbsp;an<br>
+unexpected&nbsp;exception.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-id"><strong>id</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-run"><strong>run</strong></a>(self, result<font color="#909090">=None</font>)</dt></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-setUp"><strong>setUp</strong></a>(self)</dt><dd><tt>Hook&nbsp;method&nbsp;for&nbsp;setting&nbsp;up&nbsp;the&nbsp;test&nbsp;fixture&nbsp;before&nbsp;exercising&nbsp;it.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-shortDescription"><strong>shortDescription</strong></a>(self)</dt><dd><tt>Returns&nbsp;a&nbsp;one-line&nbsp;description&nbsp;of&nbsp;the&nbsp;test,&nbsp;or&nbsp;None&nbsp;if&nbsp;no<br>
+description&nbsp;has&nbsp;been&nbsp;provided.<br>
+&nbsp;<br>
+The&nbsp;default&nbsp;implementation&nbsp;of&nbsp;this&nbsp;method&nbsp;returns&nbsp;the&nbsp;first&nbsp;line&nbsp;of<br>
+the&nbsp;specified&nbsp;test&nbsp;method's&nbsp;docstring.</tt></dd></dl>
+
+<dl><dt><a name="SimpleParseRecursiveTests-tearDown"><strong>tearDown</strong></a>(self)</dt><dd><tt>Hook&nbsp;method&nbsp;for&nbsp;deconstructing&nbsp;the&nbsp;test&nbsp;fixture&nbsp;after&nbsp;testing&nbsp;it.</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="unittest.html#TestCase">TestCase</a>:<br>
+<dl><dt><strong>__dict__</strong> = &lt;dictproxy object&gt;<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dl>
+
+<dl><dt><strong>__weakref__</strong> = &lt;attribute '__weakref__' of 'TestCase' objects&gt;<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dl>
+
+<dl><dt><strong>failureException</strong> = &lt;class exceptions.AssertionError&gt;<dd><tt>Assertion&nbsp;failed.</tt></dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-getSuite"><strong>getSuite</strong></a>()</dt></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>AnyInt</strong> = &lt;Any Integer&gt;<br>
+<strong>NullResult</strong> = &lt;Null Children&gt;<br>
+<strong>SPGenerator</strong> = &lt;simpleparse.generator.Generator instance&gt;<br>
+<strong>declaration</strong> = 'declarationset      :=  declaration+<font color="#c040c0">\n</font>declaration...,[0-9a-fA-F],[0-9a-fA-F],[0-9a-fA-F],[0-9a-fA-F]<font color="#c040c0">\n</font>'<br>
+<strong>recursiveParser</strong> = &lt;simpleparse.parser.Parser instance&gt;</td></tr></table>
+</body></html>

@@ -1,0 +1,240 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: package simpleparse.common</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="simpleparse.html"><font color="#ffffff">simpleparse</font></a>.common</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/mcfletch/pylive/simpleparse/common/__init__.py">/home/mcfletch/pylive/simpleparse/common/__init__.py</a></font></td></tr></table>
+    <p><tt>Common&nbsp;(library)&nbsp;definitions<br>
+&nbsp;<br>
+You&nbsp;normally&nbsp;use&nbsp;this&nbsp;module&nbsp;by&nbsp;importing&nbsp;one&nbsp;of&nbsp;our<br>
+sub-modules&nbsp;(which&nbsp;automatically&nbsp;registers&nbsp;itself&nbsp;with<br>
+the&nbsp;SOURCES&nbsp;list&nbsp;defined&nbsp;here).<br>
+&nbsp;<br>
+Calling&nbsp;common.<a href="#-share">share</a>(&nbsp;dictionary&nbsp;)&nbsp;with&nbsp;a&nbsp;dictionary<br>
+mapping&nbsp;string&nbsp;names&nbsp;to&nbsp;element&nbsp;token&nbsp;instances&nbsp;will<br>
+make&nbsp;the&nbsp;element&nbsp;tokens&nbsp;available&nbsp;under&nbsp;those&nbsp;string<br>
+names&nbsp;in&nbsp;default&nbsp;parsers.&nbsp;&nbsp;Note:&nbsp;a&nbsp;Parser&nbsp;can&nbsp;override<br>
+this&nbsp;by&nbsp;specifying&nbsp;an&nbsp;explicit&nbsp;definitionSources<br>
+parameter&nbsp;in&nbsp;its&nbsp;initialiser.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Package Contents</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><a href="simpleparse.common.__init__.html">__init__</a> -- Common (library) definitions<br><a href="simpleparse.common.calendar_names.html">calendar_names</a> -- Locale-specific calendar names (day-of-week and month-of-year)<br><a href="simpleparse.common.chartypes.html">chartypes</a> -- Common locale-specific character types<br><a href="simpleparse.common.comments.html">comments</a> -- Common comment formats<br><a href="simpleparse.common.iso_date.html">iso_date</a> -- Canonical ISO date format YYYY-MM-DDTHH:mm:SS+HH:mm<br><a href="simpleparse.common.iso_date_loose.html">iso_date_loose</a> -- Somewhat Looser ISO date format YYYY-MM-DD HH:mm:SS +HH:mm<br><a href="simpleparse.common.numbers.html">numbers</a> -- Samples showing the parsing of common programming-language constructs<br><a href="simpleparse.common.phonetics.html">phonetics</a> -- Phonetic spellings for character values<br><a href="simpleparse.common.strings.html">strings</a> -- Python string parsers with escape characters<br><a href="simpleparse.common.timezone_names.html">timezone_names</a> -- Common timezone names (civilian, military and combined)</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-share"><strong>share</strong></a>(dictionary)</dt></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>SOURCES</strong> = [{'locale_day_abbrs': FirstOfGroup(
+    children = [
+        Literal(
+...l(
+            value = 'Fri',
+        ),
+    ],
+), 'locale_day_abbrs_lc': FirstOfGroup(
+    children = [
+        Literal(
+...l(
+            value = 'fri',
+        ),
+    ],
+), 'locale_day_abbrs_uc': FirstOfGroup(
+    children = [
+        Literal(
+...l(
+            value = 'FRI',
+        ),
+    ],
+), 'locale_day_names': FirstOfGroup(
+    children = [
+        Literal(
+...            value = 'Friday',
+        ),
+    ],
+), 'locale_day_names_lc': FirstOfGroup(
+    children = [
+        Literal(
+...            value = 'friday',
+        ),
+    ],
+), 'locale_day_names_uc': FirstOfGroup(
+    children = [
+        Literal(
+...            value = 'FRIDAY',
+        ),
+    ],
+), 'locale_month_abbrs': FirstOfGroup(
+    children = [
+        Literal(
+...eral(
+            value = '',
+        ),
+    ],
+), 'locale_month_abbrs_lc': FirstOfGroup(
+    children = [
+        Literal(
+...eral(
+            value = '',
+        ),
+    ],
+), 'locale_month_abbrs_uc': FirstOfGroup(
+    children = [
+        Literal(
+...eral(
+            value = '',
+        ),
+    ],
+), 'locale_month_names': FirstOfGroup(
+    children = [
+        Literal(
+...eral(
+            value = '',
+        ),
+    ],
+), ...}, {'EOF': Prebuilt(
+    value = ((None, 101, 1),),
+), 'ascii_letter': Range(
+    value = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+), 'ascii_letters': Range(
+    repeating = 1,
+    value = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+), 'ascii_lowercase': Range(
+    repeating = 1,
+    value = 'abcdefghijklmnopqrstuvwxyz',
+), 'ascii_lowercasechar': Range(
+    value = 'abcdefghijklmnopqrstuvwxyz',
+), 'ascii_uppercase': Range(
+    repeating = 1,
+    value = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+), 'ascii_uppercasechar': Range(
+    value = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+), 'digit': Range(
+    value = '0123456789',
+), 'digits': Range(
+    repeating = 1,
+    value = '0123456789',
+), 'hexdigit': Range(
+    value = '0123456789abcdefABCDEF',
+), ...}, {'c_comment': LibraryElement(
+    production = 'slashbang_comm...enerator.Generator instance at 0x2aaaad5dedd0&gt;,
+), 'c_nest_comment': LibraryElement(
+    production = 'slashbang_nest...enerator.Generator instance at 0x2aaaad5e7170&gt;,
+), 'hash_comment': LibraryElement(
+    production = 'hash_comment',...enerator.Generator instance at 0x2aaaad5d9128&gt;,
+), 'semicolon_comment': LibraryElement(
+    production = 'semicolon_comm...enerator.Generator instance at 0x2aaaad5d9128&gt;,
+), 'slashbang_comment': LibraryElement(
+    production = 'slashbang_comm...enerator.Generator instance at 0x2aaaad5dedd0&gt;,
+), 'slashbang_nest_comment': LibraryElement(
+    production = 'slashbang_nest...enerator.Generator instance at 0x2aaaad5e7170&gt;,
+), 'slashslash_comment': LibraryElement(
+    production = 'slashslash_com...enerator.Generator instance at 0x2aaaad5d9128&gt;,
+)}, {'binary_number': LibraryElement(
+    production = 'binary_number'...enerator.Generator instance at 0x2aaaad5f69e0&gt;,
+), 'float': LibraryElement(
+    production = 'float',
+    ge...enerator.Generator instance at 0x2aaaad5f69e0&gt;,
+), 'float_floatexp': LibraryElement(
+    production = 'float_floatexp...enerator.Generator instance at 0x2aaaad5f69e0&gt;,
+), 'hex': LibraryElement(
+    production = 'hex',
+    gene...enerator.Generator instance at 0x2aaaad5f69e0&gt;,
+), 'imaginary_number': LibraryElement(
+    production = 'imaginary_numb...enerator.Generator instance at 0x2aaaad5f69e0&gt;,
+), 'int': LibraryElement(
+    production = 'int',
+    gene...enerator.Generator instance at 0x2aaaad5f69e0&gt;,
+), 'int_unsigned': LibraryElement(
+    production = 'int_unsigned',...enerator.Generator instance at 0x2aaaad5f69e0&gt;,
+), 'number': LibraryElement(
+    production = 'number',
+    g...enerator.Generator instance at 0x2aaaad5f69e0&gt;,
+), 'number_full': LibraryElement(
+    production = 'number_full',
+...enerator.Generator instance at 0x2aaaad5f69e0&gt;,
+)}, {'ISO_date': LibraryElement(
+    production = 'ISO_date',
+   ...enerator.Generator instance at 0x2aaaad5dca28&gt;,
+), 'ISO_date_time': LibraryElement(
+    production = 'ISO_date_time'...enerator.Generator instance at 0x2aaaad5dca28&gt;,
+), 'ISO_time': LibraryElement(
+    production = 'ISO_time',
+   ...enerator.Generator instance at 0x2aaaad5dca28&gt;,
+)}, {'ISO_date_loose': LibraryElement(
+    production = 'ISO_date_loose...enerator.Generator instance at 0x2aaaad6009e0&gt;,
+), 'ISO_date_time_loose': LibraryElement(
+    production = 'ISO_date_time_...enerator.Generator instance at 0x2aaaad6009e0&gt;,
+), 'ISO_time_loose': LibraryElement(
+    production = 'ISO_time_loose...enerator.Generator instance at 0x2aaaad6009e0&gt;,
+)}, {'military_alphabet_char': FirstOfGroup(
+    children = [
+        Literal(
+...(
+            value = 'Zulu',
+        ),
+    ],
+), 'military_alphabet_char_lower': FirstOfGroup(
+    children = [
+        Literal(
+...(
+            value = 'zulu',
+        ),
+    ],
+)}, {'string': LibraryElement(
+    production = 'string',
+    g...enerator.Generator instance at 0x2aaaad608d88&gt;,
+), 'string_double_quote': LibraryElement(
+    production = 'str',
+    gene...enerator.Generator instance at 0x2aaaad82b200&gt;,
+), 'string_single_quote': LibraryElement(
+    production = 'str',
+    gene...enerator.Generator instance at 0x2aaaad602680&gt;,
+), 'string_triple_double': LibraryElement(
+    production = 'str',
+    gene...enerator.Generator instance at 0x2aaaad5d95a8&gt;,
+), 'string_triple_single': LibraryElement(
+    production = 'str',
+    gene...enerator.Generator instance at 0x2aaaad827710&gt;,
+)}, {'civilian_timezone_name': FirstOfGroup(
+    children = [
+        Literal(
+...
+            value = 'ACSST',
+        ),
+    ],
+), 'military_timezone_name': FirstOfGroup(
+    children = [
+        Literal(
+...ral(
+            value = 'A',
+        ),
+    ],
+), 'timezone_name': FirstOfGroup(
+    children = [
+        Literal(
+...ral(
+            value = 'A',
+        ),
+    ],
+)}]<br>
+<strong>__path__</strong> = ['/home/mcfletch/pylive/simpleparse/common']</td></tr></table>
+</body></html>

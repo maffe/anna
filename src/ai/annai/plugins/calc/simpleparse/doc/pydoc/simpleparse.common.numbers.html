@@ -1,0 +1,272 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module simpleparse.common.numbers</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="simpleparse.html"><font color="#ffffff">simpleparse</font></a>.<a href="simpleparse.common.html"><font color="#ffffff">common</font></a>.numbers</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/mcfletch/pylive/simpleparse/common/numbers.py">/home/mcfletch/pylive/simpleparse/common/numbers.py</a></font></td></tr></table>
+    <p><tt>Samples&nbsp;showing&nbsp;the&nbsp;parsing&nbsp;of&nbsp;common&nbsp;programming-language&nbsp;constructs<br>
+&nbsp;<br>
+numbers<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;integers<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int_unsigned<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hexidecimal&nbsp;integers<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hex<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;floats&nbsp;(including&nbsp;exponents,&nbsp;requring&nbsp;a&nbsp;'.'&nbsp;in&nbsp;the&nbsp;literal)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;floats,&nbsp;with&nbsp;optional&nbsp;integer-only&nbsp;exponents<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float_floatexp<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;floats,&nbsp;with&nbsp;optional&nbsp;integer&nbsp;or&nbsp;float&nbsp;exponents<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;imaginary_number<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(float/int),[jJ]<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;number<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hex/float/int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;number_full<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;binary_number/imaginary_number/hex/float/int<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;binary_number<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;signed&nbsp;binary&nbsp;number<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1001001b&nbsp;or&nbsp;1001001B&nbsp;bit-field&nbsp;format,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;optional&nbsp;sign<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;can&nbsp;be&nbsp;used&nbsp;with&nbsp;number&nbsp;as&nbsp;(binary_number/number)<br>
+&nbsp;<br>
+Interpreters:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#IntInterpreter">IntInterpreter</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int,&nbsp;int_unsigned<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#HexInterpreter">HexInterpreter</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hex<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#FloatInterpreter">FloatInterpreter</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#FloatFloatExpInterpreter">FloatFloatExpInterpreter</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float_floatexp<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#BinaryInterpreter">BinaryInterpreter</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;binary_number<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ImaginaryInterpreter">ImaginaryInterpreter</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;imaginary_number</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="simpleparse.common.chartypes.html">simpleparse.common.chartypes</a><br>
+<a href="simpleparse.common.html">simpleparse.common</a><br>
+</td><td width="25%" valign=top><a href="simpleparse.objectgenerator.html">simpleparse.objectgenerator</a><br>
+<a href="string.html">string</a><br>
+</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="simpleparse.dispatchprocessor.html#DispatchProcessor">DispatchProcessor</a>(<a href="simpleparse.processor.html#Processor">Processor</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="simpleparse.common.numbers.html#BinaryInterpreter">BinaryInterpreter</a>
+</font></dt><dt><font face="helvetica, arial"><a href="simpleparse.common.numbers.html#FloatFloatExpInterpreter">FloatFloatExpInterpreter</a>
+</font></dt><dt><font face="helvetica, arial"><a href="simpleparse.common.numbers.html#FloatInterpreter">FloatInterpreter</a>
+</font></dt><dt><font face="helvetica, arial"><a href="simpleparse.common.numbers.html#HexInterpreter">HexInterpreter</a>
+</font></dt><dt><font face="helvetica, arial"><a href="simpleparse.common.numbers.html#ImaginaryInterpreter">ImaginaryInterpreter</a>
+</font></dt><dt><font face="helvetica, arial"><a href="simpleparse.common.numbers.html#IntInterpreter">IntInterpreter</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="BinaryInterpreter">class <strong>BinaryInterpreter</strong></a>(<a href="simpleparse.dispatchprocessor.html#DispatchProcessor">DispatchProcessor</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="simpleparse.common.numbers.html#BinaryInterpreter">BinaryInterpreter</a></dd>
+<dd><a href="simpleparse.dispatchprocessor.html#DispatchProcessor">DispatchProcessor</a></dd>
+<dd><a href="simpleparse.processor.html#Processor">Processor</a></dd>
+<dd><a href="simpleparse.processor.html#MethodSource">MethodSource</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="BinaryInterpreter-__call__"><strong>__call__</strong></a>(self, (tag, left, right, children), buffer)</dt><dd><tt>Interpret&nbsp;a&nbsp;bitfield&nbsp;set&nbsp;as&nbsp;an&nbsp;integer</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="simpleparse.processor.html#Processor">Processor</a>:<br>
+<dl><dt><a name="BinaryInterpreter-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;a&nbsp;representation&nbsp;of&nbsp;the&nbsp;class</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="FloatFloatExpInterpreter">class <strong>FloatFloatExpInterpreter</strong></a>(<a href="simpleparse.dispatchprocessor.html#DispatchProcessor">DispatchProcessor</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Interpret&nbsp;a&nbsp;float&nbsp;string&nbsp;as&nbsp;an&nbsp;integer&nbsp;value<br>
+Note:&nbsp;we're&nbsp;allowing&nbsp;float&nbsp;exponentiation,&nbsp;which<br>
+gives&nbsp;you&nbsp;a&nbsp;nice&nbsp;way&nbsp;to&nbsp;write&nbsp;2e.5<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="simpleparse.common.numbers.html#FloatFloatExpInterpreter">FloatFloatExpInterpreter</a></dd>
+<dd><a href="simpleparse.dispatchprocessor.html#DispatchProcessor">DispatchProcessor</a></dd>
+<dd><a href="simpleparse.processor.html#Processor">Processor</a></dd>
+<dd><a href="simpleparse.processor.html#MethodSource">MethodSource</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="FloatFloatExpInterpreter-__call__"><strong>__call__</strong></a>(self, (tag, left, right, children), buffer)</dt></dl>
+
+<hr>
+Methods inherited from <a href="simpleparse.processor.html#Processor">Processor</a>:<br>
+<dl><dt><a name="FloatFloatExpInterpreter-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;a&nbsp;representation&nbsp;of&nbsp;the&nbsp;class</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="FloatInterpreter">class <strong>FloatInterpreter</strong></a>(<a href="simpleparse.dispatchprocessor.html#DispatchProcessor">DispatchProcessor</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Interpret&nbsp;a&nbsp;standard&nbsp;float&nbsp;value&nbsp;as&nbsp;a&nbsp;float<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="simpleparse.common.numbers.html#FloatInterpreter">FloatInterpreter</a></dd>
+<dd><a href="simpleparse.dispatchprocessor.html#DispatchProcessor">DispatchProcessor</a></dd>
+<dd><a href="simpleparse.processor.html#Processor">Processor</a></dd>
+<dd><a href="simpleparse.processor.html#MethodSource">MethodSource</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="FloatInterpreter-__call__"><strong>__call__</strong></a>(self, (tag, left, right, children), buffer)</dt></dl>
+
+<hr>
+Methods inherited from <a href="simpleparse.processor.html#Processor">Processor</a>:<br>
+<dl><dt><a name="FloatInterpreter-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;a&nbsp;representation&nbsp;of&nbsp;the&nbsp;class</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="HexInterpreter">class <strong>HexInterpreter</strong></a>(<a href="simpleparse.dispatchprocessor.html#DispatchProcessor">DispatchProcessor</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Interpret&nbsp;a&nbsp;hexidecimal&nbsp;integer&nbsp;string&nbsp;as&nbsp;an&nbsp;integer&nbsp;value<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="simpleparse.common.numbers.html#HexInterpreter">HexInterpreter</a></dd>
+<dd><a href="simpleparse.dispatchprocessor.html#DispatchProcessor">DispatchProcessor</a></dd>
+<dd><a href="simpleparse.processor.html#Processor">Processor</a></dd>
+<dd><a href="simpleparse.processor.html#MethodSource">MethodSource</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="HexInterpreter-__call__"><strong>__call__</strong></a>(self, (tag, left, right, children), buffer)</dt></dl>
+
+<hr>
+Methods inherited from <a href="simpleparse.processor.html#Processor">Processor</a>:<br>
+<dl><dt><a name="HexInterpreter-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;a&nbsp;representation&nbsp;of&nbsp;the&nbsp;class</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ImaginaryInterpreter">class <strong>ImaginaryInterpreter</strong></a>(<a href="simpleparse.dispatchprocessor.html#DispatchProcessor">DispatchProcessor</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="simpleparse.common.numbers.html#ImaginaryInterpreter">ImaginaryInterpreter</a></dd>
+<dd><a href="simpleparse.dispatchprocessor.html#DispatchProcessor">DispatchProcessor</a></dd>
+<dd><a href="simpleparse.processor.html#Processor">Processor</a></dd>
+<dd><a href="simpleparse.processor.html#MethodSource">MethodSource</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="ImaginaryInterpreter-__call__"><strong>__call__</strong></a>(self, (tag, left, right, children), buffer)</dt><dd><tt>Interpret&nbsp;a&nbsp;bitfield&nbsp;set&nbsp;as&nbsp;an&nbsp;integer,&nbsp;not&nbsp;sure&nbsp;this&nbsp;algo<br>
+is&nbsp;correct,&nbsp;will&nbsp;see&nbsp;I&nbsp;suppose</tt></dd></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>map</strong> = {'float': &lt;FloatInterpreter object @ 46912541411376&gt;, 'int': &lt;IntInterpreter object @ 46912541411088&gt;}</dl>
+
+<hr>
+Methods inherited from <a href="simpleparse.processor.html#Processor">Processor</a>:<br>
+<dl><dt><a name="ImaginaryInterpreter-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;a&nbsp;representation&nbsp;of&nbsp;the&nbsp;class</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="IntInterpreter">class <strong>IntInterpreter</strong></a>(<a href="simpleparse.dispatchprocessor.html#DispatchProcessor">DispatchProcessor</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Interpret&nbsp;an&nbsp;integer&nbsp;(or&nbsp;unsigned&nbsp;integer)&nbsp;string&nbsp;as&nbsp;an&nbsp;integer<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="simpleparse.common.numbers.html#IntInterpreter">IntInterpreter</a></dd>
+<dd><a href="simpleparse.dispatchprocessor.html#DispatchProcessor">DispatchProcessor</a></dd>
+<dd><a href="simpleparse.processor.html#Processor">Processor</a></dd>
+<dd><a href="simpleparse.processor.html#MethodSource">MethodSource</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="IntInterpreter-__call__"><strong>__call__</strong></a>(self, (tag, left, right, children), buffer)</dt></dl>
+
+<hr>
+Methods inherited from <a href="simpleparse.processor.html#Processor">Processor</a>:<br>
+<dl><dt><a name="IntInterpreter-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;a&nbsp;representation&nbsp;of&nbsp;the&nbsp;class</tt></dd></dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-_toInt"><strong>_toInt</strong></a>(s, base)</dt></dl>
+ <dl><dt><a name="-_toLong"><strong>_toLong</strong></a>(s, base)</dt></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>_p</strong> = &lt;simpleparse.parser.Parser instance&gt;<br>
+<strong>c</strong> = {'binary_number': LibraryElement(
+    production = 'binary_number'...enerator.Generator instance at 0x2aaaad5f69e0&gt;,
+), 'float': LibraryElement(
+    production = 'float',
+    ge...enerator.Generator instance at 0x2aaaad5f69e0&gt;,
+), 'float_floatexp': LibraryElement(
+    production = 'float_floatexp...enerator.Generator instance at 0x2aaaad5f69e0&gt;,
+), 'hex': LibraryElement(
+    production = 'hex',
+    gene...enerator.Generator instance at 0x2aaaad5f69e0&gt;,
+), 'imaginary_number': LibraryElement(
+    production = 'imaginary_numb...enerator.Generator instance at 0x2aaaad5f69e0&gt;,
+), 'int': LibraryElement(
+    production = 'int',
+    gene...enerator.Generator instance at 0x2aaaad5f69e0&gt;,
+), 'int_unsigned': LibraryElement(
+    production = 'int_unsigned',...enerator.Generator instance at 0x2aaaad5f69e0&gt;,
+), 'number': LibraryElement(
+    production = 'number',
+    g...enerator.Generator instance at 0x2aaaad5f69e0&gt;,
+), 'number_full': LibraryElement(
+    production = 'number_full',
+...enerator.Generator instance at 0x2aaaad5f69e0&gt;,
+)}<br>
+<strong>declaration</strong> = '<font color="#c040c0">\n</font># sample for parsing integer and float numbers<font color="#c040c0">\n</font>... := binary_number/imaginary_number/hex/float/int<font color="#c040c0">\n</font>'<br>
+<strong>name</strong> = 'number_full'</td></tr></table>
+</body></html>

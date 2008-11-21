@@ -1,0 +1,157 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module simpleparse.common.timezone_names</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="simpleparse.html"><font color="#ffffff">simpleparse</font></a>.<a href="simpleparse.common.html"><font color="#ffffff">common</font></a>.timezone_names</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/mcfletch/pylive/simpleparse/common/timezone_names.py">/home/mcfletch/pylive/simpleparse/common/timezone_names.py</a></font></td></tr></table>
+    <p><tt>Common&nbsp;timezone&nbsp;names&nbsp;(civilian,&nbsp;military&nbsp;and&nbsp;combined)<br>
+&nbsp;<br>
+These&nbsp;productions&nbsp;are&nbsp;a&nbsp;collection&nbsp;of&nbsp;common&nbsp;civilian&nbsp;and<br>
+military&nbsp;timezone&nbsp;names.&nbsp;&nbsp;The&nbsp;list&nbsp;of&nbsp;names&nbsp;is&nbsp;by&nbsp;no&nbsp;means<br>
+exhaustive&nbsp;(nor&nbsp;definitive),&nbsp;but&nbsp;it&nbsp;gives&nbsp;most&nbsp;timezones<br>
+at&nbsp;least&nbsp;one&nbsp;named&nbsp;value&nbsp;(to&nbsp;make&nbsp;it&nbsp;possible&nbsp;to&nbsp;enter&nbsp;the<br>
+name),&nbsp;and&nbsp;it&nbsp;doesn't&nbsp;repeat&nbsp;any&nbsp;names&nbsp;(I&nbsp;hope&nbsp;;)&nbsp;).&nbsp;&nbsp;You<br>
+have&nbsp;three&nbsp;major&nbsp;classes&nbsp;of&nbsp;names,&nbsp;civilian&nbsp;(EST,&nbsp;PST,&nbsp;GMT,<br>
+UTC),&nbsp;military&nbsp;single-character&nbsp;(A,B,C,D,E...)&nbsp;and&nbsp;military<br>
+phonetic&nbsp;spelling&nbsp;(Alpha,&nbsp;Bravo...&nbsp;Zulu).&nbsp;&nbsp;The&nbsp;military<br>
+variants&nbsp;are&nbsp;combined&nbsp;into&nbsp;a&nbsp;single&nbsp;production,&nbsp;however.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;civilian_timezone_name&nbsp;--&nbsp;the&nbsp;"familiar"&nbsp;timezones,&nbsp;most<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;real-world&nbsp;data&nbsp;entry&nbsp;will&nbsp;want&nbsp;to&nbsp;use&nbsp;this&nbsp;as&nbsp;their<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"timezone"&nbsp;definition&nbsp;I'm&nbsp;guessing.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;military_timezone_name&nbsp;--&nbsp;military&nbsp;timezones&nbsp;in&nbsp;the&nbsp;two<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;formats&nbsp;outlined&nbsp;above.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;timezone_name&nbsp;--&nbsp;combination&nbsp;of&nbsp;the&nbsp;two&nbsp;above&nbsp;into&nbsp;a<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;single&nbsp;production.<br>
+&nbsp;<br>
+Interpreter:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#TimeZoneNameInterpreter">TimeZoneNameInterpreter</a>&nbsp;--&nbsp;see&nbsp;below&nbsp;for&nbsp;details,&nbsp;by<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;default&nbsp;takes&nbsp;the&nbsp;timezone&nbsp;name&nbsp;and&nbsp;converts&nbsp;to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;second&nbsp;offset&nbsp;in&nbsp;West-negative&nbsp;format.&nbsp;&nbsp;Note:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this&nbsp;is&nbsp;the&nbsp;_opposite_&nbsp;of&nbsp;the&nbsp;time&nbsp;module,&nbsp;but&nbsp;is<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;more&nbsp;commonly&nbsp;used&nbsp;format&nbsp;AFAIK.&nbsp;&nbsp;Null&nbsp;matches<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;will&nbsp;return&nbsp;a&nbsp;default&nbsp;TimeZone&nbsp;as&nbsp;specified.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="simpleparse.common.html">simpleparse.common</a><br>
+</td><td width="25%" valign=top><a href="simpleparse.objectgenerator.html">simpleparse.objectgenerator</a><br>
+</td><td width="25%" valign=top><a href="simpleparse.common.phonetics.html">simpleparse.common.phonetics</a><br>
+</td><td width="25%" valign=top><a href="time.html">time</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="simpleparse.common.timezone_names.html#TimeZoneNameInterpreter">TimeZoneNameInterpreter</a>
+</font></dt></dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="TimeZoneNameInterpreter">class <strong>TimeZoneNameInterpreter</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Intepret&nbsp;a&nbsp;timezone&nbsp;specified&nbsp;as&nbsp;a&nbsp;military&nbsp;or&nbsp;civilian&nbsp;timezone&nbsp;name<br>
+&nbsp;<br>
+Return&nbsp;value&nbsp;is&nbsp;an&nbsp;offset&nbsp;from&nbsp;UTC&nbsp;given&nbsp;in&nbsp;seconds.<br>
+If&nbsp;a&nbsp;null-match&nbsp;is&nbsp;passed&nbsp;uses&nbsp;the&nbsp;passed&nbsp;defaultZone.<br>
+Returns&nbsp;values&nbsp;in&nbsp;seconds&nbsp;difference&nbsp;from&nbsp;UTC&nbsp;(negative<br>
+West)&nbsp;divided&nbsp;by&nbsp;the&nbsp;passed&nbsp;"seconds"&nbsp;argument.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="TimeZoneNameInterpreter-__call__"><strong>__call__</strong></a>(self, (tag, left, right, children), buffer)</dt></dl>
+
+<dl><dt><a name="TimeZoneNameInterpreter-__init__"><strong>__init__</strong></a>(self, defaultZone<font color="#909090">=-14400</font>, seconds<font color="#909090">=1.0</font>)</dt><dd><tt>defaultZone&nbsp;--&nbsp;ofset&nbsp;in&nbsp;seconds&nbsp;to&nbsp;be&nbsp;returned&nbsp;if&nbsp;there<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;no&nbsp;value&nbsp;specified&nbsp;(null-match)<br>
+seconds&nbsp;--&nbsp;divisor&nbsp;applied&nbsp;to&nbsp;the&nbsp;value&nbsp;before&nbsp;returning,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;you&nbsp;want&nbsp;hours,&nbsp;use&nbsp;3600.0,&nbsp;if&nbsp;you&nbsp;want&nbsp;minutes,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;use&nbsp;60.0,&nbsp;if&nbsp;you&nbsp;want&nbsp;days&nbsp;(why?),&nbsp;use&nbsp;86400.0</tt></dd></dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-_build"><strong>_build</strong></a>(data)</dt><dd><tt>Build&nbsp;the&nbsp;name:time&nbsp;map&nbsp;and&nbsp;match&nbsp;rule&nbsp;for&nbsp;each&nbsp;dataset</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>LOCAL_ZONE</strong> = -14400<br>
+<strong>c</strong> = {'civilian_timezone_name': FirstOfGroup(
+    children = [
+        Literal(
+...
+            value = 'ACSST',
+        ),
+    ],
+), 'military_timezone_name': FirstOfGroup(
+    children = [
+        Literal(
+...ral(
+            value = 'A',
+        ),
+    ],
+), 'timezone_name': FirstOfGroup(
+    children = [
+        Literal(
+...ral(
+            value = 'A',
+        ),
+    ],
+)}<br>
+<strong>civilian_data</strong> = [('NZDT', 46800), ('IDLE', 43200), ('NZST', 43200), ('NZT', 43200), ('AESST', 39600), ('ACSST', 37800), ('CADT', 37800), ('SADT', 37800), ('AEST', 36000), ('EAST', 36000), ('GST', 36000), ('LIGT', 36000), ('ACST', 34200), ('CAST', 34200), ('SAT', 34200), ('AWSST', 32400), ('JST', 32400), ('KST', 32400), ('WDT', 32400), ('MT', 30600), ...]<br>
+<strong>civilian_mapping</strong> = {'ACSST': 37800, 'ACST': 34200, 'ADT': -10800, 'AESST': 39600, 'AEST': 36000, 'AHST': -36000, 'AKST': -32400, 'AST': -14400, 'AT': -7200, 'AWSST': 32400, ...}<br>
+<strong>civilian_rule</strong> = FirstOfGroup(
+    children = [
+        Literal(
+...
+            value = 'ACSST',
+        ),
+    ],
+)<br>
+<strong>item</strong> = 'Zulu'<br>
+<strong>key</strong> = 'Z'<br>
+<strong>timezone_data</strong> = [('NZDT', 46800), ('IDLE', 43200), ('NZST', 43200), ('NZT', 43200), ('AESST', 39600), ('ACSST', 37800), ('CADT', 37800), ('SADT', 37800), ('AEST', 36000), ('EAST', 36000), ('GST', 36000), ('LIGT', 36000), ('ACST', 34200), ('CAST', 34200), ('SAT', 34200), ('AWSST', 32400), ('JST', 32400), ('KST', 32400), ('WDT', 32400), ('MT', 30600), ...]<br>
+<strong>timezone_mapping</strong> = {'A': 3600, 'ACSST': 37800, 'ACST': 34200, 'ADT': -10800, 'AESST': 39600, 'AEST': 36000, 'AHST': -36000, 'AKST': -32400, 'AST': -14400, 'AT': -7200, ...}<br>
+<strong>timezone_rule</strong> = FirstOfGroup(
+    children = [
+        Literal(
+...ral(
+            value = 'A',
+        ),
+    ],
+)<br>
+<strong>value</strong> = 0<br>
+<strong>zulu_data</strong> = [('Alpha', 3600), ('Bravo', 7200), ('Charlie', 10800), ('Delta', 14400), ('Echo', 18000), ('Echo', 18000), ('Foxtrot', 21600), ('Golf', 25200), ('Gulf', 25200), ('Hotel', 28800), ('India', 32400), ('Kilo', 36000), ('Lima', 39600), ('Mike', 43200), ('November', -3600), ('Oscar', -7200), ('Papa', -10800), ('Quebec', -14400), ('Romeo', -18000), ('Sierra', -21600), ...]<br>
+<strong>zulu_mapping</strong> = {'A': 3600, 'Alpha': 3600, 'B': 7200, 'Bravo': 7200, 'C': 10800, 'Charlie': 10800, 'D': 14400, 'Delta': 14400, 'E': 18000, 'Echo': 18000, ...}<br>
+<strong>zulu_rule</strong> = FirstOfGroup(
+    children = [
+        Literal(
+...ral(
+            value = 'A',
+        ),
+    ],
+)</td></tr></table>
+</body></html>
