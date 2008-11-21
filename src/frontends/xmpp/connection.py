@@ -72,6 +72,9 @@ class Connection(px.jab.Client, _threading.Thread):
 
     def connect(self):
         """Overrides C{pyxmpp.jabber.Client.connect} for the sake of API."""
+        # Exit when this is the only thread left (in particular: when the main
+        # thread has exited).
+        self.setDaemon(True)
         self.start()
 
     def connect_xmpp(self):

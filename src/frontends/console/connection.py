@@ -38,6 +38,9 @@ class Connection(BaseConnection, _threading.Thread):
     def connect(self):
         # The connection will be closed when this is set to True.
         self.halt = False
+        # Exit when this is the only thread left (in particular: when the main
+        # thread has exited).
+        self.setDaemon(True)
         self.start()
 
     def disconnect(self):

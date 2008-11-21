@@ -34,6 +34,8 @@ _frontends_imported = _threading.Lock()
 _frontends = {}
 # Main anna logger.
 _logger = logging.getLogger("anna." + __name__)
+# Already received a stop signal.
+_handling_sigstop = _threading.Lock()
 
 def discard_args(func):
     """Decorator that discards all arguments to a function."""
@@ -96,9 +98,15 @@ def print_frontends():
 @discard_args
 def stop():
     """Stops the bot started by L{main}."""
-    global bot
-    _logger.info("Stopping the bot...")
-    bot.stop()
+    global bot, _handling_sigstop
+    if _handling_sigstop.acquire(False):
+        _logger.info("Stopping the bot (waiting for the frontends to finish, "
+                "repeat stop signal to skip)..")
+        bot.stop()
+    else:
+        _logger.warning(u"Not waiting for threads to finish.")
+        # Forcefully flush thread reference pool.
+        bot.pool = []
 
 def main():
     """Start one instance of the Anna bot."""
@@ -131,6 +139,7 @@ def main():
         time.sleep(3)
     c.stop()
     _logger.info("Bot stopped.")
+    logging.shutdown()
 
 if __name__ == "__main__":
     main()
