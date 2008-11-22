@@ -182,6 +182,6 @@ class ImaginaryInterpreter( DispatchProcessor ):
 		"""Interpret a bitfield set as an integer, not sure this algo
 		is correct, will see I suppose"""
 		base = children[0]
-		base = self.mapSet[base[0]](base, buffer)
+		base = self.map[base[0]](base, buffer)
 		return base * 1j
 	
