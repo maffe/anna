@@ -1,28 +1,37 @@
->expression<	:= addsub / term
+>expression<	:= equality / side
 >atomicexpr<	:= satomicexpr / uatomicexpr
 >uatomicexpr<	:= (('(', ws, expression, ws, ')')) / unumber
 satomicexpr	:= sign, uatomicexpr
 
+# Equality test.
+equality	:= side, (ws, equal_oper, ws, side)+
+>side<		:= addsub / term
 # Additions and substraction of terms.
 addsub		:= term, (ws, addsub_oper, ws, term)+
 >term<		:= muldiv / factor
 # Multiplication and division of factors.
 muldiv		:= factor, (ws, muldiv_oper, ws, factor)+
->factor<	:= exponent / atomicexpr
+>factor<	:= pow / atomicexpr
 # Exponentiation.
-exponent	:= atomicexpr, (ws, expo_oper, ws, atomicexpr)+
+pow		:= atomicexpr, (ws, pow_oper, ws, atomicexpr)+
 
-# Only natural numbers for now.
-unumber		:= [0-9]+
+# All numbers are expected to be unsigned.
+unumber		:= exp / real
+>exp<		:= real, c'e', natural
+>real<		:= (natural?, decimal_sign, !, natural) / natural
+>natural<	:= [0-9]+
+
 <ws>		:= [ \t\n]*
+equal_oper	:= '='
 >addsub_oper<	:= add_oper / sub_oper
 add_oper	:= '+'
 sub_oper	:= '-'
 >muldiv_oper<	:= mul_oper / div_oper
 mul_oper	:= [*xX]
 div_oper	:= [:/]
-expo_oper	:= '^' / '**'
+pow_oper	:= '^' / '**'
 # Unary sign operators for numbers and expressions.
 >sign<		:= (pos_sign / neg_sign), ws
 pos_sign	:= add_oper
 neg_sign	:= sub_oper
+decimal_sign	:= [.,]

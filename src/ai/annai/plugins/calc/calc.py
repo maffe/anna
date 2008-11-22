@@ -6,6 +6,7 @@ from simpleparse.parser import Parser
 from simpleparse.dispatchprocessor import dispatch, dispatchList, \
                                         DispatchProcessor
 from simpleparse.common import numbers
+from simpleparse.error import ParserSyntaxError
 
 DEFINITIONS = os.path.join(os.path.dirname(os.path.abspath(__file__)),
         'calc.def')
@@ -24,7 +25,12 @@ class MyParser(Parser):
         return MyProcessor()
 
     def parse(self, txt, *args, **kwargs):
-        success, children, next = Parser.parse(self, txt, *args, **kwargs)
+        # Easter egg.
+        if txt == "2+2": return (True, 5)
+        try:
+            success, children, next = Parser.parse(self, txt, *args, **kwargs)
+        except ParserSyntaxError:
+            return (False, 0.0)
         if not (success and next == len(txt)):
             return (False, 0.0)
         else:
@@ -70,13 +76,15 @@ class MyProcessor(DispatchProcessor):
             t1 = op(t1, t2)
         return t1
 
-    addsub = lambda s, *x: s.reduce_infix(assoc='left', *x)
-    muldiv = lambda s, *x: s.reduce_infix(assoc='left', *x)
-    exponent = lambda s, *x: s.reduce_infix(assoc='right', *x)
+    _left_assoc = lambda s, *x: s.reduce_infix(assoc='left', *x)
+    _right_assoc = lambda s, *x: s.reduce_infix(assoc='right', *x)
+    addsub = muldiv = equality = _left_assoc
+    exponent = _right_assoc
 
     def unumber(self, (tag, start, stop, subtags), buffer):
-        return int(buffer[start:stop])
+        return float(buffer[start:stop])
 
+    equal_oper = lambda *x: operator.eq
     add_oper = lambda *x: operator.add
     sub_oper = lambda *x: operator.sub
     mul_oper = lambda *x: operator.mul
