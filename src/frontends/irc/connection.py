@@ -37,14 +37,16 @@ def _irc_nameq(x, y):
     return irclib.irc_lower(x) == irclib.irc_lower(y)
 
 class _ServerBot(ircbot.SingleServerIRCBot):
-    def __init__(self, servername, host, encoding, channels, nick, port=6667):
-        self._servername = servername
+    def __init__(self, host, encoding, channels, nick, port=6667):
         self._chan_names = channels
         self._enc = encoding
         nick = nick.encode(encoding)
         ircbot.SingleServerIRCBot.__init__(self, [(host, port)], nick, nick)
         self.individuals = ircbot.IRCDict()
         self.connection.add_global_handler("join", self.late_on_join, 20)
+
+    def on_action(self, conn, ev):
+        pass # TODO: catch incoming ACTIONs.
 
     def on_invite(self, conn, ev):
         """Join a channel when invited."""
@@ -103,9 +105,9 @@ class _ServerBot(ircbot.SingleServerIRCBot):
     def on_privmsg(self, conn, ev):
         msg = ev.arguments()[0].decode(self._enc, "replace")
         sender_name_enc = irclib.nm_to_n(ev.source())
-        sender_name = sender_name_enc.decoder(self._enc)
-        _logger.debug(u"PRIVMSG from %s: %s", sender, msg)
-        if sender not in self.individuals:
+        sender_name = sender_name_enc.decode(self._enc)
+        _logger.debug(u"PRIVMSG from %s: %s", sender_name, msg)
+        if sender_name_enc not in self.individuals:
             sender = Individual(conn, name=sender_name, encoding=self._enc)
             sender.set_AI(_def_ai_ooo(sender))
             self.individuals[sender_name_enc] = sender
@@ -131,7 +133,7 @@ class _ServerBot(ircbot.SingleServerIRCBot):
             _logger.info(ev.arguments()[0].decode(self._enc))
         except UnicodeDecodeError:
             _logger.warning("Failed to parse the welcome message from"
-                    " %s.", SERVER)
+                    " %s.", self.host) #:TODO: Is self.host a valid name?
         for chan_name in self._chan_names:
             conn.join(chan_name.encode(self._enc))
 
@@ -149,12 +151,12 @@ class Connection(BaseConnection, _threading.Thread):
 
     def run(self):
         bots = []
-        for server, kwargs in _conf.irc_networks.iteritems():
+        for kwargs in _conf.irc_networks.itervalues():
             kwargs.setdefault("nick", _conf.misc["bot_nickname"])
-            bot = _ServerBot(server, **kwargs)
+            bot = _ServerBot(**kwargs)
             bot._connect()
             bots.append(bot)
-            _logger.debug("Connected to %s.", server)
+            _logger.debug("Connected to %s.", kwargs["host"])
         while not self.halt:
             for bot in bots:
                 bot.ircobj.process_once(0)

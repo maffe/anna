@@ -66,7 +66,10 @@ class _Plugin(BasePlugin):
         try:
             for name, identity in _rooms[self._mucname]:
                 if name != self._peername:
-                    identity.send(u"<%s> %s" % (sender, msg))
+                    if msg.startswith(u"/me "):
+                        identity.send(u"* %s %s" % (sender, msg[4:]))
+                    else:
+                        identity.send(u"<%s> %s" % (sender, msg))
         finally:
             _room_lock.release()
 

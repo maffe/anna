@@ -1,33 +1,33 @@
 """Plugin that fetches and interprets news feeds.
 
 @TODO: Currently only supports the atom 1.0 spefication.
-@TODO: Parse (x)html content; if a feed does not provide text/plain type
-content the output of this plugin is now unusable.
 
 """
+import itertools
 import logging
+import re
 try:
     import threading as _threading
 except ImportError:
     import dummy_threading as _threading
 import time
+import urllib2
+
+import feedparser
+import html2text
+from BeautifulSoup import BeautifulSoup
 
 import ai.annai
 from ai.annai.plugins import BasePlugin, PluginError
 import frontends
 
-# A local import ('import _feedparser') would make more sense but for some
-# reason that does not work.
-from ai.annai.plugins import _feedparser as feedparser
-
 #: Default interval between feed checks in seconds.
-DEFAULT_INTERVAL = 300
+DEFAULT_INTERVAL = 5
+HTML_TYPES = ("html", "xhtml", "text/html", "application/xhtml+xml")
 MIN_INTERVAL = 60
 #: Maximum number of concurrent running plugins overall.
 MAX_CONCURRENT_THREADS = 10
-FORMAT = u"""New feed message for %(feed_url)s:
-
-== %(title)s (%(date)s) ==
+FORMAT = u"""== %(title)s (%(date)s) ==
 
 %(content)s
 
@@ -36,51 +36,68 @@ FORMAT = u"""New feed message for %(feed_url)s:
 _logger = logging.getLogger("anna." + __name__)
 #: Semaphore for keeping track of concurrent feedfetcher threads.
 _tickets = _threading.Semaphore(MAX_CONCURRENT_THREADS)
+_nos_rex = re.compile(r"https?://(?:[\-\w\.]*\.)?nos\.nl/")
 
-def unpack_entry(entry):
-    """Unpacks an atom entry as parsed by feedparser to a more consise object.
+def _parse_nos(entry):
+    """Extracts the article from a nos.nl link in Markdown form.
+    
+    @TODO: Catch exceptions.
+    
+    """
+    if not (hasattr(entry, "link") and _nos_rex.match(entry["link"])):
+        return None
+    art = BeautifulSoup(urllib2.urlopen(entry["link"])).find(id="tt_article")
+    # Remove all useless children.
+    art.find("div", "ext-links").extract()
+    art.find("div", "readspeaker").extract()
+    art.find("img", "tt_bullet").extract()
+    return html2text.html2text(unicode(art))
+
+def _parse_all(entry):
+    """Unpacks an atom entry as parsed by feedparser to a more concise object.
 
     If the entry can not be processed for some reason (like unknown encoding)
     C{None} is returned. Favours entries of type text/plain. If there is no
     content with type text/plain the last content dictionary in the list is
     used.
 
-    @return: A dictionary with the following values as C{unicode} objects:
-        - title
-        - updated (this is a 9-element tuple instead)
-        - content
-        - url
-    @rtype: C{dict} or C{None}
-    @TODO: Decypher common content types (like (x)html) to plain text.
+    @return: A unicode object ready to be printed to the user.
+    @rtype: C{unicode} or C{None}
 
     """
-    title = entry.get("title", u"No title")
-    url = entry.get("link", u"")
     try:
-        updated = entry["updated_parsed"]
+        # Feedparser always decodes to GMT.
+        date = "%s UTC" % time.asctime(entry["updated_parsed"])
     except KeyError:
         return None
-    try:
-        contents = entry["content"]
-    except KeyError:
+    if "content" not in entry:
         # If there's no content, try the summary.
         try:
             content = entry["summary_detail"]["value"]
         except KeyError:
             return None
+        if entry["summary_detail"]["type"] in HTML_TYPES:
+            content = html2text.html2text(content)
     else:
-        # Try and see if there is a text/plain content
+        content = None
         for dic in entry["content"]:
-            content = dic["value"]
-            if dic["type"] == "text/plain":
-                text_plain_found = True
+            if dic["type"] in ("text", "text/plain"):
+                # If there is a plaintext entry, use that.
+                content = dic["value"]
                 break
+            elif dic["type"] in HTML_TYPES:
+                # HTML is second choice.
+                #:TODO: What can dic["value"] contain, here? Always unicode?
+                content = html2text.html2text(dic["value"])
+    title = entry.get("title", u"No title")
+    url = entry.get("link", u"...")
     # If there was none, default to the last-supplied content.
     # Now check if all elements are unicode objects.
-    if not (isinstance(title, unicode) and isinstance(url, unicode)
-            and isinstance(content, unicode)):
+    if isinstance(title, unicode) and isinstance(url, unicode) \
+            and isinstance(content, unicode):
+        return FORMAT % locals()
+    else:
         return None
-    return dict(title=title, updated=updated, content=content, url=url)
 
 class _Plugin(BasePlugin):
     """Will only instantiate if there is room for another thread.
@@ -122,43 +139,50 @@ class _Plugin(BasePlugin):
         # If this function was not called by the timer it's still running.
         self.timer.cancel()
         d = feedparser.parse(self.feed_url)
-        if d["bozo"]:
-            self._stop(u"parsing feed failed, plugin can not continue.")
-            return
-        if not d["version"] == "atom10":
-            self._stop(u"Only atom 1.0 is supported for now.")
-            return
-        # List of tuples: (title, content, url)
+#         if d["bozo"]:
+#             self._stop(u"parsing feed failed, plugin can not continue.")
+#             return
+#         if not d["version"] == "atom10":
+#             self._stop(u"Only atom 1.0 is supported for now.")
+#             return
         new_entries = []
         for entry in d["entries"]:
-            clean = unpack_entry(entry)
-            if clean is None:
+            try:
+                # Get the result of the first parser that does not return None.
+                parsed = itertools.dropwhile(lambda x: x is None, (p(entry) for
+                    p in _parsers)).next()
+            except StopIteration:
                 _logger.info(u"Incompatible feed entry: %s.", entry)
                 continue
             try:
-                if clean["updated"] <= self.latest_elem:
+                if entry["updated_parsed"] <= self.latest_elem:
+                    _logger.debug("%r <= %r", entry["updated_parsed"],
+                            self.latest_elem)
                     # This element is not newer than the element we saw last
                     # time. The entries are expected to be ordered
                     # chronologically.
                     break
+                else:
+                    _logger.debug("%r > %r", entry["updated_parsed"],
+                            self.latest_elem)
             except AttributeError:
                 # There is no self.latest_elem: this is the first fetch.
-                # TODO: This belongs in a seperate routine.
-                self.latest_elem = clean["updated"]
+                #:TODO: This belongs in a seperate routine.
+                self.latest_elem = entry["updated_parsed"]
                 self.timer = _threading.Timer(self.update_interval,
                                                         self._check_feed)
                 self.timer.setDaemon(True)
                 self.timer.start()
                 return
-            new_entries.append(clean)
-        # The first element is now the newest and the last the oldest now.
-        for clean in reversed(new_entries):
-            # Feedparser always decodes to GMT.
-            date = "%s GMT" % time.asctime(clean["updated"])
-            clean.update(dict(date=date, feed_url=self.feed_url))
-            self.party.send(FORMAT % clean)
+            new_entries.append(parsed)
+        if d["entries"]:
             # Update the value of the latest feed we checked out.
-            self.latest_elem = clean["updated"]
+            self.latest_elem = entry["updated_parsed"]
+            _logger.debug("self.latest_elem = %s", self.latest_elem)
+        # The first element is now the newest and the last the oldest.
+        for parsed in reversed(new_entries):
+            self.party.send(u"New feed message on %s:\n\n%s" %
+                                                    (self.feed_url, parsed))
         self.timer = _threading.Timer(self.update_interval, self._check_feed)
         self.timer.setDaemon(True)
         self.timer.start()
@@ -177,7 +201,7 @@ class _Plugin(BasePlugin):
         assert(isinstance(reason, unicode))
         self.error = u"%s exiting: %s" % (self, reason)
         self.feed_url = u""
-        _logger.info(u"feedfetcher.exit(%r)", reason)
+        _logger.info(u"feedfetcher.exit(%s)", reason)
 
     def process(self, message, reply, *args, **kwargs):
         if self.error is not None:
@@ -203,5 +227,6 @@ class _Plugin(BasePlugin):
         self.timer.cancel()
         _tickets.release()
 
+_parsers = (_parse_nos, _parse_all)
 OneOnOnePlugin = _Plugin
 ManyOnManyPlugin = _Plugin

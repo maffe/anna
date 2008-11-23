@@ -4,14 +4,8 @@ Only reacts when the expression can be succesfully parsed. Acts shy (only
 reacts when no other plugin reacted yet).
 
 '''
-
-import sys
-
 from ai.annai.plugins import BasePlugin
 
-import simpleparse
-# Hack to fool simpleparse into thinking it's a system-wide lib.
-sys.modules['simpleparse'] = simpleparse
 import calc
 
 parser = calc.MyParser()

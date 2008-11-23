@@ -1,6 +1,6 @@
 >expression<	:= equality / side
 >atomicexpr<	:= satomicexpr / uatomicexpr
->uatomicexpr<	:= (('(', ws, expression, ws, ')')) / unumber
+>uatomicexpr<	:= ('(', !, ws, expression, ws, ')') / unumber
 satomicexpr	:= sign, uatomicexpr
 
 # Equality test.

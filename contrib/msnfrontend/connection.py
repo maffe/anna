@@ -47,9 +47,20 @@ for i in (_e.AddressBookEventInterface, _e.ClientEventInterface,
         _e.InviteEventInterface, _e.OfflineMessagesEventInterface):
     _l.append(_log_meths(i))
 
+def _dec_con(contact):
+    """Create a unicode object from a pymsn.profile.Contact instance."""
+    return u"%s (%s)" % (contact.display_name.decode("utf-8"),
+            contact.account.decode("utf-8"))
+
+class _AddressBookHandler(pymsn.event.AddressBookEventInterface):
+    def on_addressbook_messenger_contact_added(self, contact):
+        _logger.debug(u"%s added this bot to its list.", _dec_con(contact))
+        self._client.address_book.accept_contact_invitation(contact)
+
 class _ClientHandler(pymsn.event.ClientEventInterface):
     def __init__(self, conn, *args, **kwargs):
         pymsn.event.ClientEventInterface.__init__(self, *args, **kwargs)
+        # Just in case the parent class uses ._conn all of a sudden.
         self.__conn = conn
 
     def on_client_error(self, error_type, error):
@@ -61,24 +72,49 @@ class _ClientHandler(pymsn.event.ClientEventInterface):
             _logger.error("Network/protocol failure.")
             self.__conn.disconnect()
         else:
-            _logger.warning("%(error_type)s: %(error)s.", locals())
+            _logger.error("%s: %s.", error_type, error)
 
     def on_client_state_changed(self, state):
-        if state == pymsn.event.ClientState.AUTHENTICATED:
-            _logger.info("Logged in.")
-        elif state == pymsn.event.ClientState.CLOSED:
+        if state == pymsn.event.ClientState.CLOSED:
             _logger.info("Connection to server closed.")
+        elif state == pymsn.event.ClientState.AUTHENTICATED:
+            _logger.info("Logged in.")
+        elif state == pymsn.event.ClientState.OPEN:
+            self._client.profile.display_name = _conf.misc["bot_nickname"]
+            self._client.profile.presence = pymsn.profile.Presence.ONLINE
+
+class _ContactHandler(pymsn.event.ContactEventInterface):
+    def on_contact_memberships_changed(self, contact):
+        if contact.memberships & pymsn.profile.Membership.PENDING:
+            _logger.info(u"%s is still pending for approval.",
+                    _dec_con(contact))
+            self._client.address_book.accept_contact_invitation(contact)
+
+class _ConversationHandler(pymsn.event.ConversationEventInterface):
+    def on_conversation_message_received(self, sender, message):
+        _logger.debug(u"Message from %s: %s" % (_dec_con(sender),
+            message.content.decode("utf-8")))
 
 class _InviteHandler(pymsn.event.InviteEventInterface):
+    def __init__(self, *args, **kwargs):
+        pymsn.event.InviteEventInterface.__init__(self, *args, **kwargs)
+        # Keep a reference to prevent these poor handlers from being cleaned up
+        # (pymsn uses weakrefs internally).
+        self._convohandlers = []
+
     def on_invite_conversation(self, convo):
-        _logger.debug("Invited to convo.")
+        _logger.debug("Invited to conversation.")
+        self._convohandlers.append(_ConversationHandler(convo))
 
 class Connection(BaseConnection, _threading.Thread):
     def __init__(self):
         _threading.Thread.__init__(self, name="MSN frontend")
         self._client = pymsn.Client((_conf.msn["server"], _conf.msn["port"]))
         self._handlers = [
+                _AddressBookHandler(self._client),
                 _ClientHandler(self, self._client),
+                _ContactHandler(self._client),
+                _InviteHandler(self._client),
                 ]
         self._handlers.append(_l[0](self._client))
         self._handlers.append(_l[1](self._client))

@@ -94,24 +94,23 @@ class MyProcessor(DispatchProcessor):
     pos_sign = lambda *x: 1
     neg_sign = lambda *x: -1
 
-def main():
-    pars = MyParser()
-    if len(sys.argv) < 2:
-        sys.exit('Usage: %s <expression>' % sys.argv[0])
-    debug = '-d' in sys.argv
-    if debug:
-        sys.argv.remove('-d')
-    expr = ''.join(sys.argv[1:])
+def process(expr, debug=False, parser=MyParser()):
     if debug:
         import pprint
-        (x, pars.buildProcessor) = (pars.buildProcessor, lambda *x: None)
-        pprint.pprint(pars.parse(expr))
-        pars.buildProcessor = x
-    success, res = pars.parse(expr)
-    if not success:
-        sys.exit('Failed to parse.')
-    else:
-        print res
+        (x, parser.buildProcessor) = (parser.buildProcessor, lambda *x: None)
+        pprint.pprint(parser.parse(expr))
+        parser.buildProcessor = x
+    success, res = parser.parse(expr)
+    print res if success else 'Failed to parse.'
+
+def main():
+    if '-h' in sys.argv or '--help' in sys.argv:
+        print 'Usage:', sys.argv[0], '<expression>'
+        sys.exit(0)
+    while 1:
+        sys.stderr.write('> ')
+        sys.stderr.flush()
+        process(raw_input(), '-d' in sys.argv)
 
 if __name__ == '__main__':
     main()

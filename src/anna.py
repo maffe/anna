@@ -7,6 +7,7 @@ To kill the entire chatbot, use ctrl + C.
 """
 import logging
 import optparse
+import os
 import signal
 import sys
 try:
@@ -108,10 +109,17 @@ def stop():
         # Forcefully flush thread reference pool.
         bot.pool = []
 
+def modify_syspath():
+    """Include the necessary dirs in C{sys.path} for dependencies."""
+    new = os.path.abspath(os.path.join(os.path.dirname(__file__),
+            '../dependencies'))
+    sys.path.append(new)
+
 def main():
     """Start one instance of the Anna bot."""
     global bot
     print __doc__
+    modify_syspath()
     p = optparse.OptionParser(USAGE)
     p.set_defaults(loglevel=logging.WARNING)
     p.add_option("-f", "--file", help="use specified configuration file "

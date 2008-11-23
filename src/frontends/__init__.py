@@ -26,6 +26,8 @@ class BaseConnection(object):
 
 class BaseIndividual(object):
     """Parent-class for classes that represent individuals in dialogues."""
+    def destroy(self):
+        self.get_AI().destroy()
     def get_AI(self):
         return self.ai
     def get_name(self):
@@ -43,6 +45,11 @@ class BaseIndividual(object):
 
 class BaseGroup(object):
     """Parent-class for classes representing a group having a conversation."""
+    def destroy(self):
+        self.leave()
+        for p in self.get_participants():
+            self.del_participant(p)
+        self.get_AI().destroy()
     def join(self):
         pass
     def leave(self):
@@ -64,10 +71,10 @@ class BaseGroup(object):
         if not isinstance(nick, unicode):
             raise TypeError, "Nickname must be a unicode object."
     def add_participant(self, part):
-        if not isinstance(nick, unicode):
+        if not isinstance(part, BaseGroupMember):
             raise TypeError, "Participant must be a GroupMember instance."
     def del_participant(self, part):
-        if not isinstance(nick, unicode):
+        if not isinstance(part, BaseGroupMember):
             raise TypeError, "Participant must be a GroupMember instance."
         raise NoSuchParticipantError, part.nick
     def get_participant(self, nick):
