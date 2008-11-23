@@ -6,6 +6,7 @@ stored once so other modules can use the configuration without having to open
 the file every time.  The L{get_conf_copy} function can be used to this end.
 
 """
+import collections
 import logging
 import os
 import sys
@@ -89,11 +90,10 @@ class AnnaConfigParser(object):
         Works with new configuration files (post r136).
 
         """
-        vals = {}
+        vals = collections.defaultdict(dict)
         p = ConfigParser.SafeConfigParser()
         p.read(conf_loc)
         for section in p.sections():
-            vals[section] = {}
             if section == "annai_plugins":
                 vals["annai_plugins"]["names"] = {}
             for (name, value) in p.items(section):

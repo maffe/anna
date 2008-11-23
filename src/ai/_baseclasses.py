@@ -12,6 +12,10 @@ class BaseOneOnOne(object):
     def __init__(self, individual):
         pass
 
+    def destroy(self):
+        """Clean up AI instance."""
+        pass
+
     def handle(self, message):
         """Process incoming message.
 
@@ -29,6 +33,10 @@ class BaseManyOnMany(object):
 
     """
     def __init__(self, room):
+        pass
+
+    def destroy(self):
+        """Clean up AI instance."""
         pass
 
     def handle(self, message, member):

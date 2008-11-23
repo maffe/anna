@@ -8,6 +8,10 @@ exiting your program to kill the two threads polling for messages.
 import getpass as _getpass_mod
 import logging
 import mutex
+try:
+    import readline
+except:
+    pass
 import sys
 try:
     import threading as _threading
