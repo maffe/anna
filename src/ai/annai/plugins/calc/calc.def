@@ -1,28 +1,30 @@
 >expression<	:= equality / side
 >atomicexpr<	:= satomicexpr / uatomicexpr
->uatomicexpr<	:= ('(', !, ws, expression, ws, ')') / unumber
+>uatomicexpr<	:= ('(', !, ws, expression, ws, ')') / uconstant
 satomicexpr	:= sign, uatomicexpr
 
 # Equality test.
-equality	:= side, (ws, equal_oper, ws, side)+
+equality	:= side, (ws, equal_oper, !, ws, side)+
 >side<		:= addsub / term
 # Additions and substraction of terms.
-addsub		:= term, (ws, addsub_oper, ws, term)+
+addsub		:= term, (ws, addsub_oper, !, ws, term)+
 >term<		:= muldiv / factor
 # Multiplication and division of factors.
-muldiv		:= factor, (ws, muldiv_oper, ws, factor)+
+muldiv		:= factor, (ws, muldiv_oper, !, ws, factor)+
 >factor<	:= pow / atomicexpr
 # Exponentiation.
-pow		:= atomicexpr, (ws, pow_oper, ws, atomicexpr)+
+pow		:= atomicexpr, (ws, pow_oper, !, ws, atomicexpr)+
 
 # All numbers are expected to be unsigned.
+>uconstant<	:= unumber
 unumber		:= exp / real
+# Exponent notation (1e2 = 100).
 >exp<		:= real, c'e', natural
 >real<		:= (natural?, decimal_sign, !, natural) / natural
 >natural<	:= [0-9]+
 
 <ws>		:= [ \t\n]*
-equal_oper	:= '='
+<equal_oper>	:= '='
 >addsub_oper<	:= add_oper / sub_oper
 add_oper	:= '+'
 sub_oper	:= '-'

@@ -1,3 +1,4 @@
+import math
 import operator
 import os
 import sys
@@ -11,11 +12,15 @@ from simpleparse.error import ParserSyntaxError
 DEFINITIONS = os.path.join(os.path.dirname(os.path.abspath(__file__)),
         'calc.def')
 
-def _reverse_args(func):
-    '''Decorator that reverses the order of the arguments to a function.'''
-    def newf(*args):
-        return func(*reversed(args))
-    return newf
+def _all_equal(*args):
+    '''Returns True if all arguments are equal.'''
+    print args
+    args = iter(args)
+    x = args.next()
+    for e in args:
+        if x != e:
+            return False
+    return True
 
 class MyParser(Parser):
     def __init__(self, root='expression', *args):
@@ -40,7 +45,10 @@ class MyProcessor(DispatchProcessor):
     def satomicexpr(self, (tag, start, stop, subtags), buffer):
         return reduce(operator.mul, dispatchList(self, subtags, buffer))
 
-    def reduce_infix(self, (tag, start, stop, subtags), buffer, assoc='left'):
+    def equality(self, (tag, start, stop, subtags), buffer):
+        return _all_equal(dispatchList(self, subtags, buffer))
+
+    def _reduce_infix(self, (tag, start, stop, subtags), buffer, assoc='left'):
         '''Reduce a list of tags by their infix operands.
 
         The assocative argument (left or right) indicates where to start
@@ -76,10 +84,13 @@ class MyProcessor(DispatchProcessor):
             t1 = op(t1, t2)
         return t1
 
-    _left_assoc = lambda s, *x: s.reduce_infix(assoc='left', *x)
-    _right_assoc = lambda s, *x: s.reduce_infix(assoc='right', *x)
-    addsub = muldiv = equality = _left_assoc
-    exponent = _right_assoc
+    _left_assoc = lambda s, *x: s._reduce_infix(assoc='left', *x)
+    _right_assoc = lambda s, *x: s._reduce_infix(assoc='right', *x)
+    addsub = muldiv = _left_assoc
+    pow = _right_assoc
+
+    def naturalexp(self, (tag, start, stop, subtags), buffer):
+        return reduce(operator.mul, dispatchList(self, subtags, buffer))
 
     def unumber(self, (tag, start, stop, subtags), buffer):
         return float(buffer[start:stop])
@@ -89,10 +100,12 @@ class MyProcessor(DispatchProcessor):
     sub_oper = lambda *x: operator.sub
     mul_oper = lambda *x: operator.mul
     div_oper = lambda *x: operator.truediv
-    expo_oper = lambda *x: operator.pow
+    pow_oper = lambda *x: operator.pow
 
     pos_sign = lambda *x: 1
     neg_sign = lambda *x: -1
+
+    naturalexpchar = lambda *x: math.e
 
 def process(expr, debug=False, parser=MyParser()):
     if debug:
