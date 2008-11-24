@@ -1,3 +1,9 @@
+'''Calculator that parses textual expressions as input.
+
+Handles the common arithmetic operations. Takes expressions to evaluate on the
+stdin (one per line) and returns the answers on the stdout.
+
+'''
 import math
 import operator
 import os
@@ -14,7 +20,6 @@ DEFINITIONS = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 
 def _all_equal(*args):
     '''Returns True if all arguments are equal.'''
-    print args
     args = iter(args)
     x = args.next()
     for e in args:
@@ -46,7 +51,7 @@ class MyProcessor(DispatchProcessor):
         return reduce(operator.mul, dispatchList(self, subtags, buffer))
 
     def equality(self, (tag, start, stop, subtags), buffer):
-        return _all_equal(dispatchList(self, subtags, buffer))
+        return _all_equal(*dispatchList(self, subtags, buffer))
 
     def _reduce_infix(self, (tag, start, stop, subtags), buffer, assoc='left'):
         '''Reduce a list of tags by their infix operands.
@@ -115,15 +120,31 @@ def process(expr, debug=False, parser=MyParser()):
         parser.buildProcessor = x
     success, res = parser.parse(expr)
     print res if success else 'Failed to parse.'
+    return success
 
 def main():
     if '-h' in sys.argv or '--help' in sys.argv:
-        print 'Usage:', sys.argv[0], '<expression>'
+        print __doc__
+        print 'Usage:', sys.argv[0], '[-d] [expression]'
         sys.exit(0)
+    debug = '-d' in sys.argv
+    if debug:
+        sys.argv.remove('-d')
+    if len(sys.argv) > 1:
+        # All other arguments are considered part of an expression.
+        sys.exit(0 if process(' '.join(sys.argv[1:])) else 1)
+    try:
+        import readline
+    except ImportError:
+        pass
     while 1:
         sys.stderr.write('> ')
         sys.stderr.flush()
-        process(raw_input(), '-d' in sys.argv)
+        try:
+            process(raw_input(), debug)
+        except (KeyboardInterrupt, EOFError):
+            print
+            sys.exit(0)
 
 if __name__ == '__main__':
     main()

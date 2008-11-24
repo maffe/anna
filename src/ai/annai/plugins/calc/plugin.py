@@ -1,6 +1,6 @@
 '''Annai wrapper for the calculator library.
 
-Only reacts when the expression can be succesfully parsed. Acts shy (only
+Only reacts when the expression can be succesfully computed. Acts shy (only
 reacts when no other plugin reacted yet).
 
 '''
@@ -26,11 +26,10 @@ _jobq = None
 def work(inq, outq):
     '''Consume jobs from the queue and report the answer to given handler.'''
     pars = calc.MyParser()
-    _logger.debug("Worker instantiated.")
+    _logger.debug('Worker instantiated.')
     while 1:
         try:
             (success, result) = pars.parse(inq.get())
-            _logger.debug("Worker completed job.")
         except ArithmeticError, e:
             outq.put((False, u'Error: %s' % (e,)))
         else:
@@ -52,16 +51,13 @@ class Manager(_threading.Thread):
         self.inq = processing.Queue()
         self.outq = processing.Queue()
         self.worker = processing.Process(target=work, args=[self.outq,
-                self.inq], name='Annai calc plugin worker')
-        _logger.debug('Started new process %s.', self.worker.getName())
+                self.inq], name=__name__ + ' worker')
         self.worker.setDaemon(True)
         self.worker.start()
 
     def take_job(self):
         '''Listen for incoming job and delegate to worker process.'''
-        _logger.debug('%s waiting for job...', self)
         jobt = self.jobq.get()
-        _logger.debug('Got job %s, passing on to worker.', jobt)
         (job, callback, highlight) = jobt
         # There can not be communication yet.
         assert(self.inq.empty() and self.outq.empty())
@@ -106,9 +102,7 @@ class _Plugin(BasePlugin):
 
         '''
         if reply is None:
-            _logger.debug(u'Delegating job to %s.', _manager.getName())
             _jobq.put((message, self.party.send, highlight))
-            _logger.debug(u'Succesfully delegated job.')
         return (message, reply)
 
 OneOnOnePlugin = _Plugin
