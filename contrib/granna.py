@@ -32,6 +32,9 @@ def apply_pattern(pattern, words):
         a = ids[j][2] - 1
         while a > 0:
             i += 1
+            if i >= len(words):
+                return False
+
             if j + 1 < len(ids) and not idfuncs["is_" + ids[j + 1][0]](words[i]) == ids[j + 1][1]:
                 j += 1
                 break
@@ -71,9 +74,7 @@ class _Plugin(BasePlugin):
             if not i == None:
                 for i in xrange(len(words)):
                     for pattern in self.wrong:
-                        cp = apply_pattern(pattern, words[i:])
-                        if not cp == False:
-                            print i
+                        if apply_pattern(pattern, words[i:]):
                             reply = message[0:res.start()] + "DAN" + message[res.end():]
                             return (message, "Wrong! '" + reply + "'")
         
