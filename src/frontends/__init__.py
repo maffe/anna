@@ -4,7 +4,10 @@ More information on frontends (including the API) can be found on the
 U{wiki <https://0brg.net/anna/wiki/Frontends>}.
 
 """
+import logging
+
 __all__ = ["xmpp", "console", "irc"]
+_logger = logging.getLogger("anna." + __name__)
 
 class NoSuchParticipantError(Exception):
     """Raised when an unknown GroupMember is adressed."""
@@ -27,6 +30,7 @@ class BaseConnection(object):
 class BaseIndividual(object):
     """Parent-class for classes that represent individuals in dialogues."""
     def destroy(self):
+        _logger.debug(u"Destroying individual %s.", unicode(self))
         self.get_AI().destroy()
     def get_AI(self):
         return self.ai
@@ -46,6 +50,7 @@ class BaseIndividual(object):
 class BaseGroup(object):
     """Parent-class for classes representing a group having a conversation."""
     def destroy(self):
+        _logger.debug(u"Destroying room %s.", unicode(self))
         self.leave()
         for p in self.get_participants():
             self.del_participant(p)
