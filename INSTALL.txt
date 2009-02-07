@@ -13,9 +13,7 @@ Dependencies:
 - Sqlalchemy 0.4.5 is known to work. Needed for the agenda, factoids and
   reactions plugin. [2]
 - PyXMPP 1.0.0 is known to work. Needed for the XMPP frontend. [3]
-- Java runtime environment [6] and JPype [7] needed for the
-  annarithmetic plugin.
-- Python IRC library [8] 0.4.6 needed for the IRC frontend.
+- Python IRC library [6] 0.4.6 needed for the IRC frontend.
 
 
    ## 1) DOWNLOAD ##
@@ -96,6 +94,4 @@ Good luck =]
 [3] http://pyxmpp.jajcus.net/
 [4] http://subversion.tigris.org/
 [5] https://0brg.net/anna/wiki/Install
-[6] http://java.com/
-[7] http://jpype.sourceforge.net/
-[8] http://python-irclib.sourceforge.net/
+[6] http://python-irclib.sourceforge.net/
