@@ -7,10 +7,16 @@
 
 import re
 import sys
+try:
+    import threading as _threading
+except ImportError:
+    import dummy_threading as _threading
 
 import ai
 import aihandler
 import frontends
+
+regex_compilation_lock = _threading.Lock()
 
 raw = {
     u"^some people are being fangoriously devoured by a gelatinous monster$": u"Hillary\u2019s legs are being digested.",
@@ -136,8 +142,7 @@ class ManyOnMany(ai.BaseManyOnMany):
 
 def _compile_regex():
     """Compile all regular expressions and store them in a global list once."""
-    global compiled
-    if not compiled:
+    if regex_compilation_lock.acquire(False):
         for of, to in raw.items():
             regex = re.compile(of, re.IGNORECASE | re.UNICODE)
             compiled.append((regex, to))
