@@ -14,20 +14,21 @@ from ai.annai.plugins import BasePlugin, PluginError
 import config
 import frontends
 
-REQ_ADD = re.compile(u"(global )?reaction to (.*?) is (.*)", re.I | re.S)
-REQ_DEL = re.compile(u"forget (global )?reaction to (.*)", re.I | re.S)
 TYPE_DIRECT = 0
 TYPE_GLOBAL = 1
 
 class _Plugin(BasePlugin):
     """Common functions for both the OneOnOne and ManyOnMany plugins.
-    
+
     This implements a state-machine for the type of reaction (direct or
     global). Whenever a _analyze_request function is called, it sets the
     instance variable _type if it hits. The _reaction_* functions use this
     variable to enter the proper value in the database.
 
     """
+    REQ_ADD = re.compile(u"(global )?reaction to (.*?) is (.*)", re.I | re.S)
+    REQ_DEL = re.compile(u"forget (global )?reaction to (.*)", re.I | re.S)
+
     def __init__(self, party, args):
         self._frmt = dict()
         # Functions to apply to incoming messages subsequently.
@@ -63,11 +64,10 @@ class _Plugin(BasePlugin):
         @rtype: C{list} or C{None}
 
         """
-        m = REQ_ADD.match(msg)
+        m = self.REQ_ADD.match(msg)
         if m is None:
             return None
-        # Watch out; this only works if TYPE_GLOBAL evaluates to True.
-        self._type = m.group(1) is not None and TYPE_GLOBAL or TYPE_DIRECT
+        self._type = TYPE_GLOBAL if m.group(1) is not None else TYPE_DIRECT
         return (m.group(2), m.group(3))
 
     def _analyze_request_delete(self, msg):
@@ -77,7 +77,7 @@ class _Plugin(BasePlugin):
         @rtype: C{unicode} or C{None}
 
         """
-        m = REQ_DEL.match(msg)
+        m = self.REQ_DEL.match(msg)
         if m is None:
             return None
         self._type = m.group(1) is not None and TYPE_GLOBAL or TYPE_DIRECT
@@ -224,7 +224,7 @@ class OneOnOnePlugin(_Plugin):
     def _handle_react(self, message):
         self._type = None
         reaction = self._reaction_get(message)
-        return reaction is not None and reaction or None
+        return reaction
 
 class ManyOnManyPlugin(_Plugin):
     def __init__(self, room, args):
