@@ -52,13 +52,14 @@ class Individual(BaseIndividual):
         if __debug__:
             if not isinstance(message, unicode):
                 raise TypeError, "Message must be a unicode object."
+        _logger.debug(u"pm -> %s: '%s'", self, message)
         message = px.Message(to_jid=self._jid, body=message,
                 stanza_type="chat")
         self._stream.send(message)
 
 class Group(BaseGroup):
     """XMPP MUC room binding for the Anna bot.
-    
+
     @ivar _mucstate: Must be set before this instance can be used.
     @type _mucstate: C{pyxmpp.jabber.muc.MucRoomState}
     @ivar _members: All members of this group chat.

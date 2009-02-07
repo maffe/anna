@@ -113,11 +113,12 @@ class Connection(px.jab.Client, _threading.Thread):
     def finish(self):
         """Release all allocated resources and close all open connections.""" 
         if self.stream:
-            # Can not use the iterator .itervalues() because self.leave_room
-            # modifies the self._rooms dictionary.
             if hasattr(self, "_rooms"):
-                for room in self._rooms.rooms.values():
-                    self.leave_room(room)
+                # pyxmpp.jabber.muc.MucRoomManager.forget() modifies the .rooms
+                # dict so itervalues() can not be used.
+                for mucroomstate in self._rooms.rooms.values():
+                    mucroomstate.handler.room.destroy()
+                    self._rooms.forget(mucroomstate)
             self.lock.acquire()
             try:
                 try:
@@ -156,7 +157,6 @@ class Connection(px.jab.Client, _threading.Thread):
             # notifications.
             return True
         sender = message.get_from()
-        _logger.debug(u"pm: '%s' from '%s'", text, sender)
         if sender in self._parties:
             peer = self._parties[sender]
         else:
@@ -165,6 +165,7 @@ class Connection(px.jab.Client, _threading.Thread):
             def_AI = _conf.misc["default_ai"]
             peer.set_AI(aihandler.get_oneonone(def_AI)(peer))
             self._parties[sender] = peer
+        _logger.debug(u"pm <- %s: %s", peer, text)
         peer.get_AI().handle(text)
         return True
 
@@ -326,7 +327,7 @@ class _MucEventHandler(px.jab.muc.MucRoomHandler):
             # Ignore messages without body (typically "x is composing a
             # message" notifications).
             return False
-        _logger.debug(u"muc: %s: '%s'", message.get_from(), text)
+        _logger.debug(u"muc <- %s: '%s'", message.get_from(), text)
         ai = self.room.get_AI()
         try:
             member = self.room.get_participant(sender.nick)
