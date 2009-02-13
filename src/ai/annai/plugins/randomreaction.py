@@ -1,5 +1,9 @@
-"""This plugin allows the user to set random reactions."""
+"""This plugin allows the user to set random reactions.
 
+This plugin reacts to messages of the following form: 'random reaction
+to x is (y|z)' to create a random reaction, y or z, to x.
+
+"""
 from __future__ import with_statement
 
 import random
@@ -63,16 +67,13 @@ class _Plugin(rp._Plugin):
             re.I | re.S)
 
     def __init__(self, party, args):
-        if args:
-            raise PluginError, u'No arguments allowed for %s.' % self
-        self._msg_parsers = (
-                self._handle_add,
-                self._handle_delete,
-                self._handle_react,
-                )
+        super(_Plugin, self).__init__(party, args)
 
     def __unicode__(self):
         return u'random reaction plugin'
+
+    def _prepare_db(self):
+        pass
 
     def _reaction_add(self, hook, rctn):
         '''Add a new reaction to the database.'''

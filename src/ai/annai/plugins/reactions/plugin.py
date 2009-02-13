@@ -25,11 +25,16 @@ class _Plugin(BasePlugin):
     instance variable _type if it hits. The _reaction_* functions use this
     variable to enter the proper value in the database.
 
+    @ivar _frmt: Map for string formatting in outgoing messages.
+    @type _frmt: C{dict}
+
     """
     REQ_ADD = re.compile(u"(global )?reaction to (.*?) is (.*)", re.I | re.S)
     REQ_DEL = re.compile(u"forget (global )?reaction to (.*)", re.I | re.S)
 
     def __init__(self, party, args):
+        if args:
+            raise PluginError, u'No arguments allowed for %s.' % self
         self._frmt = dict()
         # Functions to apply to incoming messages subsequently.
         self._msg_parsers = (
@@ -37,22 +42,7 @@ class _Plugin(BasePlugin):
                 self._handle_delete,
                 self._handle_react,
                 )
-        # Create the database if it doesn't exist.
-        db_uri = config.get_conf_copy().reactions_plugin["db_uri"]
-        self._engine = sa.create_engine(db_uri)#, echo=True)
-        self._md = sa.MetaData()
-        self._table = sa.Table("reaction", self._md, 
-                sa.Column("reaction_id", sa.Integer, primary_key=True),
-                sa.Column("numreq", sa.Integer, sa.PassiveDefault('0'),
-                    nullable=False),
-                sa.Column("type", sa.Integer, nullable=False),
-                # TODO: The hook is not unique because there can be two. A real
-                # constraint should be formulated, though.
-                sa.Column("hook", sa.String(512), nullable=False),
-                sa.Column("reaction", sa.String(512), nullable=False),
-                )
-        self._md.bind = self._engine
-        self._md.create_all(self._engine)
+        self._prepare_db()
 
     def __unicode__(self):
         return u"reactions plugin"
@@ -82,6 +72,24 @@ class _Plugin(BasePlugin):
             return None
         self._type = m.group(1) is not None and TYPE_GLOBAL or TYPE_DIRECT
         return m.group(2)
+
+    def _prepare_db(self):
+        # Create the database if it doesn't exist.
+        db_uri = config.get_conf_copy().reactions_plugin["db_uri"]
+        self._engine = sa.create_engine(db_uri)#, echo=True)
+        self._md = sa.MetaData()
+        self._table = sa.Table("reaction", self._md, 
+                sa.Column("reaction_id", sa.Integer, primary_key=True),
+                sa.Column("numreq", sa.Integer, sa.PassiveDefault('0'),
+                    nullable=False),
+                sa.Column("type", sa.Integer, nullable=False),
+                # TODO: The hook is not unique because there can be two. A real
+                # constraint should be formulated, though.
+                sa.Column("hook", sa.String(512), nullable=False),
+                sa.Column("reaction", sa.String(512), nullable=False),
+                )
+        self._md.bind = self._engine
+        self._md.create_all(self._engine)
 
     def _reaction_add(self, hook, rectn):
         """Set the reaction to given hook.
