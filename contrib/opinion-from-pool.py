@@ -9,6 +9,7 @@ class _Plugin(BasePlugin):
     oldpool = ()
     words = ((u"yes", u"no"),
         (u"right", u"wrong"),
+        (u"true", u"false"),
         #(u"k"), # emulate the famous "k" plugin
         (u"ja", u"nein"), # German
         )
