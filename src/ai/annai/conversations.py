@@ -218,7 +218,8 @@ class OneOnOne(_AnnaiBase, ai.BaseOneOnOne):
 
 class ManyOnMany(_AnnaiBase, ai.BaseManyOnMany):
     _rex_nickchange = re.compile(
-            u"(?:change (?:y(?:our|a) )?(?:nick(?:name)?|name) to|/nick) (.+)$")
+            u"(?:change (?:y(?:our|a) )?(?:nick(?:name)?|name) to|/nick) (.+)$",
+            re.IGNORECASE)
     def __init__(self, room):
         super(ManyOnMany, self).__init__(room)
         if __debug__:
