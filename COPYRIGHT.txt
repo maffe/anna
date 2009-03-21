@@ -67,15 +67,6 @@ THE SOFTWARE.
 ----- end license block -----
 
 
-===== ANNARITHMETIC =====
-
-Annarithmetic (/contrib/annarithmetic/javasource/) is a Java package that
-interprets arithmetic expressions.
-
-Copyright (c) 2008 Lucas Moeskops,
-All rights reserved.
-
-
 ===== AGENDA.PY =====
 
 The agenda plugin for the Annai AI module
