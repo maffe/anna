@@ -1,0 +1,4 @@
+# Ignore backup files.
+*~
+# Ignore compiled Python files.
+*.py[co]
