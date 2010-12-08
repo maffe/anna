@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 cd "`dirname $0`/src"
-python -tt -O anna.py $@
+python -t -O anna.py $@
