@@ -14,10 +14,10 @@ class _Plugin(BasePlugin):
         return u'Captain Planet plugin'
 
     def process(self, message, reply, *args):
-        stripped = self._STRIPREX.match(message).group(1).lower()
-        if stripped in self._HOOKS:
+        stripped = _STRIPREX.match(message).group(1).lower()
+        if stripped in _HOOKS:
             self._hits.add(stripped)
-            if self._hits == self._HOOKS:
+            if self._hits == _HOOKS:
                 self._hits.clear()
                 return (message, u'By your powers combined, I am Captain Planet!')
         return (message, reply)
