@@ -3,10 +3,10 @@
 from ai.annai.plugins import BasePlugin
 import re
 
-class _Plugin(BasePlugin):
-    _HOOKS = frozenset([u'earth', u'fire', u'wind', u'water', u'heart'])
-    _STRIPREX = re.compile(u'^(.*?)[.!]*$', re.DOTALL)
+_HOOKS = frozenset([u'earth', u'fire', u'wind', u'water', u'heart'])
+_STRIPREX = re.compile(u'^(.*?)[.!]*$', re.DOTALL)
 
+class _Plugin(BasePlugin):
     def __init__(self, identity, args):
         self._hits = set()
 
