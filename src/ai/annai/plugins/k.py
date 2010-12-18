@@ -13,7 +13,7 @@ class _Plugin(BasePlugin):
         if message == "k":
             self._kcount += 1
             if self._kcount == 2:
-                return (message, u"k")
+                return (u"k", u"k")
         else:
             self._kcount = 0
         return (message, reply)

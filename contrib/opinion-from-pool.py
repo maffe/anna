@@ -5,8 +5,6 @@ from random import choice
 import re
 
 class _Plugin(BasePlugin):
-    sent = False
-    oldpool = ()
     words = ((u"yes", u"no"),
         (u"right", u"wrong"),
         (u"true", u"false"),
@@ -14,13 +12,17 @@ class _Plugin(BasePlugin):
         (u"ja", u"nein"), # German
         )
     regex_strip = re.compile(u"^(.*?)[.!?]*$", re.DOTALL)
+    
+    def __init__(self, identity, args):
+        self.sent = False
+        self.oldpool = ()
 
     def __unicode__(self):
         return u"opinion plugin"
 
     def process(self, message, reply, *args):
         if message is None:
-            return (message, reply)
+            return (None, reply)
         stripped = self.regex_strip.match(message).group(1).lower()
         for pool in self.words:
             if stripped in pool:

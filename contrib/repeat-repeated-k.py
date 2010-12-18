@@ -3,8 +3,9 @@
 from ai.annai.plugins import BasePlugin
 
 class _Plugin(BasePlugin):
-    sent = False
-    wask = False
+    def __init__(self, identity, args):
+        self.sent = False
+        self.wask = False
 
     def __unicode__(self):
         return u"repeat k plugin"
@@ -14,7 +15,7 @@ class _Plugin(BasePlugin):
             if self.wask:
                 if not self.sent:
                     self.sent = True
-                    return (message, message)
+                    return (u"k", u"k")
             self.wask = True
         else:
             self.sent = False

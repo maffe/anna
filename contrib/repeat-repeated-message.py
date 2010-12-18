@@ -3,8 +3,9 @@
 from ai.annai.plugins import BasePlugin
 
 class _Plugin(BasePlugin):
-    sent = False
-    old = u""
+    def __init__(self, identity, args):
+        self.sent = False
+        self.old = u""
 
     def __unicode__(self):
         return u"repeat message plugin"
